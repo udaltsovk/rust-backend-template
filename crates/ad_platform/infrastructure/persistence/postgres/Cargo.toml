@@ -1,0 +1,22 @@
+[package]
+name = "infrastructure-persistence-postgres"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+kernel = { path = "../../../kernel"}
+
+async-trait.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+sqlx = { version = "0.8", features = [
+    "runtime-tokio-rustls",
+    "postgres",
+    "uuid"
+] }
+
+[lints]
+workspace = true

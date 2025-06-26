@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS clients;
+
+DROP TYPE IF EXISTS client_gender;

@@ -1,0 +1,74 @@
+use async_trait::async_trait;
+use kernel::{
+    application::repository::client::ClientRepository,
+    domain::{
+        Id,
+        client::{Client, UpsertClient},
+    },
+};
+use sqlx::query_file_as;
+
+use crate::{
+    entity::client::{StoredClient, gender::StoredClientGender},
+    error::PostgresAdapterError,
+    repository::DatabaseRepositoryImpl,
+};
+
+#[async_trait]
+impl ClientRepository for DatabaseRepositoryImpl<Client> {
+    type AdapterError = PostgresAdapterError;
+
+    async fn bulk_upsert(
+        &self,
+        source: &[UpsertClient],
+    ) -> Result<Vec<Client>, Self::AdapterError> {
+        if source.is_empty() {
+            return Ok(vec![]);
+        }
+
+        let mut transaction = self.db.begin().await?;
+
+        let mut clients = vec![];
+
+        for client in source {
+            let gender: StoredClientGender = client.gender.clone().into();
+            let age: i32 = client.age.into();
+
+            let result = query_file_as!(
+                StoredClient,
+                "./sql/client/upsert.sql",
+                client.id.value,
+                client.login,
+                age,
+                gender as StoredClientGender,
+                client.location
+            )
+            .fetch_one(&mut *transaction)
+            .await
+            .map(Client::from)?;
+
+            clients.push(result);
+        }
+
+        transaction.commit().await?;
+        let result = clients;
+
+        Ok(result)
+    }
+
+    async fn find_by_id(
+        &self,
+        id: Id<Client>,
+    ) -> Result<Option<Client>, Self::AdapterError> {
+        let result = query_file_as!(
+            StoredClient,
+            "./sql/client/find_by_id.sql",
+            id.value
+        )
+        .fetch_optional(&*self.db)
+        .await?
+        .map(Client::from);
+
+        Ok(result)
+    }
+}

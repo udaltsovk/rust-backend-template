@@ -1,0 +1,34 @@
+[package]
+name = "presentation-api-rest"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+kernel = { path = "../../../kernel" }
+
+thiserror.workspace = true
+tokio = { workspace = true, features = ["signal"] }
+tower.workspace = true
+tower-http = { workspace = true, features = ["catch-panic", "request-id"] }
+tracing.workspace = true
+uuid = { workspace = true, features = ["serde"] }
+
+axum = { version = "0.8", features = ["macros"] }
+garde = { version = "0.22", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+
+# TODO: use utoipa from crates.io when https://github.com/juhaku/utoipa/pull/1329 merged
+utoipa = { git = "https://github.com/NikSneMC/utoipa", features = [
+    "axum_extras",
+    "preserve_order",
+    "preserve_path_order",
+    "non_strict_integers",
+    "uuid",
+    "chrono",
+] }
+utoipa-axum = { git = "https://github.com/NikSneMC/utoipa" }
+utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa", features = ["axum"] }
+
+[lints]
+workspace = true

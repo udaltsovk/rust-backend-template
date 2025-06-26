@@ -1,0 +1,23 @@
+services:
+  postgres_db:
+    image: postgres:alpine
+    restart: on-failure
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ad_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:alpine
+    restart: on-failure
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+volumes:
+  db-data:
+  redis-data:
