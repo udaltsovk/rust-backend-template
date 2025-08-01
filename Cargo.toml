@@ -8,7 +8,7 @@ members = [
     "crates/ad_platform/infrastructure/persistence/redis",
     "crates/ad_platform/presentation/api/rest",
     "crates/ad_platform/presentation/bot/telegram",
-    "crates/ad_platform/bin/rest-api"
+    "crates/ad_platform/bootstrap/rest-api"
 ]
 
 [workspace.package]
@@ -21,9 +21,7 @@ lib = { path = "./crates/lib" }
 async-trait = "0.1"
 chrono = "0.4"
 env-vars-config = "0.5"
-jemalloc_pprof = "0.7"
 metrics = "0.24"
-tikv-jemalloc-ctl = "0.6"
 tikv-jemallocator = "0.6"
 thiserror = "2.0"
 tokio = "1.45"
@@ -34,17 +32,21 @@ uuid = "1.17"
 
 
 [profile.release]
-lto = true
+lto = "fat"
 strip = true
 opt-level = 3
-panic = 'abort'
+panic = "abort"
 codegen-units = 1
 
-# Arithmetic
 [workspace.lints.rust]
+# Arithmetic
 arithmetic_overflow = "deny"  # Prevent operations that would cause integer overflow
 
+# Unsafe code detection
+unnecessary_transmutes = "deny"       # Prevent unsafe transmutation from integers to characters or floats
+
 [workspace.lints.clippy]
+# Arithmetic
 checked_conversions = "deny"          # Suggest using checked conversions between numeric types
 cast_possible_truncation = "deny"     # Detect when casting might truncate a value
 cast_sign_loss = "deny"               # Detect when casting might lose sign information
@@ -72,7 +74,6 @@ serde_api_misuse = "deny"             # Prevent incorrect usage of Serde's seria
 uninit_vec = "deny"                   # Prevent creating uninitialized vectors which is unsafe
 
 # Unsafe code detection
-transmute_int_to_char = "deny"        # Prevent unsafe transmutation from integers to characters
-transmute_int_to_float = "deny"       # Prevent unsafe transmutation from integers to floats
 transmute_ptr_to_ref = "deny"         # Prevent unsafe transmutation from pointers to references
 transmute_undefined_repr = "deny"     # Detect transmutes with potentially undefined representations
+
