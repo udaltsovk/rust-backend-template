@@ -59,4 +59,6 @@ async fn main() {
         *config::SERVER_PORT,
     )))
     .await;
+
+    lgtm.shutdown();
 }
