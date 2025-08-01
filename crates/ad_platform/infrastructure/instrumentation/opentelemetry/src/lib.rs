@@ -38,7 +38,7 @@ fn parse_directive(directive: &'static str) -> Directive {
     directive.parse().expect("Failed to parse directive")
 }
 
-const HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME: &'static str =
+const HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME: &str =
     "http_server_request_duration_seconds";
 
 #[allow(dead_code)]
@@ -248,12 +248,16 @@ impl LGTM {
         lgtm
     }
 
-    pub fn shutdown(&self) -> OTelSdkResult {
+    pub fn shutdown(&self) {
         tracing::info!("Shutting down LGTM stuff");
 
-        self.get_tracer_provider().shutdown()?;
-        self.get_logger_provider().shutdown()?;
+        let r: OTelSdkResult = (|| {
+            self.get_tracer_provider().shutdown()?;
+            self.get_logger_provider().shutdown()?;
 
-        Ok(())
+            Ok(())
+        })();
+
+        r.expect("Failed to shut down LGTM");
     }
 }

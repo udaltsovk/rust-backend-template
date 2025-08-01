@@ -22,6 +22,6 @@ pub enum AppError {
 }
 impl<E: Debug> From<UseCaseError<E>> for AppError {
     fn from(e: UseCaseError<E>) -> Self {
-        AppError::UseCase(format!("{:?}", e))
+        AppError::UseCase(format!("{e:?}"))
     }
 }

@@ -29,7 +29,7 @@ impl App {
         let middlewares = ServiceBuilder::new()
             .layer(SetRequestIdLayer::new(
                 Self::REQUEST_ID_HEADER,
-                MakeRequestUuid::default(),
+                MakeRequestUuid,
             ))
             .layer(PropagateRequestIdLayer::new(Self::REQUEST_ID_HEADER))
             .layer(CatchPanicLayer::new());

@@ -35,7 +35,7 @@ impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         match self {
             AppError::Validation(validation_errors) => {
-                error!("{:?}", validation_errors);
+                error!("{validation_errors:?}");
 
                 let mut messages: Vec<String> = Vec::new();
                 let errors = validation_errors.into_inner();
@@ -47,22 +47,22 @@ impl IntoResponse for AppError {
                     .as_response(StatusCode::BAD_REQUEST)
             },
             AppError::JsonRejection(rejection) => {
-                error!("{:?}", rejection);
+                error!("{rejection:?}");
 
                 let messages = vec![rejection];
                 JsonErrorStruct::new("invalid_request", messages)
                     .as_response(StatusCode::BAD_REQUEST)
             },
             AppError::ApiPathRejection(rejection) => {
-                error!("{:?}", rejection);
+                error!("{rejection:?}");
 
                 let messages = vec![rejection];
                 JsonErrorStruct::new("missing_api_version", messages)
                     .as_response(StatusCode::BAD_REQUEST)
             },
             AppError::UnknownApiVerRejection(version) => {
-                let err = format!("Unknown api version ({}).", version);
-                error!("{}", err);
+                let err = format!("Unknown api version ({version}).");
+                error!("{err}");
 
                 let messages = vec![err];
                 JsonErrorStruct::new(
