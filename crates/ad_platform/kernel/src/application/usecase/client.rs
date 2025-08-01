@@ -1,9 +1,7 @@
-use async_trait::async_trait;
-
 use crate::{
     application::{
         repository::{RepositoriesModuleExt, client::ClientRepository},
-        usecase::{UseCase, client::ClientUseCase, error::UseCaseError},
+        usecase::{UseCase, error::UseCaseError},
     },
     domain::{
         Id,
@@ -11,15 +9,14 @@ use crate::{
     },
 };
 
-#[async_trait]
-impl<R> ClientUseCase for UseCase<R, Client>
+impl<R> UseCase<R, Client>
 where
     R: RepositoriesModuleExt,
 {
-    type Error =
+    pub type Error =
         UseCaseError<<R::ClientRepo as ClientRepository>::AdapterError>;
 
-    async fn bulk_upsert(
+    pub async fn bulk_upsert(
         &self,
         source: &[UpsertClient],
     ) -> Result<Vec<Client>, Self::Error> {
@@ -31,7 +28,7 @@ where
         Ok(result)
     }
 
-    async fn find_by_id(
+    pub async fn find_by_id(
         &self,
         id: Id<Client>,
     ) -> Result<Option<Client>, Self::Error> {

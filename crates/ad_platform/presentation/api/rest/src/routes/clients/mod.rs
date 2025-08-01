@@ -4,9 +4,7 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
 };
-use kernel::{
-    application::usecase::client::ClientUseCase, domain::client::UpsertClient,
-};
+use kernel::domain::client::UpsertClient;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
 
