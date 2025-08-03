@@ -7,6 +7,7 @@ use kernel::{
     },
 };
 use sqlx::query_file_as;
+use tracing::instrument;
 
 use crate::{
     entity::client::{StoredClient, gender::StoredClientGender},
@@ -18,6 +19,7 @@ use crate::{
 impl ClientRepository for DatabaseRepositoryImpl<Client> {
     type AdapterError = PostgresAdapterError;
 
+    #[instrument(name = "PostgresCLientRepository::bulk_upsert", skip_all)]
     async fn bulk_upsert(
         &self,
         source: &[UpsertClient],
@@ -56,6 +58,7 @@ impl ClientRepository for DatabaseRepositoryImpl<Client> {
         Ok(result)
     }
 
+    #[instrument(name = "PostgresCLientRepository::find_by_id", skip_all)]
     async fn find_by_id(
         &self,
         id: Id<Client>,
