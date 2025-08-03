@@ -6,7 +6,8 @@ edition.workspace = true
 
 [dependencies]
 async-trait.workspace = true
-# tracing.workspace = true
+derive-where = "1.5"
+tracing.workspace = true
 thiserror.workspace = true
 uuid = { workspace = true, features = ["v7"] }
 

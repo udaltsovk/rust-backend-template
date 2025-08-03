@@ -1,10 +1,12 @@
 use std::marker::PhantomData;
 
+use derive_where::derive_where;
 use uuid::Uuid;
 
 pub mod client;
+pub mod session;
 
-#[derive(Debug)]
+#[derive_where(Clone, Debug)]
 pub struct Id<T> {
     pub value: Uuid,
     _entity: PhantomData<T>,

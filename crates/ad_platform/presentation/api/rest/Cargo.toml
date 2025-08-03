@@ -7,6 +7,7 @@ edition.workspace = true
 [dependencies]
 kernel = { path = "../../../kernel" }
 
+serde = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["signal"] }
 tower.workspace = true
@@ -16,7 +17,6 @@ uuid = { workspace = true, features = ["serde"] }
 
 axum = { version = "0.8", features = ["macros"] }
 garde = { version = "0.22", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
 
 # TODO: use utoipa from crates.io when https://github.com/juhaku/utoipa/pull/1329 merged
 utoipa = { git = "https://github.com/NikSneMC/utoipa", features = [

@@ -1,7 +1,10 @@
 use std::fmt::Debug;
 
 use axum::extract::rejection::{JsonRejection, PathRejection};
-use kernel::application::usecase::error::UseCaseError;
+use kernel::application::{
+    repository::RepositoriesModuleExt, service::ServicesModuleExt,
+    usecase::client::error::ClientUseCaseError,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
@@ -20,8 +23,12 @@ pub enum AppError {
     #[error("{0}")]
     UseCase(String),
 }
-impl<E: Debug> From<UseCaseError<E>> for AppError {
-    fn from(e: UseCaseError<E>) -> Self {
+impl<R, S> From<ClientUseCaseError<R, S>> for AppError
+where
+    R: RepositoriesModuleExt,
+    S: ServicesModuleExt,
+{
+    fn from(e: ClientUseCaseError<R, S>) -> Self {
         AppError::UseCase(format!("{e:?}"))
     }
 }

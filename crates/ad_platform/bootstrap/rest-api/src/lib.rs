@@ -3,6 +3,7 @@ use std::{net::IpAddr, str::FromStr as _};
 use env_vars_config::env_vars_config;
 
 mod modules;
+mod services;
 
 pub use modules::Modules;
 
@@ -16,4 +17,5 @@ env_vars_config! {
     DB_NAME: String = "ad_platform",
     OTEL_ENDPOINT: String = "http://localhost:4317",
     METRICS_ADDRESS: String = "0.0.0.0:8081",
+    JWT_SECRET: String = "changeme",
 }

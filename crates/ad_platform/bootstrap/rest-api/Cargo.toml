@@ -11,6 +11,7 @@ path = "./src/openapi.rs"
 kernel = { path = "../../kernel" }
 infrastructure-instrumentation-opentelemetry = { path = "../../infrastructure/instrumentation/opentelemetry" }
 infrastructure-persistence-postgres = { path = "../../infrastructure/persistence/postgres" }
+infrastructure-service-jwt = { path = "../../infrastructure/service/jwt" }
 presentation-api-rest = { path = "../../presentation/api/rest" }
 
 env-vars-config.workspace = true

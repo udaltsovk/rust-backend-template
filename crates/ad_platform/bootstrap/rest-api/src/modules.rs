@@ -4,16 +4,19 @@ use infrastructure_persistence_postgres::{Db, module::RepositoriesModule};
 use kernel::{application::usecase::UseCase, domain::client::Client};
 use presentation_api_rest::module::ModulesExt;
 
-use crate::config;
+use crate::{config, services::ServicesModule};
 
 #[derive(Clone)]
 pub struct Modules {
-    client_usecase: Arc<UseCase<RepositoriesModule, Client>>,
+    client_usecase: Arc<UseCase<RepositoriesModule, ServicesModule, Client>>,
 }
 impl ModulesExt for Modules {
     type RepositoriesModule = RepositoriesModule;
+    type ServicesModule = ServicesModule;
 
-    fn client_usecase(&self) -> &UseCase<Self::RepositoriesModule, Client> {
+    fn client_usecase(
+        &self,
+    ) -> &UseCase<Self::RepositoriesModule, Self::ServicesModule, Client> {
         &self.client_usecase
     }
 }
@@ -30,9 +33,12 @@ impl Modules {
         let db = Db::new(&database_url).await;
 
         let repositories_module = RepositoriesModule::new(&db);
+        let services_module = ServicesModule::new(&config::JWT_SECRET);
 
-        let client_usecase =
-            Arc::new(UseCase::new(repositories_module.clone()));
+        let client_usecase = Arc::new(UseCase::new(
+            repositories_module.clone(),
+            services_module.clone(),
+        ));
 
         Self {
             client_usecase,
