@@ -17,13 +17,13 @@ where
     I: Clone,
     T: DomainType<I>,
 {
-    pub fn new<F>(value: F, errors: &mut Vec<ValidationErrors>) -> Self
+    pub fn new<F>(value: F, errors: &mut ValidationErrors) -> Self
     where
         T: TryFrom<F, Error = ValidationErrors>,
     {
         let res = value
             .try_into()
-            .inspect_err(|err: &ValidationErrors| errors.push(err.clone()));
+            .inspect_err(|err: &ValidationErrors| errors.extend(err.clone()));
         Self {
             inner: res,
             _phantom: PhantomData,

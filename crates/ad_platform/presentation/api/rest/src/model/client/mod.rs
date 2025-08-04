@@ -50,19 +50,16 @@ pub struct UpsertJsonClient {
 }
 impl ParseableJson<UpsertClient> for UpsertJsonClient {
     fn parse(self) -> Result<UpsertClient, ValidationErrors> {
-        let mut errors = vec![];
+        let mut errors = ValidationErrors::new();
         let login_fn = Validator::new(self.login, &mut errors).lazy();
         let age_fn = Validator::new(self.age, &mut errors).lazy();
         let location_fn = Validator::new(self.location, &mut errors).lazy();
-        errors
-            .is_empty()
-            .then(|| UpsertClient {
-                id: self.id.into(),
-                login: login_fn(),
-                age: age_fn(),
-                gender: self.gender.into(),
-                location: location_fn(),
-            })
-            .ok_or_else(|| errors.into())
+        errors.into_result(|| UpsertClient {
+            id: self.id.into(),
+            login: login_fn(),
+            age: age_fn(),
+            gender: self.gender.into(),
+            location: location_fn(),
+        })
     }
 }
