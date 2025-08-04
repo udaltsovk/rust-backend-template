@@ -11,10 +11,10 @@ impl TryFrom<String> for ClientLocation {
         const FIELD: &str = "location";
         let mut errors = ValidationErrors::default();
 
-        if value.chars().count() < 10 {
+        if value.chars().count() < 5 {
             errors.push(
                 FIELD,
-                "Location length must be at least 10 characters long",
+                "Location length must be at least 5 characters long",
             );
         }
         if value.chars().count() > 100 {
