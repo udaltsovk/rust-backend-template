@@ -56,7 +56,7 @@ impl ParseableJson<UpsertClient> for UpsertJsonClient {
         let location_fn = Validator::new(self.location, &mut errors).lazy();
         errors
             .is_empty()
-            .then_some(UpsertClient {
+            .then(|| UpsertClient {
                 id: self.id.into(),
                 login: login_fn(),
                 age: age_fn(),
