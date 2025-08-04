@@ -1,6 +1,4 @@
-use kernel::domain::client::{
-    Client, age::ClientAge, location::ClientLocation, login::ClientLogin,
-};
+use kernel::domain::client::Client;
 use sqlx::FromRow;
 use uuid::Uuid;
 
@@ -20,10 +18,10 @@ impl From<StoredClient> for Client {
     fn from(c: StoredClient) -> Self {
         Self {
             id: c.id.into(),
-            login: ClientLogin::safe_parse(c.login),
-            age: ClientAge::safe_parse(c.age),
+            login: c.login.into_domain(),
+            age: c.age.into_domain(),
             gender: c.gender.into(),
-            location: ClientLocation::safe_parse(c.location),
+            location: c.location.into_domain(),
         }
     }
 }

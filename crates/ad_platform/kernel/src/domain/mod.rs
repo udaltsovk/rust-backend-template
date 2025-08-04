@@ -8,6 +8,7 @@ use crate::domain::error::ValidationErrors;
 pub mod client;
 pub mod error;
 pub mod session;
+pub mod validation;
 
 #[derive_where(Clone, Debug)]
 pub struct Id<T> {

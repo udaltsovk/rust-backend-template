@@ -4,21 +4,22 @@ use kernel::domain::{DomainType, error::ValidationErrors};
 
 pub(crate) mod client;
 
-trait DomainTypeFromDb<F, T, I>
+trait DomainTypeFromDb<T, I>
 where
-    T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
+    Self: Sized,
+    T: DomainType<I> + TryFrom<Self, Error = ValidationErrors>,
     I: Clone,
 {
-    fn safe_parse(value: F) -> T;
+    fn into_domain(self) -> T;
 }
 
-impl<F, T, I> DomainTypeFromDb<F, T, I> for T
+impl<F, T, I> DomainTypeFromDb<T, I> for F
 where
     T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
     I: Clone,
 {
-    fn safe_parse(value: F) -> T {
-        value.try_into().unwrap_or_else(|_| {
+    fn into_domain(self) -> T {
+        self.try_into().unwrap_or_else(|_| {
             panic!("Expected `{}` from the db to be valid", type_name::<T>())
         })
     }
