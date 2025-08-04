@@ -2,7 +2,7 @@ use kernel::domain::{
     DomainType as _,
     client::{Client, UpsertClient},
     error::ValidationErrors,
-    validation::Validator,
+    validation::IntoValidator as _,
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -51,15 +51,17 @@ pub struct UpsertJsonClient {
 impl ParseableJson<UpsertClient> for UpsertJsonClient {
     fn parse(self) -> Result<UpsertClient, ValidationErrors> {
         let mut errors = ValidationErrors::new();
-        let login_fn = Validator::new(self.login, &mut errors).lazy();
-        let age_fn = Validator::new(self.age, &mut errors).lazy();
-        let location_fn = Validator::new(self.location, &mut errors).lazy();
+
+        let login = self.login.into_validator(&mut errors);
+        let age = self.age.into_validator(&mut errors);
+        let location = self.location.into_validator(&mut errors);
+
         errors.into_result(|| UpsertClient {
             id: self.id.into(),
-            login: login_fn(),
-            age: age_fn(),
+            login: login.validated(),
+            age: age.validated(),
             gender: self.gender.into(),
-            location: location_fn(),
+            location: location.validated(),
         })
     }
 }

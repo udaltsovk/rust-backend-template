@@ -30,14 +30,30 @@ where
         }
     }
 
-    pub fn lazy(self) -> impl FnOnce() -> T {
-        || {
-            self.inner.unwrap_or_else(|_| {
-                panic!(
-                    "`{}` should be Ok because error vec is empty",
-                    type_name::<Self>()
-                )
-            })
-        }
+    pub fn validated(self) -> T {
+        self.inner.unwrap_or_else(|_| {
+            panic!(
+                "`{}` should be Ok because error vec is empty",
+                type_name::<Self>()
+            )
+        })
     }
+}
+
+pub trait IntoValidator<T, I>
+where
+    Self: Sized,
+    I: Clone,
+    T: DomainType<I> + TryFrom<Self, Error = ValidationErrors>,
+{
+    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T, I> {
+        Validator::new(self, errors)
+    }
+}
+
+impl<F, T, I> IntoValidator<T, I> for F
+where
+    I: Clone,
+    T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
+{
 }
