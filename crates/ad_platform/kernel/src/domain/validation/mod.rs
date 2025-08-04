@@ -30,7 +30,7 @@ where
         }
     }
 
-    pub fn validated(self) -> T {
+    pub fn validated(self, _confirmation: ValidationConfirmation) -> T {
         self.inner.unwrap_or_else(|_| {
             panic!(
                 "`{}` should be Ok because error vec is empty",
@@ -38,6 +38,11 @@ where
             )
         })
     }
+}
+
+#[derive(Clone, Copy)]
+pub struct ValidationConfirmation {
+    _phantom: PhantomData<()>,
 }
 
 pub trait IntoValidator<T, I>

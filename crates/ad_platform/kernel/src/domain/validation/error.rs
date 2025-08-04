@@ -1,4 +1,6 @@
-use std::{error::Error, fmt};
+use std::{error::Error, fmt, marker::PhantomData};
+
+use crate::domain::validation::ValidationConfirmation;
 
 #[derive(Clone, Debug)]
 pub struct ValidationErrors(Vec<(String, String)>);
@@ -20,8 +22,14 @@ impl ValidationErrors {
         self.0.push((path.to_string(), message.to_string()));
     }
 
-    pub fn into_result<T>(self, ok_fn: impl FnOnce() -> T) -> Result<T, Self> {
-        self.0.is_empty().then(ok_fn).ok_or(self)
+    pub fn into_result<T>(
+        self,
+        ok_fn: impl FnOnce(ValidationConfirmation) -> T,
+    ) -> Result<T, Self> {
+        let confirmation = ValidationConfirmation {
+            _phantom: PhantomData,
+        };
+        self.0.is_empty().then(|| ok_fn(confirmation)).ok_or(self)
     }
 }
 

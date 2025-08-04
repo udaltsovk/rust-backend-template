@@ -56,12 +56,12 @@ impl ParseableJson<UpsertClient> for UpsertJsonClient {
         let age = self.age.into_validator(&mut errors);
         let location = self.location.into_validator(&mut errors);
 
-        errors.into_result(|| UpsertClient {
+        errors.into_result(|ok| UpsertClient {
             id: self.id.into(),
-            login: login.validated(),
-            age: age.validated(),
+            login: login.validated(ok),
+            age: age.validated(ok),
             gender: self.gender.into(),
-            location: location.validated(),
+            location: location.validated(ok),
         })
     }
 }
