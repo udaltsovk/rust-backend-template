@@ -1,11 +1,15 @@
 [package]
-name = "lib"
+name = "lib-proc-macros"
 version = "0.1.0"
 authors.workspace = true
 edition.workspace = true
 
+[lib]
+proc-macro = true
+
 [dependencies]
-lib-macros = { path = "./macros" }
+quote = "1.0"
+syn = "2.0"
 
 [lints]
 workspace = true

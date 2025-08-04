@@ -1,8 +1,10 @@
-use kernel::domain::client::Client;
+use kernel::domain::client::{
+    Client, age::ClientAge, location::ClientLocation, login::ClientLogin,
+};
 use sqlx::FromRow;
 use uuid::Uuid;
 
-use crate::entity::client::gender::StoredClientGender;
+use crate::entity::{DomainTypeFromDb, client::gender::StoredClientGender};
 
 pub(crate) mod gender;
 
@@ -18,10 +20,10 @@ impl From<StoredClient> for Client {
     fn from(c: StoredClient) -> Self {
         Self {
             id: c.id.into(),
-            login: c.login,
-            age: c.age.try_into().unwrap_or(0),
+            login: ClientLogin::safe_parse(c.login),
+            age: ClientAge::safe_parse(c.age),
             gender: c.gender.into(),
-            location: c.location,
+            location: ClientLocation::safe_parse(c.location),
         }
     }
 }

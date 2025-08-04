@@ -1,11 +1,8 @@
-use axum::{http::StatusCode, response::IntoResponse};
+use axum::{Json, http::StatusCode, response::IntoResponse};
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 use crate::{
-    context::{
-        errors::AppError, response_helper::JsonErrorStruct,
-        validate::ValidatedRequest,
-    },
+    context::{errors::AppError, response_helper::JsonErrorStruct},
     model::time::JsonTime,
     module::ModulesExt,
 };
@@ -24,7 +21,7 @@ pub fn router<M: ModulesExt>() -> OpenApiRouter<M> {
     )
 )]
 pub async fn advance<M: ModulesExt>(
-    ValidatedRequest(_source): ValidatedRequest<JsonTime>,
+    Json(_source): Json<JsonTime>,
 ) -> Result<impl IntoResponse, AppError> {
     Ok(JsonErrorStruct::new(
         "not_implemented",

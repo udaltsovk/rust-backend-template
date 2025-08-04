@@ -4,16 +4,18 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
 };
-use kernel::domain::client::UpsertClient;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
 
 use crate::{
     context::{
         api_version::ApiVersion, errors::AppError,
-        response_helper::JsonErrorStruct, validate::ValidatedRequest,
+        response_helper::JsonErrorStruct,
     },
-    model::client::{JsonClient, UpsertJsonClient},
+    model::{
+        ParseableJson as _,
+        client::{JsonClient, UpsertJsonClient},
+    },
     module::ModulesExt,
 };
 
@@ -37,10 +39,9 @@ pub fn router<M: ModulesExt>() -> OpenApiRouter<M> {
 )]
 pub async fn bulk_upsert<M: ModulesExt>(
     modules: State<M>,
-    ValidatedRequest(source): ValidatedRequest<Vec<UpsertJsonClient>>,
+    Json(source): Json<Vec<UpsertJsonClient>>,
 ) -> Result<impl IntoResponse, AppError> {
-    let clients: Vec<_> = source.into_iter().map(UpsertClient::from).collect();
-
+    let clients = source.parse()?;
     let result: Vec<JsonClient> = modules
         .client_usecase()
         .bulk_upsert(&clients)

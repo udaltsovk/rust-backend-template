@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use kernel::{
     application::repository::client::ClientRepository,
     domain::{
-        Id,
+        DomainType as _, Id,
         client::{Client, UpsertClient},
     },
 };
@@ -34,16 +34,16 @@ impl ClientRepository for DatabaseRepositoryImpl<Client> {
 
         for client in source {
             let gender: StoredClientGender = client.gender.clone().into();
-            let age: i32 = client.age.into();
+            let age: i32 = client.age.cloned_inner().into();
 
             let result = query_file_as!(
                 StoredClient,
                 "./sql/client/upsert.sql",
                 client.id.value,
-                client.login,
+                client.login.cloned_inner(),
                 age,
                 gender as StoredClientGender,
-                client.location
+                client.location.cloned_inner()
             )
             .fetch_one(&mut *transaction)
             .await

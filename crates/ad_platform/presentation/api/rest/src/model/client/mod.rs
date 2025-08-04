@@ -1,10 +1,16 @@
-use garde::Validate;
-use kernel::domain::client::{Client, UpsertClient};
+use kernel::domain::{
+    DomainType as _,
+    client::{
+        Client, UpsertClient, age::ClientAge, location::ClientLocation,
+        login::ClientLogin,
+    },
+    error::ValidationErrors,
+};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::model::client::gender::JsonClientGender;
+use crate::model::{ParseableJson, client::gender::JsonClientGender};
 
 mod gender;
 
@@ -20,46 +26,46 @@ impl From<Client> for JsonClient {
     fn from(c: Client) -> Self {
         Self {
             id: c.id.value,
-            login: c.login,
-            age: c.age,
+            login: c.login.into_inner(),
+            age: c.age.into_inner(),
             gender: c.gender.into(),
-            location: c.location,
+            location: c.location.into_inner(),
         }
     }
 }
-#[derive(Deserialize, Validate, ToSchema, Debug)]
+#[derive(Deserialize, ToSchema, Debug)]
 pub struct UpsertJsonClient {
-    #[garde(skip)]
     ///
     pub id: Uuid,
 
-    #[garde(ascii, length(min = 3, max = 32))]
     ///
     pub login: String,
 
-    #[garde(range(min = 0, max = 255))]
     ///
-    pub age: i64,
+    pub age: i32,
 
-    #[garde(skip)]
     ///
     pub gender: JsonClientGender,
 
-    #[garde(length(min = 10, max = 100))]
     ///
     pub location: String,
 }
-impl From<UpsertJsonClient> for UpsertClient {
-    fn from(uc: UpsertJsonClient) -> UpsertClient {
-        Self {
-            id: uc.id.into(),
-            login: uc.login,
-            age: uc
-                .age
-                .try_into()
-                .expect("this shouldn't happen due to validation"),
-            gender: uc.gender.into(),
-            location: uc.location,
-        }
+impl ParseableJson<UpsertClient> for UpsertJsonClient {
+    fn parse(self) -> Result<UpsertClient, ValidationErrors> {
+        let errors = vec![];
+        let (errors, login_fn) = ClientLogin::parse(self.login, errors);
+        let (errors, age_fn) = ClientAge::parse(self.age, errors);
+        let (errors, location_fn) =
+            ClientLocation::parse(self.location, errors);
+        errors
+            .is_empty()
+            .then_some(UpsertClient {
+                id: self.id.into(),
+                login: login_fn(),
+                age: age_fn(),
+                gender: self.gender.into(),
+                location: location_fn(),
+            })
+            .ok_or_else(|| errors.into())
     }
 }

@@ -5,6 +5,8 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
+lib.workspace = true
+
 async-trait.workspace = true
 derive-where = "1.5"
 tracing.workspace = true

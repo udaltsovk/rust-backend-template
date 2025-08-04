@@ -1,15 +1,18 @@
 use std::fmt::Debug;
 
 use axum::extract::rejection::{JsonRejection, PathRejection};
-use kernel::application::{
-    repository::RepositoriesModuleExt, service::ServicesModuleExt,
-    usecase::client::error::ClientUseCaseError,
+use kernel::{
+    application::{
+        repository::RepositoriesModuleExt, service::ServicesModuleExt,
+        usecase::client::error::ClientUseCaseError,
+    },
+    domain::error::{DomainError, ValidationErrors},
 };
 
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
     #[error(transparent)]
-    Validation(#[from] garde::Report),
+    Validation(#[from] ValidationErrors),
 
     #[error(transparent)]
     JsonRejection(#[from] JsonRejection),
@@ -30,5 +33,13 @@ where
 {
     fn from(e: ClientUseCaseError<R, S>) -> Self {
         AppError::UseCase(format!("{e:?}"))
+    }
+}
+impl From<DomainError> for AppError {
+    fn from(err: DomainError) -> Self {
+        use DomainError as DE;
+        match err {
+            DE::Validation(err) => Self::Validation(err),
+        }
     }
 }
