@@ -39,23 +39,6 @@ impl Default for ValidationErrors {
     }
 }
 
-impl From<Vec<(String, String)>> for ValidationErrors {
-    fn from(errors: Vec<(String, String)>) -> Self {
-        Self(errors)
-    }
-}
-
-impl From<Vec<(&str, &str)>> for ValidationErrors {
-    fn from(errors: Vec<(&str, &str)>) -> Self {
-        Self(
-            errors
-                .into_iter()
-                .map(|(path, err)| (path.to_string(), err.to_string()))
-                .collect(),
-        )
-    }
-}
-
 impl fmt::Display for ValidationErrors {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let errors = self
@@ -72,6 +55,17 @@ impl Error for ValidationErrors {}
 
 impl From<Vec<ValidationErrors>> for ValidationErrors {
     fn from(errors: Vec<ValidationErrors>) -> Self {
-        Self(errors.into_iter().flat_map(|err| err.0).collect())
+        errors
+            .into_iter()
+            .fold(ValidationErrors::default(), |mut acc, e| {
+                acc.extend(e);
+                acc
+            })
+    }
+}
+
+impl FromIterator<ValidationErrors> for ValidationErrors {
+    fn from_iter<T: IntoIterator<Item = ValidationErrors>>(iter: T) -> Self {
+        iter.into_iter().collect::<Vec<_>>().into()
     }
 }

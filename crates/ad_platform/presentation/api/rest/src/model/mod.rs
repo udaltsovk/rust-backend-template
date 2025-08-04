@@ -1,6 +1,7 @@
 #![allow(clippy::empty_docs)]
 
 use kernel::domain::error::ValidationErrors;
+
 pub mod client;
 pub mod time;
 
@@ -13,31 +14,17 @@ where
     J: ParseableJson<T>,
 {
     fn parse(self) -> Result<Vec<T>, ValidationErrors> {
-        let mut errors = vec![];
-        let converted: Vec<_> = self
+        let (errors, converted): (Vec<_>, Vec<_>) = self
             .into_iter()
-            .enumerate()
-            .map(|(i, v)| {
-                v.parse().inspect_err(|err: &ValidationErrors| {
-                    let err: ValidationErrors = err
-                        .clone()
-                        .into_inner()
-                        .into_iter()
-                        .map(|(path, error)| (format!("{i}.{path}"), error))
-                        .collect::<Vec<_>>()
-                        .into();
-                    errors.push(err)
-                })
+            .map(|v| match v.parse() {
+                Ok(ok) => (None, Some(ok)),
+                Err(err) => (Some(err), None),
             })
-            .collect();
+            .unzip();
         errors
-            .is_empty()
-            .then(|| {
-                converted
-                    .into_iter()
-                    .map(|c| c.expect("error list is empty so it's safe"))
-                    .collect()
-            })
-            .ok_or_else(|| errors.into())
+            .into_iter()
+            .flatten()
+            .collect::<ValidationErrors>()
+            .into_result(|_| converted.into_iter().flatten().collect())
     }
 }

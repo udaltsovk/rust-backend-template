@@ -8,22 +8,21 @@ impl TryFrom<String> for ClientLocation {
     type Error = ValidationErrors;
 
     fn try_from(value: String) -> Result<Self, ValidationErrors> {
-        let mut errors = vec![];
+        const FIELD: &str = "location";
+        let mut errors = ValidationErrors::default();
+
         if value.chars().count() < 10 {
-            errors.push((
-                "location",
+            errors.push(
+                FIELD,
                 "Location length must be at least 10 characters long",
-            ));
+            );
         }
         if value.chars().count() > 100 {
-            errors.push((
-                "location",
+            errors.push(
+                FIELD,
                 "Location length must be at most 100 characters long",
-            ));
+            );
         }
-        errors
-            .is_empty()
-            .then_some(Self(value))
-            .ok_or_else(|| errors.into())
+        errors.into_result(|_| Self(value))
     }
 }
