@@ -55,12 +55,17 @@ impl Error for ValidationErrors {}
 
 impl From<Vec<ValidationErrors>> for ValidationErrors {
     fn from(errors: Vec<ValidationErrors>) -> Self {
-        errors
-            .into_iter()
-            .fold(ValidationErrors::default(), |mut acc, e| {
-                acc.extend(e);
+        errors.into_iter().enumerate().fold(
+            ValidationErrors::default(),
+            |mut acc, (i, e)| {
+                let errors =
+                    e.0.into_iter()
+                        .map(|(path, error)| (format!("{i}.{path}"), error))
+                        .collect();
+                acc.extend(ValidationErrors(errors));
                 acc
-            })
+            },
+        )
     }
 }
 
