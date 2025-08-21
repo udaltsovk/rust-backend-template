@@ -39,12 +39,12 @@ watch-rs crate:
          just test && \
          just run {{crate}}"
 
-migrate:
+sqlx-prepare:
     cargo sqlx prepare --workspace
 
-watch-migrations:
+watch-sql:
     watchexec \
         -rqc reset \
         -e sql \
-        "just migrate"
+        "just sqlx-prepare"
 
