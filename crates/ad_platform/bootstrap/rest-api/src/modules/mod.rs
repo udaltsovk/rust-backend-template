@@ -1,10 +1,16 @@
 use std::sync::Arc;
 
-use infrastructure_persistence_postgres::{Db, module::RepositoriesModule};
+use infrastructure_persistence_postgres::Postgres;
 use kernel::{application::usecase::UseCase, domain::client::Client};
 use presentation_api_rest::module::ModulesExt;
 
-use crate::{config, services::ServicesModule};
+use crate::{
+    config,
+    modules::{repositories::RepositoriesModule, services::ServicesModule},
+};
+
+mod repositories;
+mod services;
 
 #[derive(Clone)]
 pub struct Modules {
@@ -22,17 +28,17 @@ impl ModulesExt for Modules {
 }
 impl Modules {
     pub async fn new() -> Self {
-        let database_url = format!(
+        let postgres_url = format!(
             "postgres://{}:{}@{}:{}/{}",
-            *config::DB_USER,
-            *config::DB_PASSWORD,
-            *config::DB_ADDRESS,
-            *config::DB_PORT,
-            *config::DB_NAME,
+            *config::POSTGRES_USER,
+            *config::POSTGRES_PASSWORD,
+            *config::POSTGRES_ADDRESS,
+            *config::POSTGRES_PORT,
+            *config::POSTGRES_NAME,
         );
-        let db = Db::new(&database_url).await;
+        let postgres = Postgres::new(&postgres_url).await;
 
-        let repositories_module = RepositoriesModule::new(&db);
+        let repositories_module = RepositoriesModule::new(&postgres);
         let services_module = ServicesModule::new(&config::JWT_SECRET);
 
         let client_usecase = Arc::new(UseCase::new(

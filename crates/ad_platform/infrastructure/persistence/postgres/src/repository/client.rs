@@ -12,11 +12,11 @@ use tracing::instrument;
 use crate::{
     entity::client::{StoredClient, gender::StoredClientGender},
     error::PostgresAdapterError,
-    repository::DatabaseRepositoryImpl,
+    repository::PostgresRepositoryImpl,
 };
 
 #[async_trait]
-impl ClientRepository for DatabaseRepositoryImpl<Client> {
+impl ClientRepository for PostgresRepositoryImpl<Client> {
     type AdapterError = PostgresAdapterError;
 
     #[instrument(name = "PostgresCLientRepository::bulk_upsert", skip_all)]

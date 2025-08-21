@@ -1,16 +1,16 @@
 use std::marker::PhantomData;
 
-use crate::Db;
+use crate::Postgres;
 
 mod client;
 
 #[derive(Clone)]
-pub struct DatabaseRepositoryImpl<T: Send + Sync> {
-    db: Db,
+pub struct PostgresRepositoryImpl<T: Send + Sync> {
+    db: Postgres,
     _entity: PhantomData<T>,
 }
-impl<T: Send + Sync> DatabaseRepositoryImpl<T> {
-    pub(crate) fn new(db: &Db) -> Self {
+impl<T: Send + Sync> PostgresRepositoryImpl<T> {
+    pub fn new(db: &Postgres) -> Self {
         Self {
             db: db.clone(),
             _entity: PhantomData,

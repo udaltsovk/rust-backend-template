@@ -1,15 +1,14 @@
 use std::ops::Deref;
 
-use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
+use sqlx::{Pool, Postgres as PostgreSQL, postgres::PgPoolOptions};
 
 pub mod entity;
 pub mod error;
-pub mod module;
 pub mod repository;
 
 #[derive(Clone)]
-pub struct Db(Pool<Postgres>);
-impl Db {
+pub struct Postgres(Pool<PostgreSQL>);
+impl Postgres {
     pub async fn new(database_url: &str) -> Self {
         let pool = PgPoolOptions::new()
             .max_connections(8)
@@ -19,8 +18,8 @@ impl Db {
         Self(pool)
     }
 }
-impl Deref for Db {
-    type Target = Pool<Postgres>;
+impl Deref for Postgres {
+    type Target = Pool<PostgreSQL>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
