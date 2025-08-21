@@ -1,5 +1,15 @@
 export RUSTFLAGS := "-Z macro-backtrace --cfg tokio_unstable"
 
+dev-compose-down:
+    docker compose -f ./dev-compose.yml down 
+
+dev-compose-up:
+    docker compose -f ./dev-compose.yml up -d
+
+dev-compose-restart:
+    just dev-compose-down
+    just dev-compose-up
+
 udeps:
     cargo udeps --all
 
@@ -38,7 +48,3 @@ watch-migrations:
         -e sql \
         "just migrate"
 
-watch-all crate:
-    just --evaluate watch-rs {{crate}} &
-    just --evaluate watch-migrations &
-    wait
