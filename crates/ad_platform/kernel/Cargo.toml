@@ -8,7 +8,7 @@ edition.workspace = true
 lib.workspace = true
 
 async-trait.workspace = true
-derive-where = "1.5"
+derive-where = "1.6"
 tracing.workspace = true
 thiserror.workspace = true
 uuid = { workspace = true, features = ["v7"] }

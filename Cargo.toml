@@ -28,11 +28,11 @@ metrics = "0.24"
 serde = "1.0"
 tikv-jemallocator = "0.6"
 thiserror = "2.0"
-tokio = "1.45"
+tokio = "1.47"
 tower = "0.5"
 tower-http = "0.6"
 tracing = "0.1"
-uuid = "1.17"
+uuid = "1.18"
 
 
 [profile.release]
