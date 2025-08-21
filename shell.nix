@@ -11,6 +11,8 @@
       extensions = ["rust-src"];
     })
 
+    just
+
     watchexec
     sqlx-cli
     cargo-udeps
