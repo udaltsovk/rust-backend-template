@@ -2,6 +2,7 @@ use std::{net::IpAddr, str::FromStr as _};
 
 use env_vars_config::env_vars_config;
 
+pub mod bootstrappers;
 mod modules;
 
 pub use modules::Modules;

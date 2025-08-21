@@ -11,7 +11,7 @@ members = [
     "crates/ad_platform/infrastructure/service/jwt",
     "crates/ad_platform/presentation/api/rest",
     "crates/ad_platform/presentation/bot/telegram",
-    "crates/ad_platform/bootstrap/rest-api",
+    "crates/ad_platform/bootstrap/monolyth",
 ]
 
 [workspace.package]

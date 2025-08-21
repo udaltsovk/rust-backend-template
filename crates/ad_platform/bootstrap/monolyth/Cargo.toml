@@ -1,11 +1,15 @@
 [package]
-name = "ad_platform-rest-api"
+name = "ad_platform-monolyth"
 version = "0.1.0"
 edition = "2024"
 
 [[bin]]
+name = "ad_platform-monolyth"
+path = "./src/bin/main.rs"
+
+[[bin]]
 name = "ad_platform-openapi"
-path = "./src/openapi.rs"
+path = "./src/bin/openapi.rs"
 
 [dependencies]
 kernel = { path = "../../kernel" }
@@ -14,6 +18,7 @@ infrastructure-persistence-postgres = { path = "../../infrastructure/persistence
 infrastructure-service-jwt = { path = "../../infrastructure/service/jwt" }
 presentation-api-rest = { path = "../../presentation/api/rest" }
 
+async-trait.workspace = true
 env-vars-config.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tower.workspace = true

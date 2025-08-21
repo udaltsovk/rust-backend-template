@@ -13,10 +13,10 @@ use utoipa_scalar::{Scalar, Servable as _};
 
 use crate::{context::openapi::ApiDoc, module::ModulesExt, routes};
 
-pub struct App {
+pub struct RestApi {
     pub router: Router,
 }
-impl App {
+impl RestApi {
     const REQUEST_ID_HEADER: HeaderName =
         HeaderName::from_static("x-request-id");
 
