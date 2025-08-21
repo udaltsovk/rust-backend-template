@@ -1,0 +1,52 @@
+use std::{ops::Deref as _, sync::Arc};
+
+use opentelemetry::{global, trace::TracerProvider as _};
+use opentelemetry_otlp::{SpanExporter, WithExportConfig as _};
+use opentelemetry_sdk::trace::{BatchSpanProcessor, SdkTracerProvider, Tracer};
+use tracing::Subscriber;
+use tracing_opentelemetry::OpenTelemetryLayer;
+use tracing_subscriber::registry::LookupSpan;
+
+use crate::LGTM;
+
+impl LGTM {
+    pub(super) fn get_tracer_provider(&self) -> SdkTracerProvider {
+        self.tracer_provider
+            .clone()
+            .expect("Called `LGTM::get_tracer_provider` too early")
+            .deref()
+            .clone()
+    }
+
+    #[inline]
+    pub(super) fn configure_tracer_provider(mut self) -> Self {
+        let tracer_provider = SdkTracerProvider::builder()
+            .with_resource(self.resource.clone())
+            .with_span_processor(
+                BatchSpanProcessor::builder(
+                    SpanExporter::builder()
+                        .with_tonic()
+                        .with_export_config(self.export_config())
+                        .build()
+                        .expect("Failed to build exporter!"),
+                )
+                .build(),
+            )
+            .build();
+        global::set_tracer_provider(tracer_provider.clone());
+        self.tracer_provider = Some(Arc::new(tracer_provider));
+        self
+    }
+
+    #[inline]
+    pub(super) fn trace_layer<S: Subscriber + for<'span> LookupSpan<'span>>(
+        &self,
+    ) -> OpenTelemetryLayer<S, Tracer> {
+        OpenTelemetryLayer::new(
+            self.tracer_provider
+                .clone()
+                .expect("Called `LGTM::trace_layer` too early")
+                .tracer(self.otel_service_name.clone()),
+        )
+    }
+}
