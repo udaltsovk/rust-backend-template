@@ -15,7 +15,7 @@ path = "./src/bin/openapi.rs"
 kernel = { path = "../../kernel" }
 infrastructure-instrumentation-opentelemetry = { path = "../../infrastructure/instrumentation/opentelemetry" }
 infrastructure-persistence-postgres = { path = "../../infrastructure/persistence/postgres" }
-infrastructure-service-jwt = { path = "../../infrastructure/service/jwt" }
+infrastructure-service-token-jwt = { path = "../../infrastructure/service/token/jwt" }
 presentation-api-rest = { path = "../../presentation/api/rest" }
 
 async-trait.workspace = true

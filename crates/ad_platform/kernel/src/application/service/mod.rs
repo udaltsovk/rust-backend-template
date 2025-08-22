@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use crate::application::service::token::TokenService;
 
+pub mod hasher;
 pub mod token;
 
 pub trait ServicesModuleExt: Send + Sync {

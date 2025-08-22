@@ -10,7 +10,6 @@ use uuid::Uuid;
 use crate::claims::Claims;
 
 mod claims;
-mod error;
 
 pub struct JwtService {
     encoding_key: EncodingKey,
@@ -35,6 +34,7 @@ impl TokenService for JwtService {
     }
 }
 impl JwtService {
+    #[tracing::instrument(name = "JwtService::new", skip_all, level = "trace")]
     pub fn new(secret: &str) -> Self {
         let secret = secret.as_bytes();
         Self {

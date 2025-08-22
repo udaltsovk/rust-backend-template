@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use infrastructure_service_jwt::JwtService;
+use infrastructure_service_token_jwt::JwtService;
 use kernel::application::service::ServicesModuleExt;
 
 #[derive(Clone)]

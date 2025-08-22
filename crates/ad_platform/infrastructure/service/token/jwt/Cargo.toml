@@ -1,11 +1,11 @@
 [package]
-name = "infrastructure-service-jwt"
+name = "infrastructure-service-token-jwt"
 version = "0.1.0"
 authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-kernel = { path = "../../../kernel"}
+kernel = { path = "../../../../kernel"}
 
 chrono.workspace = true
 serde = { workspace = true, features = ["derive"] }
