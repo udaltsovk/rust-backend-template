@@ -34,7 +34,7 @@ impl Modules {
             *config::POSTGRES_PASSWORD,
             *config::POSTGRES_ADDRESS,
             *config::POSTGRES_PORT,
-            *config::POSTGRES_NAME,
+            *config::POSTGRES_DATABASE,
         );
         let postgres = Postgres::new(&postgres_url).await;
 
