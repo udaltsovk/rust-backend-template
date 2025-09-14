@@ -6,7 +6,7 @@ members = [
 ]
 
 [workspace.package]
-authors = ["Kirill Udaltsov <contact@udaltsovk.ru>"]
+authors = ["Kirill Udaltsov <me@udaltsovk.ru>"]
 edition = "2024"
 
 [workspace.dependencies]
