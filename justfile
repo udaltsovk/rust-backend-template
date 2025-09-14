@@ -28,16 +28,19 @@ test:
 run crate:
     cargo run --bin {{crate}}
 
+check crate:
+    just udeps && \
+    just audit && \
+    just fmt && \
+    just lint && \
+    just test && \
+    just run {{crate}}
+
 watch-rs crate:
     watchexec \
         -rqc reset \
         -e rs,toml \
-        "just udeps && \
-         just audit && \
-         just fmt && \
-         just lint && \
-         just test && \
-         just run {{crate}}"
+        "just check {{crate}}"
 
 sqlx-prepare:
     cargo sqlx prepare --workspace
