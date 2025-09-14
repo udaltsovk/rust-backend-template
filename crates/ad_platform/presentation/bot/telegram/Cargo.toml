@@ -4,12 +4,8 @@ version = "0.1.0"
 authors.workspace = true
 edition.workspace = true
 
-[[bin]]
-name = "promo-bot-telegram"
-path = "src/bin/bootstrap.rs"
-
 [dependencies]
-tokio = { workspace = true, features = ["full", "rt-multi-thread"] }
+# tokio = { workspace = true, features = ["full", "rt-multi-thread"] }
 
 [lints]
 workspace = true
