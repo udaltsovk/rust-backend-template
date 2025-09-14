@@ -8,7 +8,8 @@ edition.workspace = true
 lib = { workspace = true, features = [
     "infrastructure_persistence_postgres"
 ] }
-kernel = { path = "../../../kernel", package = "ad_platform-kernel" }
+domain = { path = "../../../domain", package = "ad_platform-domain" }
+application = { path = "../../../application", package = "ad_platform-application" }
 
 async-trait.workspace = true
 thiserror.workspace = true

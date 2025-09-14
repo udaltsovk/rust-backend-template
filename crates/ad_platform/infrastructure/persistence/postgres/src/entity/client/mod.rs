@@ -1,4 +1,4 @@
-use kernel::domain::client::Client;
+use domain::client::Client;
 use lib::infrastructure::persistence::postgres::entity::DomainTypeFromDb as _;
 use sqlx::FromRow;
 use uuid::Uuid;

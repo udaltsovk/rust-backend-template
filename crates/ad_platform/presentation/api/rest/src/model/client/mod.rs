@@ -1,6 +1,6 @@
-use kernel::domain::client::{Client, UpsertClient};
+use domain::client::{Client, UpsertClient};
 use lib::{
-    kernel::domain::{
+    domain::{
         DomainType as _,
         validation::{IntoValidator as _, error::ValidationErrors},
     },

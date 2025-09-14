@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
+use application::repository::RepositoriesModuleExt;
+use domain::client::Client;
 use infrastructure::persistence::postgres::repository::PostgresRepositoryImpl;
-use kernel::{
-    application::repository::RepositoriesModuleExt, domain::client::Client,
-};
 use lib::infrastructure::persistence::postgres::Postgres;
 
 #[derive(Clone)]

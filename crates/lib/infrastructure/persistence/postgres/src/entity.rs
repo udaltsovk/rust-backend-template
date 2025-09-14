@@ -1,6 +1,6 @@
 use std::any::type_name;
 
-use kernel::domain::{DomainType, validation::error::ValidationErrors};
+use domain::{DomainType, validation::error::ValidationErrors};
 
 pub trait DomainTypeFromDb<T, I>
 where

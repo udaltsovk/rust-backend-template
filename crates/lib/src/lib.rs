@@ -1,9 +1,9 @@
 #[cfg(feature = "bootstrap")]
 pub use bootstrap;
+#[cfg(feature = "domain")]
+pub use domain;
 #[cfg(feature = "infrastructure")]
 pub use infrastructure;
-#[cfg(feature = "kernel")]
-pub use kernel;
 #[cfg(feature = "macros")]
 pub use macros::*;
 #[cfg(feature = "presentation")]

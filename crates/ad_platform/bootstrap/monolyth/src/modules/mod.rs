@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
-use kernel::{application::usecase::UseCase, domain::client::Client};
+use application::usecase::UseCase;
+use domain::client::Client;
 use lib::infrastructure::persistence::postgres::Postgres;
 use presentation::api::rest::module::ModulesExt;
 

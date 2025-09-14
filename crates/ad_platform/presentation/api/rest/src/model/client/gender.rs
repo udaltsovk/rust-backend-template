@@ -1,4 +1,4 @@
-use kernel::domain::client::gender::ClientGender;
+use domain::client::gender::ClientGender;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 

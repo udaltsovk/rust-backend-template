@@ -4,7 +4,6 @@ use sqlx::{Pool, Postgres as PostgreSQL, postgres::PgPoolOptions};
 
 pub mod entity;
 pub mod error;
-pub mod repository;
 
 #[derive(Clone)]
 pub struct Postgres(Pool<PostgreSQL>);

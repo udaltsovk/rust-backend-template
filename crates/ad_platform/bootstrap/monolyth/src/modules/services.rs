@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
+use application::service::ServicesModuleExt;
 use infrastructure::services::token::jwt::JwtService;
-use kernel::application::service::ServicesModuleExt;
 
 #[derive(Clone)]
 pub struct ServicesModule {

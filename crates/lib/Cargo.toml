@@ -8,6 +8,8 @@ edition.workspace = true
 bootstrap = ["dep:bootstrap"]
 bootstrap_openapi = ["bootstrap", "bootstrap/openapi"]
 
+domain = ["dep:domain"]
+
 infrastructure = ["dep:infrastructure"]
 
 infrastructure_instrumentation = ["infrastructure", "infrastructure/instrumentation"]
@@ -15,8 +17,6 @@ infrastructure_instrumentation_opentelemetry = ["infrastructure_instrumentation"
 
 infrastructure_persistence = ["infrastructure/persistence"]
 infrastructure_persistence_postgres = ["infrastructure/persistence", "infrastructure/persistence_postgres"]
-
-kernel = ["dep:kernel"]
 
 macros = ["dep:macros"]
 macros_proc = ["macros", "macros/proc"]
@@ -32,7 +32,7 @@ presentation_bot_telegram = ["presentation/bot", "presentation/bot_telegram"]
 [dependencies]
 bootstrap = { path = "./bootstrap", package = "lib-bootstrap", optional = true }
 infrastructure = { path = "./infrastructure", package = "lib-infrastructure", optional = true }
-kernel = { path = "./kernel", package = "lib-kernel", optional = true }
+domain = { path = "./domain", package = "lib-domain", optional = true }
 macros = { path = "./macros", package = "lib-macros", optional = true }
 presentation = { path = "./presentation", package = "lib-presentation", optional = true }
 

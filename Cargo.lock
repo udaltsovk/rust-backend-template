@@ -3,6 +3,28 @@
 version = 4
 
 [[package]]
+name = "ad_platform-application"
+version = "0.1.0"
+dependencies = [
+ "ad_platform-domain",
+ "async-trait",
+ "derive-where",
+ "lib",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "ad_platform-domain"
+version = "0.1.0"
+dependencies = [
+ "derive-where",
+ "lib",
+ "thiserror",
+ "uuid",
+]
+
+[[package]]
 name = "ad_platform-infrastructure"
 version = "0.1.0"
 dependencies = [
@@ -21,7 +43,8 @@ dependencies = [
 name = "ad_platform-infrastructure-persistence-postgres"
 version = "0.1.0"
 dependencies = [
- "ad_platform-kernel",
+ "ad_platform-application",
+ "ad_platform-domain",
  "async-trait",
  "lib",
  "sqlx",
@@ -49,7 +72,7 @@ dependencies = [
 name = "ad_platform-infrastructure-services-hasher-argon2"
 version = "0.1.0"
 dependencies = [
- "ad_platform-kernel",
+ "ad_platform-application",
  "argon2",
  "thiserror",
  "tracing",
@@ -66,7 +89,8 @@ dependencies = [
 name = "ad_platform-infrastructure-services-token-jwt"
 version = "0.1.0"
 dependencies = [
- "ad_platform-kernel",
+ "ad_platform-application",
+ "ad_platform-domain",
  "chrono",
  "jsonwebtoken",
  "serde",
@@ -76,23 +100,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "ad_platform-kernel"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "derive-where",
- "lib",
- "thiserror",
- "tracing",
- "uuid",
-]
-
-[[package]]
 name = "ad_platform-monolyth"
 version = "0.1.0"
 dependencies = [
+ "ad_platform-application",
+ "ad_platform-domain",
  "ad_platform-infrastructure",
- "ad_platform-kernel",
  "ad_platform-presentation",
  "async-trait",
  "axum-prometheus",
@@ -126,7 +139,8 @@ dependencies = [
 name = "ad_platform-presentation-api-rest"
 version = "0.1.0"
 dependencies = [
- "ad_platform-kernel",
+ "ad_platform-application",
+ "ad_platform-domain",
  "axum",
  "lib",
  "serde",
@@ -1377,8 +1391,8 @@ name = "lib"
 version = "0.1.0"
 dependencies = [
  "lib-bootstrap",
+ "lib-domain",
  "lib-infrastructure",
- "lib-kernel",
  "lib-macros",
  "lib-presentation",
 ]
@@ -1390,6 +1404,14 @@ dependencies = [
  "serde_json",
  "thiserror",
  "utoipa",
+]
+
+[[package]]
+name = "lib-domain"
+version = "0.1.0"
+dependencies = [
+ "derive-where",
+ "uuid",
 ]
 
 [[package]]
@@ -1439,17 +1461,9 @@ dependencies = [
 name = "lib-infrastructure-persistence-postgres"
 version = "0.1.0"
 dependencies = [
- "lib-kernel",
+ "lib-domain",
  "sqlx",
  "thiserror",
-]
-
-[[package]]
-name = "lib-kernel"
-version = "0.1.0"
-dependencies = [
- "derive-where",
- "uuid",
 ]
 
 [[package]]
@@ -1487,7 +1501,7 @@ name = "lib-presentation-api-rest"
 version = "0.1.0"
 dependencies = [
  "axum",
- "lib-kernel",
+ "lib-domain",
  "serde",
  "tokio",
  "tower",

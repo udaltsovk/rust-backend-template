@@ -37,7 +37,7 @@ pub fn domain_type(input: TokenStream) -> TokenStream {
     };
 
     let expanded = quote! {
-        impl #impl_generics lib::kernel::domain::DomainType<#inner_type> for #ident #ty_generics #where_clause {
+        impl #impl_generics lib::domain::DomainType<#inner_type> for #ident #ty_generics #where_clause {
             fn value(&self) -> &#inner_type {
                 #value_impl
             }

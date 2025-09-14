@@ -5,7 +5,8 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-kernel = { path = "../../../../kernel", package = "ad_platform-kernel" }
+domain = { path = "../../../../domain", package = "ad_platform-domain" }
+application = { path = "../../../../application", package = "ad_platform-application" }
 
 chrono.workspace = true
 serde = { workspace = true, features = ["derive"] }

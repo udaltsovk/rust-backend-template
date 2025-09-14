@@ -5,7 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-lib = { path = "../../../kernel", package = "lib-kernel" }
+domain = { path = "../../../domain", package = "lib-domain" }
 
 axum.workspace = true
 serde = { workspace = true, features = ["derive"] }

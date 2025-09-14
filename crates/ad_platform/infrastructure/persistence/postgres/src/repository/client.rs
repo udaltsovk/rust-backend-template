@@ -1,11 +1,9 @@
+use application::repository::client::ClientRepository;
 use async_trait::async_trait;
-use kernel::{
-    application::repository::client::ClientRepository,
-    domain::client::{Client, UpsertClient},
-};
+use domain::client::{Client, UpsertClient};
 use lib::{
+    domain::{DomainType as _, Id},
     infrastructure::persistence::postgres::error::PostgresAdapterError,
-    kernel::domain::{DomainType as _, Id},
 };
 use sqlx::query_file_as;
 use tracing::instrument;

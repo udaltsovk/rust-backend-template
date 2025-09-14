@@ -1,4 +1,4 @@
-use lib::domain::validation::error::ValidationErrors;
+use domain::validation::error::ValidationErrors;
 
 pub trait ParseableJson<T> {
     fn parse(self) -> Result<T, ValidationErrors>;

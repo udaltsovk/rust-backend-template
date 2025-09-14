@@ -1,9 +1,9 @@
+use application::service::hasher::HasherService;
 use argon2::{
     Algorithm, Argon2, Params, ParamsBuilder, PasswordHash,
     PasswordHasher as _, PasswordVerifier as _, Version,
     password_hash::{SaltString, rand_core::OsRng},
 };
-use kernel::application::service::hasher::HasherService;
 use tracing::instrument;
 
 pub struct Argon2Service {

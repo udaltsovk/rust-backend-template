@@ -1,10 +1,8 @@
-use kernel::{
-    application::{
-        repository::RepositoriesModuleExt, service::ServicesModuleExt,
-        usecase::UseCase,
-    },
-    domain::client::Client,
+use application::{
+    repository::RepositoriesModuleExt, service::ServicesModuleExt,
+    usecase::UseCase,
 };
+use domain::client::Client;
 
 pub trait ModulesExt: Clone + Send + Sync + 'static {
     type RepositoriesModule: RepositoriesModuleExt;

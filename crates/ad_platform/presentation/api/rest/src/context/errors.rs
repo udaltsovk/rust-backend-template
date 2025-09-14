@@ -1,14 +1,12 @@
 use std::fmt::Debug;
 
-use axum::extract::rejection::{JsonRejection, PathRejection};
-use kernel::{
-    application::{
-        repository::RepositoriesModuleExt, service::ServicesModuleExt,
-        usecase::client::error::ClientUseCaseError,
-    },
-    domain::error::DomainError,
+use application::{
+    repository::RepositoriesModuleExt, service::ServicesModuleExt,
+    usecase::client::error::ClientUseCaseError,
 };
-use lib::kernel::domain::validation::error::ValidationErrors;
+use axum::extract::rejection::{JsonRejection, PathRejection};
+use domain::error::DomainError;
+use lib::domain::validation::error::ValidationErrors;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {

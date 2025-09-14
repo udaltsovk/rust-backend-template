@@ -1,5 +1,5 @@
 use chrono::Utc;
-use kernel::domain::session::{Session, entity::SessionEntity};
+use domain::session::{Session, entity::SessionEntity};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 

@@ -1,0 +1,8 @@
+[package]
+name = "lib-domain"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+derive-where.workspace = true
+uuid = { workspace = true, features = ["v7"] }

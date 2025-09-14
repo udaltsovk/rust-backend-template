@@ -1,8 +1,7 @@
+use application::service::token::TokenService;
+use domain::session::Session;
 use jsonwebtoken::{
     Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
-};
-use kernel::{
-    application::service::token::TokenService, domain::session::Session,
 };
 use tracing::instrument;
 use uuid::Uuid;
