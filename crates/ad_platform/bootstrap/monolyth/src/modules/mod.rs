@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use infrastructure_persistence_postgres::Postgres;
 use kernel::{application::usecase::UseCase, domain::client::Client};
-use presentation_api_rest::module::ModulesExt;
+use lib::infrastructure::persistence::postgres::Postgres;
+use presentation::api::rest::module::ModulesExt;
 
 use crate::{
     config,
@@ -27,7 +27,7 @@ impl ModulesExt for Modules {
     }
 }
 impl Modules {
-    pub async fn new() -> Self {
+    pub async fn init() -> Self {
         let postgres_url = format!(
             "postgres://{}:{}@{}:{}/{}",
             *config::POSTGRES_USER,

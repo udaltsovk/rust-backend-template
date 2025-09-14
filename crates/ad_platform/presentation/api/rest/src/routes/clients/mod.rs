@@ -4,18 +4,15 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
 };
+use lib::presentation::api::rest::{
+    context::JsonErrorStruct, model::ParseableJson as _,
+};
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
 
 use crate::{
-    context::{
-        api_version::ApiVersion, errors::AppError,
-        response_helper::JsonErrorStruct,
-    },
-    model::{
-        ParseableJson as _,
-        client::{JsonClient, UpsertJsonClient},
-    },
+    context::{api_version::ApiVersion, errors::AppError},
+    model::client::{JsonClient, UpsertJsonClient},
     module::ModulesExt,
 };
 

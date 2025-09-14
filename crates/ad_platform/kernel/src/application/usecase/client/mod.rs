@@ -1,3 +1,4 @@
+use lib::kernel::domain::Id;
 use tracing::instrument;
 
 use crate::{
@@ -6,10 +7,7 @@ use crate::{
         service::ServicesModuleExt,
         usecase::{UseCase, client::error::ClientUseCaseError},
     },
-    domain::{
-        Id,
-        client::{Client, UpsertClient},
-    },
+    domain::client::{Client, UpsertClient},
 };
 
 pub mod error;

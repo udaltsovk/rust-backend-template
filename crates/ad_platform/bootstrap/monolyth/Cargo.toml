@@ -12,11 +12,20 @@ name = "ad_platform-openapi"
 path = "./src/bin/openapi.rs"
 
 [dependencies]
-kernel = { path = "../../kernel" }
-infrastructure-instrumentation-opentelemetry = { path = "../../infrastructure/instrumentation/opentelemetry" }
-infrastructure-persistence-postgres = { path = "../../infrastructure/persistence/postgres" }
-infrastructure-service-token-jwt = { path = "../../infrastructure/service/token/jwt" }
-presentation-api-rest = { path = "../../presentation/api/rest" }
+lib = { workspace = true, features = [
+    "bootstrap_openapi",
+    "infrastructure_instrumentation_opentelemetry",
+    "infrastructure_persistence_postgres"
+] }
+kernel = { path = "../../kernel", package = "ad_platform-kernel" }
+infrastructure = { path = "../../infrastructure", package = "ad_platform-infrastructure", features = [
+    "persistence_postgres",
+    "services_hasher_argon2",
+    "services_token_jwt"
+] }
+presentation = { path = "../../presentation", package = "ad_platform-presentation", features = [
+    "api-rest"
+] }
 
 async-trait.workspace = true
 env-vars-config.workspace = true
@@ -24,10 +33,10 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tower.workspace = true
 tower-http = { workspace = true, features = ["trace"] }
 tracing.workspace = true
-
-tracing-subscriber = "0.3"
+utoipa.workspace = true
 
 axum-prometheus = "0.9"
+tracing-subscriber = "0.3"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 tikv-jemallocator = { workspace = true, features = ["profiling", "unprefixed_malloc_on_supported_platforms"] }

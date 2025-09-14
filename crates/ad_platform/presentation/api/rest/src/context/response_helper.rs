@@ -1,36 +1,12 @@
-use std::fmt::Display;
-
 use axum::{
-    Json,
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use serde::Serialize;
+use lib::presentation::api::rest::context::JsonErrorStruct;
 use tracing::log::error;
-use utoipa::ToSchema;
 
 use crate::context::errors::AppError;
 
-#[derive(Serialize, ToSchema)]
-pub struct JsonErrorStruct {
-    error_code: String,
-    errors: Vec<String>,
-}
-impl JsonErrorStruct {
-    pub(crate) fn new(
-        error_code: impl Display,
-        errors: Vec<impl Display>,
-    ) -> Self {
-        Self {
-            error_code: error_code.to_string(),
-            errors: errors.into_iter().map(|e| e.to_string()).collect(),
-        }
-    }
-
-    pub(crate) fn as_response(&self, status_code: StatusCode) -> Response {
-        (status_code, Json(self)).into_response()
-    }
-}
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         match self {

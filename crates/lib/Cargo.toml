@@ -4,8 +4,37 @@ version = "0.1.0"
 authors.workspace = true
 edition.workspace = true
 
+[features]
+bootstrap = ["dep:bootstrap"]
+bootstrap_openapi = ["bootstrap", "bootstrap/openapi"]
+
+infrastructure = ["dep:infrastructure"]
+
+infrastructure_instrumentation = ["infrastructure", "infrastructure/instrumentation"]
+infrastructure_instrumentation_opentelemetry = ["infrastructure_instrumentation", "infrastructure/instrumentation_opentelemetry"]
+
+infrastructure_persistence = ["infrastructure/persistence"]
+infrastructure_persistence_postgres = ["infrastructure/persistence", "infrastructure/persistence_postgres"]
+
+kernel = ["dep:kernel"]
+
+macros = ["dep:macros"]
+macros_proc = ["macros", "macros/proc"]
+
+presentation = ["dep:presentation"]
+
+presentation_api = ["presentation", "presentation/api"]
+presentation_api_rest = ["presentation/api", "presentation/api_rest"]
+
+presentation_bot = ["presentation/bot"]
+presentation_bot_telegram = ["presentation/bot", "presentation/bot_telegram"]
+
 [dependencies]
-lib-macros = { path = "./macros" }
+bootstrap = { path = "./bootstrap", package = "lib-bootstrap", optional = true }
+infrastructure = { path = "./infrastructure", package = "lib-infrastructure", optional = true }
+kernel = { path = "./kernel", package = "lib-kernel", optional = true }
+macros = { path = "./macros", package = "lib-macros", optional = true }
+presentation = { path = "./presentation", package = "lib-presentation", optional = true }
 
 [lints]
 workspace = true

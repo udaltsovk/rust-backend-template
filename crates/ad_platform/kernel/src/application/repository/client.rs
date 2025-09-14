@@ -1,11 +1,9 @@
 use std::fmt::Debug;
 
 use async_trait::async_trait;
+use lib::kernel::domain::Id;
 
-use crate::domain::{
-    Id,
-    client::{Client, UpsertClient},
-};
+use crate::domain::client::{Client, UpsertClient};
 
 #[async_trait]
 pub trait ClientRepository {

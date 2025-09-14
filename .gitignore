@@ -1,4 +1,5 @@
-.idea
+.direnv
 .env
+.idea
 target
 !bin

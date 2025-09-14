@@ -1,19 +1,12 @@
-#[cfg(target_os = "linux")]
-use std::ffi::CStr;
-
 use ad_platform_monolyth::{
     Modules, bootstrappers::BootstraperExt as _, config,
 };
-use infrastructure_instrumentation_opentelemetry::LGTM;
-use presentation_api_rest::startup::RestApi;
+use lib::{
+    configure_jemalloc, infrastructure::instrumentation::opentelemetry::LGTM,
+    presentation::api::rest::startup::RestApi,
+};
 
-#[cfg(target_os = "linux")]
-#[global_allocator]
-static ALLOC: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
-
-#[cfg(target_os = "linux")]
-#[unsafe(export_name = "malloc_conf")]
-pub static MALLOC_CONF: &CStr = c"prof:true,prof_active:true,lg_prof_sample:19";
+configure_jemalloc!();
 
 #[tokio::main]
 async fn main() {
@@ -27,7 +20,7 @@ async fn main() {
         async || {
             config::test_values();
 
-            let modules = Modules::new().await;
+            let modules = Modules::init().await;
 
             RestApi::bootstrap(modules).await;
         },

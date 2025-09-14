@@ -1,0 +1,15 @@
+[package]
+name = "lib-infrastructure-instrumentation"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+opentelemetry = ["dep:opentelemetry"]
+
+[dependencies]
+opentelemetry = { path = "./opentelemetry", package = "lib-infrastructure-instrumentation-opentelemetry", optional = true }
+
+
+[lints]
+workspace = true

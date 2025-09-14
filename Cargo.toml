@@ -2,16 +2,6 @@
 resolver = "3"
 members = [
     "crates/lib",
-    "crates/lib/macros",
-    "crates/lib/macros/proc",
-    "crates/ad_platform/kernel",
-    "crates/ad_platform/infrastructure/instrumentation/opentelemetry",
-    "crates/ad_platform/infrastructure/persistence/postgres",
-    "crates/ad_platform/infrastructure/persistence/redis",
-    "crates/ad_platform/infrastructure/service/hasher/argon2",
-    "crates/ad_platform/infrastructure/service/token/jwt",
-    "crates/ad_platform/presentation/api/rest",
-    "crates/ad_platform/presentation/bot/telegram",
     "crates/ad_platform/bootstrap/monolyth",
 ]
 
@@ -23,10 +13,13 @@ edition = "2024"
 lib = { path = "./crates/lib" }
 
 async-trait = "0.1"
+axum = "0.8"
+derive-where = "1.6"
 chrono = "0.4"
 env-vars-config = "0.5"
 metrics = "0.24"
 serde = "1.0"
+sqlx = "0.8"
 tikv-jemallocator = "0.6"
 thiserror = "2.0"
 tokio = "1.47"
@@ -34,6 +27,11 @@ tower = "0.5"
 tower-http = "0.6"
 tracing = "0.1"
 uuid = "1.18"
+
+# TODO: use utoipa from crates.io when https://github.com/juhaku/utoipa/pull/1329 merged
+utoipa = { git = "https://github.com/NikSneMC/utoipa" }
+utoipa-axum = { git = "https://github.com/NikSneMC/utoipa" }
+utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa" }
 
 
 [profile.release]

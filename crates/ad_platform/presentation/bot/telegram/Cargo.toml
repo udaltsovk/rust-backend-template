@@ -1,5 +1,5 @@
 [package]
-name = "presentation-bot-telegram"
+name = "ad_platform-presentation-bot-telegram"
 version = "0.1.0"
 authors.workspace = true
 edition.workspace = true

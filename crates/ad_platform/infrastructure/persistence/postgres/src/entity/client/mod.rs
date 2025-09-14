@@ -1,8 +1,9 @@
 use kernel::domain::client::Client;
+use lib::infrastructure::persistence::postgres::entity::DomainTypeFromDb as _;
 use sqlx::FromRow;
 use uuid::Uuid;
 
-use crate::entity::{DomainTypeFromDb, client::gender::StoredClientGender};
+use crate::entity::client::gender::StoredClientGender;
 
 pub(crate) mod gender;
 

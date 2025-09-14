@@ -1,0 +1,19 @@
+[package]
+name = "lib-infrastructure"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+instrumentation = ["dep:instrumentation"]
+instrumentation_opentelemetry = ["instrumentation", "instrumentation/opentelemetry"]
+
+persistence = ["dep:persistence"]
+persistence_postgres = ["persistence", "persistence/postgres"]
+
+[dependencies]
+instrumentation = { path = "./instrumentation", package = "lib-infrastructure-instrumentation", optional = true }
+persistence = { path = "./persistence", package = "lib-infrastructure-persistence", optional = true }
+
+[lints]
+workspace = true

@@ -1,0 +1,14 @@
+[package]
+name = "ad_platform-infrastructure-persistence"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+postgres = ["dep:postgres"]
+
+[dependencies]
+postgres = { path = "./postgres", package = "ad_platform-infrastructure-persistence-postgres", optional = true }
+
+[lints]
+workspace = true

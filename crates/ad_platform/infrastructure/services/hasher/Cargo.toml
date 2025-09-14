@@ -1,0 +1,14 @@
+[package]
+name = "ad_platform-infrastructure-services-hasher"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+argon2 = ["dep:argon2"]
+
+[dependencies]
+argon2 = { path = "./argon2", package = "ad_platform-infrastructure-services-hasher-argon2", optional = true }
+
+[lints]
+workspace = true

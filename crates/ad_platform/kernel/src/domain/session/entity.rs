@@ -1,6 +1,7 @@
+use lib::kernel::domain::Id;
 use uuid::Uuid;
 
-use crate::domain::{Id, client::Client};
+use crate::domain::client::Client;
 
 #[derive(Clone)]
 pub enum SessionEntity {

@@ -1,0 +1,19 @@
+[package]
+name = "lib-infrastructure-persistence-postgres"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+kernel = { path = "../../../kernel", package = "lib-kernel" }
+
+sqlx = { workspace = true, features = [
+    "runtime-tokio",
+    "postgres",
+    "uuid"
+] }
+thiserror.workspace = true
+
+
+[lints]
+workspace = true

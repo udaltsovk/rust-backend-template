@@ -1,17 +1,17 @@
 use async_trait::async_trait;
 use kernel::{
     application::repository::client::ClientRepository,
-    domain::{
-        DomainType as _, Id,
-        client::{Client, UpsertClient},
-    },
+    domain::client::{Client, UpsertClient},
+};
+use lib::{
+    infrastructure::persistence::postgres::error::PostgresAdapterError,
+    kernel::domain::{DomainType as _, Id},
 };
 use sqlx::query_file_as;
 use tracing::instrument;
 
 use crate::{
     entity::client::{StoredClient, gender::StoredClientGender},
-    error::PostgresAdapterError,
     repository::PostgresRepositoryImpl,
 };
 

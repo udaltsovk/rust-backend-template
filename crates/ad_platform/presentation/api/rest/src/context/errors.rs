@@ -6,8 +6,9 @@ use kernel::{
         repository::RepositoriesModuleExt, service::ServicesModuleExt,
         usecase::client::error::ClientUseCaseError,
     },
-    domain::error::{DomainError, ValidationErrors},
+    domain::error::DomainError,
 };
+use lib::kernel::domain::validation::error::ValidationErrors;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {

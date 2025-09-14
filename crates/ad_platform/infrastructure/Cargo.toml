@@ -1,0 +1,24 @@
+[package]
+name = "ad_platform-infrastructure"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+persistence = ["dep:persistence"]
+persistence_postgres = ["persistence", "persistence/postgres"]
+
+
+services = ["dep:services"]
+services_hasher = ["services", "services/hasher"]
+services_hasher_argon2 = ["services_hasher", "services/hasher_argon2"]
+
+services_token = ["services", "services/token"]
+services_token_jwt = ["services_token", "services/token_jwt"]
+
+[dependencies]
+persistence = { path = "./persistence", package = "ad_platform-infrastructure-persistence", optional = true }
+services = { path = "./services", package = "ad_platform-infrastructure-services", optional = true }
+
+[lints]
+workspace = true

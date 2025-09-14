@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::Postgres;
+use lib::infrastructure::persistence::postgres::Postgres;
 
 mod client;
 

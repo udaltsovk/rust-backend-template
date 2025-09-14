@@ -1,10 +1,9 @@
 use axum::{Json, http::StatusCode, response::IntoResponse};
+use lib::presentation::api::rest::context::JsonErrorStruct;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 use crate::{
-    context::{errors::AppError, response_helper::JsonErrorStruct},
-    model::time::JsonTime,
-    module::ModulesExt,
+    context::errors::AppError, model::time::JsonTime, module::ModulesExt,
 };
 
 pub fn router<M: ModulesExt>() -> OpenApiRouter<M> {

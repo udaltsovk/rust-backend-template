@@ -1,14 +1,16 @@
-use kernel::domain::{
-    DomainType as _,
-    client::{Client, UpsertClient},
-    error::ValidationErrors,
-    validation::IntoValidator as _,
+use kernel::domain::client::{Client, UpsertClient};
+use lib::{
+    kernel::domain::{
+        DomainType as _,
+        validation::{IntoValidator as _, error::ValidationErrors},
+    },
+    presentation::api::rest::model::ParseableJson,
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::model::{ParseableJson, client::gender::JsonClientGender};
+use crate::model::client::gender::JsonClientGender;
 
 mod gender;
 

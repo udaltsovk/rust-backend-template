@@ -1,0 +1,15 @@
+[package]
+name = "lib-presentation-api"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+rest = ["dep:rest"]
+
+[dependencies]
+rest = { path = "./rest", package = "lib-presentation-api-rest", optional = true }
+
+
+[lints]
+workspace = true

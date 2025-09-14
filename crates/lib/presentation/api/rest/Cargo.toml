@@ -1,0 +1,21 @@
+[package]
+name = "lib-presentation-api-rest"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+lib = { path = "../../../kernel", package = "lib-kernel" }
+
+axum.workspace = true
+serde = { workspace = true, features = ["derive"] }
+tokio = { workspace = true, features = ["signal"] }
+tower.workspace = true
+tower-http = { workspace = true, features = ["catch-panic", "request-id"] }
+tracing.workspace = true
+utoipa.workspace = true
+utoipa-axum.workspace = true
+utoipa-scalar = { workspace = true, features = ["axum"] }
+
+[lints]
+workspace = true

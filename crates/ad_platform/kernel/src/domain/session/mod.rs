@@ -1,4 +1,6 @@
-use crate::domain::{Id, session::entity::SessionEntity};
+use lib::kernel::domain::Id;
+
+use crate::domain::session::entity::SessionEntity;
 
 pub mod entity;
 

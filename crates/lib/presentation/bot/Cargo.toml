@@ -1,0 +1,15 @@
+[package]
+name = "lib-presentation-bot"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+telegram = ["dep:telegram"]
+
+[dependencies]
+telegram = { path = "./telegram", package = "lib-presentation-bot-telegram", optional = true }
+
+
+[lints]
+workspace = true

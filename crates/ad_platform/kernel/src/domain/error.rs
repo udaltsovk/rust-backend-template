@@ -1,4 +1,4 @@
-pub use crate::domain::validation::error::ValidationErrors;
+use lib::kernel::domain::validation::error::ValidationErrors;
 
 #[derive(thiserror::Error, Debug)]
 pub enum DomainError {

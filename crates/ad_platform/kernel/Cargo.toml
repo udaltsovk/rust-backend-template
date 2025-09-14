@@ -1,14 +1,14 @@
 [package]
-name = "kernel"
+name = "ad_platform-kernel"
 version = "0.1.0"
 authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-lib.workspace = true
+lib = { workspace = true, features = ["kernel", "macros_proc"] }
 
 async-trait.workspace = true
-derive-where = "1.6"
+derive-where.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
 uuid = { workspace = true, features = ["v7"] }

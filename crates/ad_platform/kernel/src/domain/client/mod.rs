@@ -1,9 +1,8 @@
-use crate::domain::{
-    Id,
-    client::{
-        age::ClientAge, gender::ClientGender, location::ClientLocation,
-        login::ClientLogin,
-    },
+use lib::kernel::domain::Id;
+
+use crate::domain::client::{
+    age::ClientAge, gender::ClientGender, location::ClientLocation,
+    login::ClientLogin,
 };
 
 pub mod age;

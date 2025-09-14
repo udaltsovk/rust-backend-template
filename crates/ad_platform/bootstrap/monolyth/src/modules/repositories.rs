@@ -1,11 +1,10 @@
 use std::sync::Arc;
 
-use infrastructure_persistence_postgres::{
-    Postgres, repository::PostgresRepositoryImpl,
-};
+use infrastructure::persistence::postgres::repository::PostgresRepositoryImpl;
 use kernel::{
     application::repository::RepositoriesModuleExt, domain::client::Client,
 };
+use lib::infrastructure::persistence::postgres::Postgres;
 
 #[derive(Clone)]
 pub struct RepositoriesModule {

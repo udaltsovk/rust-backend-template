@@ -1,6 +1,4 @@
-use lib::DomainType;
-
-use crate::domain::error::ValidationErrors;
+use lib::{DomainType, kernel::domain::validation::error::ValidationErrors};
 
 #[derive(DomainType)]
 pub struct ClientLocation(String);

@@ -2,20 +2,23 @@ use std::net::SocketAddr;
 
 use async_trait::async_trait;
 use axum_prometheus::PrometheusMetricLayerBuilder;
-use presentation_api_rest::startup::RestApi;
+use lib::presentation::api::rest::startup::RestApi;
+use presentation::api::rest::{context::openapi::ApiDoc, routes};
 use tower::ServiceBuilder;
 use tower_http::trace::{
     DefaultMakeSpan, DefaultOnFailure, DefaultOnRequest, DefaultOnResponse,
     TraceLayer,
 };
 use tracing::Level;
+use utoipa::OpenApi as _;
 
 use crate::{Modules, bootstrappers::BootstraperExt, config};
 
 #[async_trait]
 impl BootstraperExt for RestApi {
     async fn bootstrap(modules: Modules) {
-        let mut api = RestApi::new(modules);
+        let mut api =
+            RestApi::new(ApiDoc::openapi(), routes::router(), modules);
 
         let middlewares = ServiceBuilder::new()
             .layer(PrometheusMetricLayerBuilder::new().with_prefix("").build())

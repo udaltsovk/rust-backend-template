@@ -1,1 +1,4 @@
-pub use lib_proc_macros::*;
+#[cfg(feature = "proc")]
+pub use proc::*;
+
+mod jemalloc;
