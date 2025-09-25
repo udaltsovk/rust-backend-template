@@ -1,8 +1,7 @@
 use application::{
     repository::RepositoriesModuleExt, service::ServicesModuleExt,
-    usecase::UseCase,
+    usecase::client::ClientUseCase,
 };
-use domain::client::Client;
 
 pub trait ModulesExt: Clone + Send + Sync + 'static {
     type RepositoriesModule: RepositoriesModuleExt;
@@ -10,5 +9,5 @@ pub trait ModulesExt: Clone + Send + Sync + 'static {
 
     fn client_usecase(
         &self,
-    ) -> &UseCase<Self::RepositoriesModule, Self::ServicesModule, Client>;
+    ) -> &impl ClientUseCase<Self::RepositoriesModule, Self::ServicesModule>;
 }

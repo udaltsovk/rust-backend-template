@@ -1,45 +1,28 @@
+use async_trait::async_trait;
 use domain::client::{Client, UpsertClient};
 use lib::domain::Id;
-use tracing::instrument;
 
 use crate::{
-    repository::{RepositoriesModuleExt, client::ClientRepository},
-    service::ServicesModuleExt,
-    usecase::{UseCase, client::error::ClientUseCaseError},
+    repository::RepositoriesModuleExt, service::ServicesModuleExt,
+    usecase::client::error::ClientUseCaseError,
 };
 
 pub mod error;
+pub mod implementation;
 
-impl<R, S> UseCase<R, S, Client>
+#[async_trait]
+pub trait ClientUseCase<R, S>
 where
     R: RepositoriesModuleExt,
     S: ServicesModuleExt,
 {
-    #[instrument(name = "ClientUseCase::bulk_upsert", skip_all)]
-    pub async fn bulk_upsert(
+    async fn bulk_upsert(
         &self,
         source: &[UpsertClient],
-    ) -> Result<Vec<Client>, ClientUseCaseError<R, S>> {
-        let result = self
-            .repositories
-            .client_repository()
-            .bulk_upsert(source)
-            .await
-            .map_err(ClientUseCaseError::Repository)?;
-        Ok(result)
-    }
+    ) -> Result<Vec<Client>, ClientUseCaseError<R, S>>;
 
-    #[instrument(name = "ClientUseCase::find_by_id", skip_all)]
-    pub async fn find_by_id(
+    async fn find_by_id(
         &self,
         id: Id<Client>,
-    ) -> Result<Option<Client>, ClientUseCaseError<R, S>> {
-        let result = self
-            .repositories
-            .client_repository()
-            .find_by_id(id)
-            .await
-            .map_err(ClientUseCaseError::Repository)?;
-        Ok(result)
-    }
+    ) -> Result<Option<Client>, ClientUseCaseError<R, S>>;
 }

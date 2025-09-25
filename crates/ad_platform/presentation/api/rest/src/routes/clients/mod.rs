@@ -1,3 +1,4 @@
+use application::usecase::client::ClientUseCase as _;
 use axum::{
     Json,
     extract::{Path, State},

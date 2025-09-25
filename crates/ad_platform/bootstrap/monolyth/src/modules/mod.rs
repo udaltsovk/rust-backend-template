@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use application::usecase::UseCase;
+use application::usecase::{UseCase, client::ClientUseCase};
 use domain::client::Client;
 use lib::infrastructure::persistence::postgres::Postgres;
 use presentation::api::rest::module::ModulesExt;
@@ -23,8 +23,9 @@ impl ModulesExt for Modules {
 
     fn client_usecase(
         &self,
-    ) -> &UseCase<Self::RepositoriesModule, Self::ServicesModule, Client> {
-        &self.client_usecase
+    ) -> &impl ClientUseCase<Self::RepositoriesModule, Self::ServicesModule>
+    {
+        &*self.client_usecase
     }
 }
 impl Modules {
