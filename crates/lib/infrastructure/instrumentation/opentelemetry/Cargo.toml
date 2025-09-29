@@ -15,31 +15,33 @@ metrics-tracing-context = "0.18"
 metrics-util = "0.20"
 opentelemetry = { version = "0.30", features = ["trace", "logs", "metrics"] }
 opentelemetry_sdk = { version = "0.30", features = [
-    "rt-tokio",
-    "trace",
-    "logs",
-    "metrics",
+  "rt-tokio",
+  "trace",
+  "logs",
+  "metrics",
 ] }
 opentelemetry-appender-tracing = { version = "0.30", features = [
-    "experimental_metadata_attributes",
-    #    "spec_unstable_logs_enabled",
-    "experimental_use_tracing_span_context"
+  "experimental_metadata_attributes",
+  #    "spec_unstable_logs_enabled",
+  "experimental_use_tracing_span_context",
 ] }
 opentelemetry-otlp = { version = "0.30", features = [
-    "grpc-tonic",
-    "trace",
-    "logs",
-    "metrics",
+  "grpc-tonic",
+  "trace",
+  "logs",
+  "metrics",
 ] }
-opentelemetry-semantic-conventions = { version = "0.30", features = ["semconv_experimental"] }
+opentelemetry-semantic-conventions = { version = "0.30", features = [
+  "semconv_experimental",
+] }
 tokio-metrics = { version = "0.4", features = ["rt", "metrics-rs-integration"] }
 tracing-opentelemetry = "0.31"
 tracing-subscriber = { version = "0.3", features = [
-    "fmt",
-    "env-filter",
-    "json",
-    "registry",
-    "std",
+  "fmt",
+  "env-filter",
+  "json",
+  "registry",
+  "std",
 ] }
 
 [lints]

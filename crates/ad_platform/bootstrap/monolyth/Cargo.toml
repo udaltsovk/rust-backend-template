@@ -13,19 +13,19 @@ path = "./src/bin/openapi.rs"
 
 [dependencies]
 lib = { workspace = true, features = [
-    "bootstrap_openapi",
-    "infrastructure_instrumentation_opentelemetry",
-    "infrastructure_persistence_postgres"
+  "bootstrap_openapi",
+  "infrastructure_instrumentation_opentelemetry",
+  "infrastructure_persistence_postgres",
 ] }
 domain = { path = "../../domain", package = "ad_platform-domain" }
 application = { path = "../../application", package = "ad_platform-application" }
 infrastructure = { path = "../../infrastructure", package = "ad_platform-infrastructure", features = [
-    "persistence_postgres",
-    "services_hasher_argon2",
-    "services_token_jwt"
+  "persistence_postgres",
+  "services_hasher_argon2",
+  "services_token_jwt",
 ] }
 presentation = { path = "../../presentation", package = "ad_platform-presentation", features = [
-    "api-rest"
+  "api-rest",
 ] }
 
 async-trait.workspace = true
@@ -40,8 +40,10 @@ axum-prometheus = "0.9"
 tracing-subscriber = "0.3"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-tikv-jemallocator = { workspace = true, features = ["profiling", "unprefixed_malloc_on_supported_platforms"] }
+tikv-jemallocator = { workspace = true, features = [
+  "profiling",
+  "unprefixed_malloc_on_supported_platforms",
+] }
 
 [lints]
 workspace = true
-

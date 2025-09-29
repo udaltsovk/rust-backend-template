@@ -13,4 +13,4 @@ thiserror = { workspace = true, optional = true }
 utoipa = { workspace = true, optional = true }
 
 [lints]
-workspace = true 
+workspace = true

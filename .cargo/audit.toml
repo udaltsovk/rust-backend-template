@@ -1,6 +1,5 @@
 [advisories]
-ignore = [
-]
+ignore = []
 
 
 [yanked]

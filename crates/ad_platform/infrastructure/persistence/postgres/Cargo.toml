@@ -5,9 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-lib = { workspace = true, features = [
-    "infrastructure_persistence_postgres"
-] }
+lib = { workspace = true, features = ["infrastructure_persistence_postgres"] }
 domain = { path = "../../../domain", package = "ad_platform-domain" }
 application = { path = "../../../application", package = "ad_platform-application" }
 
@@ -16,11 +14,7 @@ thiserror.workspace = true
 tracing.workspace = true
 uuid.workspace = true
 
-sqlx = { workspace = true, features = [
-    "runtime-tokio",
-    "postgres",
-    "uuid"
-] }
+sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "uuid"] }
 
 [lints]
 workspace = true

@@ -12,11 +12,20 @@ domain = ["dep:domain"]
 
 infrastructure = ["dep:infrastructure"]
 
-infrastructure_instrumentation = ["infrastructure", "infrastructure/instrumentation"]
-infrastructure_instrumentation_opentelemetry = ["infrastructure_instrumentation", "infrastructure/instrumentation_opentelemetry"]
+infrastructure_instrumentation = [
+  "infrastructure",
+  "infrastructure/instrumentation",
+]
+infrastructure_instrumentation_opentelemetry = [
+  "infrastructure_instrumentation",
+  "infrastructure/instrumentation_opentelemetry",
+]
 
 infrastructure_persistence = ["infrastructure/persistence"]
-infrastructure_persistence_postgres = ["infrastructure/persistence", "infrastructure/persistence_postgres"]
+infrastructure_persistence_postgres = [
+  "infrastructure/persistence",
+  "infrastructure/persistence_postgres",
+]
 
 macros = ["dep:macros"]
 macros_proc = ["macros", "macros/proc"]

@@ -6,7 +6,10 @@ edition.workspace = true
 
 [features]
 instrumentation = ["dep:instrumentation"]
-instrumentation_opentelemetry = ["instrumentation", "instrumentation/opentelemetry"]
+instrumentation_opentelemetry = [
+  "instrumentation",
+  "instrumentation/opentelemetry",
+]
 
 persistence = ["dep:persistence"]
 persistence_postgres = ["persistence", "persistence/postgres"]

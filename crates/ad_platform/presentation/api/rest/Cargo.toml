@@ -14,12 +14,12 @@ serde = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 tracing.workspace = true
 utoipa = { workspace = true, features = [
-    "axum_extras",
-    "preserve_order",
-    "preserve_path_order",
-    "non_strict_integers",
-    "uuid",
-    "chrono",
+  "axum_extras",
+  "preserve_order",
+  "preserve_path_order",
+  "non_strict_integers",
+  "uuid",
+  "chrono",
 ] }
 utoipa-axum.workspace = true
 uuid = { workspace = true, features = ["serde"] }

@@ -1,9 +1,6 @@
 [workspace]
 resolver = "3"
-members = [
-    "crates/lib",
-    "crates/ad_platform/bootstrap/monolyth",
-]
+members = ["crates/lib", "crates/ad_platform/bootstrap/monolyth"]
 
 [workspace.package]
 authors = ["Kirill Udaltsov <me@udaltsovk.ru>"]
@@ -43,40 +40,39 @@ codegen-units = 1
 
 [workspace.lints.rust]
 # Arithmetic
-arithmetic_overflow = "deny"  # Prevent operations that would cause integer overflow
+arithmetic_overflow = "deny" # Prevent operations that would cause integer overflow
 
 # Unsafe code detection
-unnecessary_transmutes = "deny"       # Prevent unsafe transmutation from integers to characters or floats
+unnecessary_transmutes = "deny" # Prevent unsafe transmutation from integers to characters or floats
 
 [workspace.lints.clippy]
 # Arithmetic
-checked_conversions = "deny"          # Suggest using checked conversions between numeric types
-cast_possible_truncation = "deny"     # Detect when casting might truncate a value
-cast_sign_loss = "deny"               # Detect when casting might lose sign information
-cast_possible_wrap = "deny"           # Detect when casting might cause value to wrap around
-cast_precision_loss = "deny"          # Detect when casting might lose precision
-integer_division = "deny"             # Highlight potential bugs from integer division truncation
-arithmetic_side_effects = "deny"      # Detect arithmetic operations with potential side effects
+checked_conversions = "deny"            # Suggest using checked conversions between numeric types
+cast_possible_truncation = "deny"       # Detect when casting might truncate a value
+cast_sign_loss = "deny"                 # Detect when casting might lose sign information
+cast_possible_wrap = "deny"             # Detect when casting might cause value to wrap around
+cast_precision_loss = "deny"            # Detect when casting might lose precision
+integer_division = "deny"               # Highlight potential bugs from integer division truncation
+arithmetic_side_effects = "deny"        # Detect arithmetic operations with potential side effects
 unchecked_duration_subtraction = "deny" # Ensure duration subtraction won't cause underflow
 
 # Unwraps
-unwrap_used = "deny"                  # Discourage using .unwrap() which can cause panics
-panicking_unwrap = "deny"             # Prevent unwrap on values known to cause panics
-option_env_unwrap = "deny"            # Prevent unwrapping environment variables which might be absent
+unwrap_used = "deny"       # Discourage using .unwrap() which can cause panics
+panicking_unwrap = "deny"  # Prevent unwrap on values known to cause panics
+option_env_unwrap = "deny" # Prevent unwrapping environment variables which might be absent
 
 # Array indexing
-indexing_slicing = "deny"             # Avoid direct array indexing and use safer methods like .get()
+indexing_slicing = "deny" # Avoid direct array indexing and use safer methods like .get()
 
 # Path handling
-join_absolute_paths = "deny"          # Prevent issues when joining paths with absolute paths
+join_absolute_paths = "deny" # Prevent issues when joining paths with absolute paths
 
 # Serialization issues
-serde_api_misuse = "deny"             # Prevent incorrect usage of Serde's serialization/deserialization API
+serde_api_misuse = "deny" # Prevent incorrect usage of Serde's serialization/deserialization API
 
 # Unbounded input
-uninit_vec = "deny"                   # Prevent creating uninitialized vectors which is unsafe
+uninit_vec = "deny" # Prevent creating uninitialized vectors which is unsafe
 
 # Unsafe code detection
-transmute_ptr_to_ref = "deny"         # Prevent unsafe transmutation from pointers to references
-transmute_undefined_repr = "deny"     # Detect transmutes with potentially undefined representations
-
+transmute_ptr_to_ref = "deny"     # Prevent unsafe transmutation from pointers to references
+transmute_undefined_repr = "deny" # Detect transmutes with potentially undefined representations

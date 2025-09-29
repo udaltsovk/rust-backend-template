@@ -11,4 +11,4 @@ proc = ["dep:proc"]
 proc = { path = "./proc", package = "lib-macros-proc", optional = true }
 
 [lints]
-workspace = true 
+workspace = true
