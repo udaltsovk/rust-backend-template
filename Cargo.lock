@@ -74,6 +74,7 @@ version = "0.1.0"
 dependencies = [
  "ad_platform-application",
  "argon2",
+ "lib",
  "thiserror",
  "tracing",
 ]
@@ -93,6 +94,7 @@ dependencies = [
  "ad_platform-domain",
  "chrono",
  "jsonwebtoken",
+ "lib",
  "serde",
  "thiserror",
  "tracing",

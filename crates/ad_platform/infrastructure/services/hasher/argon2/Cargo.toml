@@ -5,6 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
+lib = { workspace = true }
 application = { path = "../../../../application", package = "ad_platform-application" }
 
 thiserror.workspace = true

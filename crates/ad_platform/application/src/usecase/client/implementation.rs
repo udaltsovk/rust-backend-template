@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 use domain::client::{Client, UpsertClient};
-use lib::domain::Id;
-use tracing::instrument;
+use lib::{domain::Id, instrument_all};
 
 use crate::{
     repository::{RepositoriesModuleExt, client::ClientRepository as _},
@@ -13,12 +12,12 @@ use crate::{
 };
 
 #[async_trait]
+#[instrument_all("ClientUseCase")]
 impl<R, S> ClientUseCase<R, S> for UseCase<R, S, Client>
 where
     R: RepositoriesModuleExt,
     S: ServicesModuleExt,
 {
-    #[instrument(name = "ClientUseCase::bulk_upsert", skip_all)]
     async fn bulk_upsert(
         &self,
         source: &[UpsertClient],
@@ -32,7 +31,6 @@ where
         Ok(result)
     }
 
-    #[instrument(name = "ClientUseCase::find_by_id", skip_all)]
     async fn find_by_id(
         &self,
         id: Id<Client>,

@@ -4,22 +4,22 @@ use argon2::{
     PasswordHasher as _, PasswordVerifier as _, Version,
     password_hash::{SaltString, rand_core::OsRng},
 };
-use tracing::instrument;
+use lib::instrument_all;
 
 pub struct Argon2Service {
     hasher: Argon2<'static>,
 }
+
+#[instrument_all("Argon2Service")]
 impl HasherService for Argon2Service {
     type AdapterError = argon2::password_hash::Error;
 
-    #[instrument(name = "Argon2Service::hash", skip_all)]
     fn hash(&self, password: &[u8]) -> Result<String, Self::AdapterError> {
         self.hasher
             .hash_password(password, &Self::gen_salt())
             .map(|hashed| hashed.to_string())
     }
 
-    #[instrument(name = "Argon2Service::verify", skip_all)]
     fn verify(
         &self,
         password: &[u8],
@@ -29,12 +29,10 @@ impl HasherService for Argon2Service {
             .verify_password(password, &PasswordHash::new(original_hash)?)
     }
 }
+
+#[instrument_all("Argon2Service")]
 impl Argon2Service {
-    #[tracing::instrument(
-        name = "Argon2Service::params",
-        skip_all,
-        level = "trace"
-    )]
+    #[tracing::instrument(level = "trace")]
     fn params() -> Params {
         ParamsBuilder::new()
             .m_cost(19_456)
@@ -45,11 +43,7 @@ impl Argon2Service {
             .expect("hasher params to be valid")
     }
 
-    #[tracing::instrument(
-        name = "Argon2Service::new",
-        skip_all,
-        level = "trace"
-    )]
+    #[tracing::instrument(level = "trace")]
     pub fn new() -> Self {
         Self {
             hasher: Argon2::new(
@@ -60,11 +54,7 @@ impl Argon2Service {
         }
     }
 
-    #[tracing::instrument(
-        name = "Argon2Service::new_with_secret",
-        skip_all,
-        level = "trace"
-    )]
+    #[tracing::instrument(level = "trace")]
     pub fn new_with_secret(secret: &'static [u8]) -> argon2::Result<Self> {
         Ok(Self {
             hasher: Argon2::new_with_secret(
@@ -76,15 +66,12 @@ impl Argon2Service {
         })
     }
 
-    #[tracing::instrument(
-        name = "Argon2Service::gen_salt",
-        skip_all,
-        level = "debug"
-    )]
+    #[tracing::instrument(level = "debug")]
     fn gen_salt() -> SaltString {
         SaltString::generate(&mut OsRng)
     }
 }
+
 impl Default for Argon2Service {
     fn default() -> Self {
         Self::new()

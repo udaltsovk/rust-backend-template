@@ -4,9 +4,9 @@ use domain::client::{Client, UpsertClient};
 use lib::{
     domain::{DomainType as _, Id},
     infrastructure::persistence::postgres::error::PostgresAdapterError,
+    instrument_all,
 };
 use sqlx::query_file_as;
-use tracing::instrument;
 
 use crate::{
     entity::client::{StoredClient, gender::StoredClientGender},
@@ -14,10 +14,10 @@ use crate::{
 };
 
 #[async_trait]
+#[instrument_all("PostgresClientRepository")]
 impl ClientRepository for PostgresRepositoryImpl<Client> {
     type AdapterError = PostgresAdapterError;
 
-    #[instrument(name = "PostgresCLientRepository::bulk_upsert", skip_all)]
     async fn bulk_upsert(
         &self,
         source: &[UpsertClient],
@@ -56,7 +56,6 @@ impl ClientRepository for PostgresRepositoryImpl<Client> {
         Ok(result)
     }
 
-    #[instrument(name = "PostgresCLientRepository::find_by_id", skip_all)]
     async fn find_by_id(
         &self,
         id: Id<Client>,

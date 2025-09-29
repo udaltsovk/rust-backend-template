@@ -3,7 +3,7 @@ use domain::session::Session;
 use jsonwebtoken::{
     Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
 };
-use tracing::instrument;
+use lib::instrument_all;
 use uuid::Uuid;
 
 use crate::claims::Claims;
@@ -14,10 +14,11 @@ pub struct JwtService {
     encoding_key: EncodingKey,
     decoding_key: DecodingKey,
 }
+
+#[instrument_all("JwtService")]
 impl TokenService for JwtService {
     type AdapterError = jsonwebtoken::errors::Error;
 
-    #[instrument(name = "JwtService::generate", skip_all)]
     fn generate(&self, session: Session) -> Result<String, Self::AdapterError> {
         let mut header = Header::new(Algorithm::RS256);
         let entity_id: Uuid = session.entity.clone().into();
@@ -25,15 +26,15 @@ impl TokenService for JwtService {
         encode(&header, &Claims::from(session), &self.encoding_key)
     }
 
-    #[instrument(name = "JwtService::parse", skip_all)]
     fn parse(&self, token: &str) -> Result<Session, Self::AdapterError> {
         let claims: Claims =
             decode(token, &self.decoding_key, &Validation::default())?.claims;
         Ok(claims.into())
     }
 }
+
+#[instrument_all("JwtService")]
 impl JwtService {
-    #[tracing::instrument(name = "JwtService::new", skip_all, level = "trace")]
     pub fn new(secret: &str) -> Self {
         let secret = secret.as_bytes();
         Self {
