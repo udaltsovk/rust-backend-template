@@ -9,6 +9,7 @@ use lib::infrastructure::persistence::postgres::Postgres;
 pub struct RepositoriesModule {
     client_repository: Arc<PostgresRepositoryImpl<Client>>,
 }
+
 impl RepositoriesModule {
     pub fn new(postgres: &Postgres) -> Self {
         let client_repository = Arc::new(PostgresRepositoryImpl::new(postgres));
@@ -18,6 +19,7 @@ impl RepositoriesModule {
         }
     }
 }
+
 impl RepositoriesModuleExt for RepositoriesModule {
     type ClientRepo = PostgresRepositoryImpl<Client>;
 

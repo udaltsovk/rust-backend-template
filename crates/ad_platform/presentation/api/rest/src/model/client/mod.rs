@@ -22,6 +22,7 @@ pub struct JsonClient {
     pub gender: JsonClientGender,
     pub location: String,
 }
+
 impl From<Client> for JsonClient {
     fn from(c: Client) -> Self {
         Self {
@@ -33,6 +34,7 @@ impl From<Client> for JsonClient {
         }
     }
 }
+
 #[derive(Deserialize, ToSchema, Debug)]
 pub struct UpsertJsonClient {
     ///
@@ -50,6 +52,7 @@ pub struct UpsertJsonClient {
     ///
     pub location: String,
 }
+
 impl ParseableJson<UpsertClient> for UpsertJsonClient {
     fn parse(self) -> Result<UpsertClient, ValidationErrors> {
         let mut errors = ValidationErrors::new();

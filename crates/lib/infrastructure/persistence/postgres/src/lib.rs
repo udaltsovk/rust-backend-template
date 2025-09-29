@@ -7,6 +7,7 @@ pub mod error;
 
 #[derive(Clone)]
 pub struct Postgres(Pool<PostgreSQL>);
+
 impl Postgres {
     pub async fn new(database_url: &str) -> Self {
         let pool = PgPoolOptions::new()
@@ -17,6 +18,7 @@ impl Postgres {
         Self(pool)
     }
 }
+
 impl Deref for Postgres {
     type Target = Pool<PostgreSQL>;
 

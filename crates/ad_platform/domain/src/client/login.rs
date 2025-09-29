@@ -2,6 +2,7 @@ use lib::{DomainType, domain::validation::error::ValidationErrors};
 
 #[derive(DomainType)]
 pub struct ClientLogin(String);
+
 impl TryFrom<String> for ClientLogin {
     type Error = ValidationErrors;
 

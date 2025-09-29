@@ -25,6 +25,7 @@ pub enum AppError {
     #[error("{0}")]
     UseCase(String),
 }
+
 impl<R, S> From<ClientUseCaseError<R, S>> for AppError
 where
     R: RepositoriesModuleExt,
@@ -34,6 +35,7 @@ where
         AppError::UseCase(format!("{e:?}"))
     }
 }
+
 impl From<DomainError> for AppError {
     fn from(err: DomainError) -> Self {
         use DomainError as DE;

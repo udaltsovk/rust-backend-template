@@ -12,6 +12,7 @@ where
     inner: Result<T, ValidationErrors>,
     _phantom: PhantomData<I>,
 }
+
 impl<T, I> Validator<T, I>
 where
     I: Clone,

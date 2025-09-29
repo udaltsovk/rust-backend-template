@@ -13,6 +13,7 @@ pub struct JsonErrorStruct {
     error_code: String,
     errors: Vec<String>,
 }
+
 impl JsonErrorStruct {
     pub fn new(error_code: impl Display, errors: Vec<impl Display>) -> Self {
         Self {

@@ -10,6 +10,7 @@ pub struct Id<T> {
     pub value: Uuid,
     _entity: PhantomData<T>,
 }
+
 impl<T> Id<T> {
     pub fn new(value: Uuid) -> Self {
         Self {
@@ -22,6 +23,7 @@ impl<T> Id<T> {
         Self::new(Uuid::now_v7())
     }
 }
+
 impl<T> From<Uuid> for Id<T> {
     fn from(uuid: Uuid) -> Self {
         Self::new(uuid)

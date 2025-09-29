@@ -17,6 +17,7 @@ mod services;
 pub struct Modules {
     client_usecase: Arc<UseCase<RepositoriesModule, ServicesModule, Client>>,
 }
+
 impl ModulesExt for Modules {
     type RepositoriesModule = RepositoriesModule;
     type ServicesModule = ServicesModule;
@@ -28,6 +29,7 @@ impl ModulesExt for Modules {
         &*self.client_usecase
     }
 }
+
 impl Modules {
     pub async fn init() -> Self {
         let postgres_url = format!(

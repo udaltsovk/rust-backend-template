@@ -9,6 +9,7 @@ const TOKEN_LIFETIME: usize = 60 * 60 * 24 * 3_usize; // 3 days
 pub enum JWTAud {
     Client,
 }
+
 impl JWTAud {
     fn from_session_entity(entity: SessionEntity) -> (Self, Uuid) {
         use SessionEntity as SE;
@@ -33,6 +34,7 @@ pub struct Claims {
     aud: JWTAud,
     jti: Uuid,
 }
+
 impl From<Session> for Claims {
     fn from(session: Session) -> Self {
         let current_time =
@@ -47,6 +49,7 @@ impl From<Session> for Claims {
         }
     }
 }
+
 impl From<Claims> for Session {
     fn from(cl: Claims) -> Self {
         Self {

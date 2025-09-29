@@ -16,6 +16,7 @@ use crate::routes::fallback;
 pub struct RestApi {
     pub router: Router,
 }
+
 impl RestApi {
     const REQUEST_ID_HEADER: HeaderName =
         HeaderName::from_static("x-request-id");

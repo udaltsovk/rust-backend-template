@@ -24,6 +24,7 @@ pub struct LGTM {
     tracer_provider: Option<Arc<SdkTracerProvider>>,
     metrics_process_collector: Arc<Collector>,
 }
+
 impl LGTM {
     #[inline]
     fn export_config(&self) -> ExportConfig {

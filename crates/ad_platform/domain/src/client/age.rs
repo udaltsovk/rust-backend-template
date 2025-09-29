@@ -2,6 +2,7 @@ use lib::{DomainType, domain::validation::error::ValidationErrors};
 
 #[derive(DomainType)]
 pub struct ClientAge(u16);
+
 impl TryFrom<i32> for ClientAge {
     type Error = ValidationErrors;
 

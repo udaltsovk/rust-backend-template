@@ -15,6 +15,7 @@ where
     services: S,
     _entity: PhantomData<T>,
 }
+
 impl<R, S, T> UseCase<R, S, T>
 where
     R: RepositoriesModuleExt + Send + Sync,

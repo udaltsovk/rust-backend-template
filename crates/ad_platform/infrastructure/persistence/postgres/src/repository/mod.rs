@@ -9,6 +9,7 @@ pub struct PostgresRepositoryImpl<T: Send + Sync> {
     db: Postgres,
     _entity: PhantomData<T>,
 }
+
 impl<T: Send + Sync> PostgresRepositoryImpl<T> {
     pub fn new(db: &Postgres) -> Self {
         Self {

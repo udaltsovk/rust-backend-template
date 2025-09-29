@@ -15,6 +15,7 @@ pub struct StoredClient {
     pub gender: StoredClientGender,
     pub location: String,
 }
+
 impl From<StoredClient> for Client {
     fn from(c: StoredClient) -> Self {
         Self {

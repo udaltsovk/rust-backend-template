@@ -7,6 +7,7 @@ pub enum StoredClientGender {
     Male,
     Female,
 }
+
 impl From<StoredClientGender> for ClientGender {
     fn from(g: StoredClientGender) -> Self {
         use StoredClientGender as G;
@@ -16,6 +17,7 @@ impl From<StoredClientGender> for ClientGender {
         }
     }
 }
+
 impl From<ClientGender> for StoredClientGender {
     fn from(g: ClientGender) -> Self {
         use ClientGender as G;

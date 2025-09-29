@@ -7,6 +7,7 @@ use infrastructure::services::token::jwt::JwtService;
 pub struct ServicesModule {
     token_service: Arc<JwtService>,
 }
+
 impl ServicesModuleExt for ServicesModule {
     type TokenService = JwtService;
 
@@ -14,6 +15,7 @@ impl ServicesModuleExt for ServicesModule {
         self.token_service.clone()
     }
 }
+
 impl ServicesModule {
     pub(crate) fn new(jwt_secret: &str) -> Self {
         let token_service = Arc::new(JwtService::new(jwt_secret));

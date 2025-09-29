@@ -8,6 +8,7 @@ pub enum JsonClientGender {
     Male,
     Female,
 }
+
 impl From<JsonClientGender> for ClientGender {
     fn from(g: JsonClientGender) -> Self {
         use JsonClientGender as G;
@@ -17,6 +18,7 @@ impl From<JsonClientGender> for ClientGender {
         }
     }
 }
+
 impl From<ClientGender> for JsonClientGender {
     fn from(g: ClientGender) -> Self {
         use ClientGender as G;
