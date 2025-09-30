@@ -1,13 +1,13 @@
 [workspace]
 resolver = "3"
-members = ["crates/lib", "crates/ad_platform/bootstrap/monolyth"]
+members = ["packages/lib-backend", "apps/ad_platform/bootstrap/monolyth"]
 
 [workspace.package]
 authors = ["Kirill Udaltsov <me@udaltsovk.ru>"]
 edition = "2024"
 
 [workspace.dependencies]
-lib = { path = "./crates/lib" }
+lib = { path = "./packages/lib-backend" }
 
 async-trait = "0.1"
 axum = "0.8"
