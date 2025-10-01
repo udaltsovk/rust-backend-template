@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["packages/lib-backend", "apps/ad_platform/bootstrap/monolyth"]
+members = ["packages/lib-backend", "apps/ad_platform"]
 
 [workspace.package]
 authors = ["Kirill Udaltsov <me@udaltsovk.ru>"]

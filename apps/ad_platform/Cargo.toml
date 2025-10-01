@@ -1,0 +1,14 @@
+[package]
+name = "ad_platform"
+version = "0.1.0"
+edition = "2024"
+
+[package.metadata.cargo-udeps.ignore]
+normal = ["bootstrap"]
+
+[dependencies]
+bootstrap = { path = "./bootstrap", package = "ad_platform-bootstrap" }
+
+
+[lints]
+workspace = true

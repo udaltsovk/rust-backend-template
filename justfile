@@ -1,7 +1,7 @@
 export RUSTFLAGS := "-Z macro-backtrace --cfg tokio_unstable"
 
 dev-compose-down:
-    docker compose -f ./dev-compose.yml down 
+    docker compose -f ./dev-compose.yml down
 
 dev-compose-up:
     docker compose -f ./dev-compose.yml up -d
@@ -26,7 +26,7 @@ test:
     cargo test --all
 
 run crate:
-    cargo run --bin {{crate}}
+    cargo run --bin {{ crate }}
 
 check crate:
     just udeps && \
@@ -34,20 +34,19 @@ check crate:
     just fmt && \
     just lint && \
     just test && \
-    just run {{crate}}
+    just run {{ crate }}
 
 watch-rs crate:
     watchexec \
         -rqc reset \
         -e rs,toml \
-        "just check {{crate}}"
+        "just check {{ crate }}"
 
 sqlx-prepare:
-    cargo sqlx prepare --workspace
+    cargo sqlx prepare
 
 watch-sql:
     watchexec \
         -rqc reset \
         -e sql \
         "just sqlx-prepare"
-
