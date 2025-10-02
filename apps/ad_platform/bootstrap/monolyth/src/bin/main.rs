@@ -26,12 +26,9 @@ async fn main() {
     // start().await
 
     // With opentelemetry
-    LGTM::new(
-        &config::PROMETHEUS_ADDRESS,
-        &config::OTEL_SERVICE_NAMESPACE,
-        &config::OTEL_SERVICE_NAME,
-    )
-    .with_otel_timeout(Duration::from_secs(30))
-    .wrap(start)
-    .await
+    LGTM::new(&config::OTEL_SERVICE_NAMESPACE, &config::OTEL_SERVICE_NAME)
+        .with_prometheus_address(&config::PROMETHEUS_ADDRESS)
+        .with_otel_timeout(Duration::from_secs(30))
+        .wrap(start)
+        .await
 }

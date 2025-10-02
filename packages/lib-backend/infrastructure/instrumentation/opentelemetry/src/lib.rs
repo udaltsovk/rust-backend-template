@@ -19,7 +19,7 @@ pub struct LGTM {
     otel_endpoint: Option<String>,
     otel_service_name: Cow<'static, str>,
     otel_timeout: Option<Duration>,
-    prometheus_address: &'static str,
+    prometheus_address: Option<&'static str>,
     resource: Resource,
     logger_provider: Option<Arc<SdkLoggerProvider>>,
     tracer_provider: Option<Arc<SdkTracerProvider>>,
@@ -49,23 +49,30 @@ impl LGTM {
     };
 
     pub fn new(
-        prometheus_address: &'static str,
         otel_service_namespace: &'static str,
         otel_service_name: &'static str,
     ) -> Self {
         Self {
-            prometheus_address,
             otel_service_name: otel_service_name.into(),
             resource: metrics::resource(
                 otel_service_namespace,
                 otel_service_name,
             ),
+            prometheus_address: None,
             otel_endpoint: None,
             otel_timeout: None,
             logger_provider: None,
             tracer_provider: None,
             metrics_process_collector: Arc::new(Collector::default()),
         }
+    }
+
+    pub fn with_prometheus_address(
+        mut self,
+        prometheus_address: &'static str,
+    ) -> Self {
+        self.prometheus_address = Some(prometheus_address);
+        self
     }
 
     pub fn with_otel_endpoint(mut self, otel_endpoint: &'static str) -> Self {

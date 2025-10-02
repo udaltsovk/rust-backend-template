@@ -29,8 +29,10 @@ impl LGTM {
     pub(super) fn setup_metrics(&self) {
         let (prometheus_recorder, serve_prometheus) = PrometheusBuilder::new()
             .with_http_listener(
-                SocketAddr::from_str(self.prometheus_address)
-                    .expect("a valid address"),
+                SocketAddr::from_str(
+                    self.prometheus_address.unwrap_or("0.0.0.0:8081"),
+                )
+                .expect("a valid address"),
             )
             .idle_timeout(
                 MetricKindMask::ALL,
