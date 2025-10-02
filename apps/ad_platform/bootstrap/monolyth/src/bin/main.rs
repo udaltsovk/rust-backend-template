@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use ad_platform_monolyth::{
     Modules, bootstrappers::BootstraperExt as _, config,
 };
@@ -8,22 +10,28 @@ use lib::{
 
 configure_jemalloc!();
 
+async fn start() {
+    config::test_values();
+
+    let modules = Modules::init().await;
+
+    tokio::join!(RestApi::bootstrap(modules));
+}
+
 #[tokio::main]
 async fn main() {
     config::init();
 
-    LGTM::wrap(
-        &config::OTEL_ENDPOINT,
-        &config::METRICS_ADDRESS,
-        "ad_platform",
-        "monolyth",
-        async || {
-            config::test_values();
+    // Without opentelemetry
+    // start().await
 
-            let modules = Modules::init().await;
-
-            RestApi::bootstrap(modules).await;
-        },
+    // With opentelemetry
+    LGTM::new(
+        &config::PROMETHEUS_ADDRESS,
+        &config::OTEL_SERVICE_NAMESPACE,
+        &config::OTEL_SERVICE_NAME,
     )
-    .await;
+    .with_otel_timeout(Duration::from_secs(30))
+    .wrap(start)
+    .await
 }

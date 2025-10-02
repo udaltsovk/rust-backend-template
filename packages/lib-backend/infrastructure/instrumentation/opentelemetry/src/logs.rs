@@ -3,7 +3,7 @@ use std::{ops::Deref as _, sync::Arc};
 use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
 use opentelemetry_otlp::{LogExporter, WithExportConfig as _};
 use opentelemetry_sdk::logs::{
-    BatchLogProcessor, SdkLogger, SdkLoggerProvider,
+    BatchLogProcessor, LogProcessor, SdkLogger, SdkLoggerProvider,
 };
 
 use crate::LGTM;
@@ -18,19 +18,29 @@ impl LGTM {
     }
 
     #[inline]
+    fn log_processor(&self) -> impl LogProcessor + 'static {
+        let exporter_builder = LogExporter::builder();
+
+        #[cfg(any(feature = "http-proto", feature = "http-json"))]
+        let exporter_builder = exporter_builder.with_http();
+
+        #[cfg(feature = "grpc-tonic")]
+        let exporter_builder = exporter_builder.with_tonic();
+
+        BatchLogProcessor::builder(
+            exporter_builder
+                .with_export_config(self.export_config())
+                .build()
+                .expect("Failed to build exporter!"),
+        )
+        .build()
+    }
+
+    #[inline]
     pub(super) fn configure_logger_provider(mut self) -> Self {
         let logger_provider = SdkLoggerProvider::builder()
             .with_resource(self.resource.clone())
-            .with_log_processor(
-                BatchLogProcessor::builder(
-                    LogExporter::builder()
-                        .with_tonic()
-                        .with_export_config(self.export_config())
-                        .build()
-                        .expect("Failed to build exporter!"),
-                )
-                .build(),
-            )
+            .with_log_processor(self.log_processor())
             .build();
         self.logger_provider = Some(Arc::new(logger_provider));
         self

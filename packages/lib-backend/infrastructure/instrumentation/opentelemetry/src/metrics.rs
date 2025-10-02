@@ -26,10 +26,10 @@ impl LGTM {
         "http_server_request_duration_seconds";
     const METRIC_SCRAPE_INTERVAL: Duration = Duration::from_secs(5);
 
-    pub(super) fn setup_metrics(&self, prometheus_address: &'static str) {
+    pub(super) fn setup_metrics(&self) {
         let (prometheus_recorder, serve_prometheus) = PrometheusBuilder::new()
             .with_http_listener(
-                SocketAddr::from_str(prometheus_address)
+                SocketAddr::from_str(self.prometheus_address)
                     .expect("a valid address"),
             )
             .idle_timeout(

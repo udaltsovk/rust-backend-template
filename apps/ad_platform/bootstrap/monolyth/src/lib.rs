@@ -16,6 +16,8 @@ env_vars_config! {
     POSTGRES_PORT: u16 = 5432u16,
     POSTGRES_DATABASE: String = "ad_platform",
     OTEL_ENDPOINT: String = "http://localhost:4317",
-    METRICS_ADDRESS: String = "0.0.0.0:8081",
+    OTEL_SERVICE_NAMESPACE: String = "ad_platform",
+    OTEL_SERVICE_NAME: String = "monolyth",
+    PROMETHEUS_ADDRESS: String = "0.0.0.0:8081",
     JWT_SECRET: String = "changeme",
 }
