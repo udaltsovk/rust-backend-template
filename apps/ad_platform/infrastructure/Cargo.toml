@@ -6,15 +6,15 @@ edition.workspace = true
 
 [features]
 persistence = ["dep:persistence"]
-persistence_postgres = ["persistence", "persistence/postgres"]
+persistence-postgres = ["persistence", "persistence/postgres"]
 
 
 services = ["dep:services"]
-services_hasher = ["services", "services/hasher"]
-services_hasher_argon2 = ["services_hasher", "services/hasher_argon2"]
+services-hasher = ["services", "services/hasher"]
+services-hasher-argon2 = ["services-hasher", "services/hasher-argon2"]
 
-services_token = ["services", "services/token"]
-services_token_jwt = ["services_token", "services/token_jwt"]
+services-token = ["services", "services/token"]
+services-token-jwt = ["services-token", "services/token-jwt"]
 
 [dependencies]
 persistence = { path = "./persistence", package = "ad_platform-infrastructure-persistence", optional = true }

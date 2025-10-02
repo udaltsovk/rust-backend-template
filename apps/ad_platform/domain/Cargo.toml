@@ -5,7 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-lib = { workspace = true, features = ["domain", "macros_proc"] }
+lib = { workspace = true, features = ["domain", "macros-proc"] }
 
 # async-trait.workspace = true
 derive-where.workspace = true

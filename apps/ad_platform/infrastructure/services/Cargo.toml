@@ -6,10 +6,10 @@ edition.workspace = true
 
 [features]
 hasher = ["dep:hasher"]
-hasher_argon2 = ["hasher/argon2"]
+hasher-argon2 = ["hasher/argon2"]
 
 token = ["dep:token"]
-token_jwt = ["token/jwt"]
+token-jwt = ["token/jwt"]
 
 [dependencies]
 hasher = { path = "./hasher", package = "ad_platform-infrastructure-services-hasher", optional = true }

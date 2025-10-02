@@ -5,7 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-lib = { workspace = true, features = ["infrastructure_persistence_postgres"] }
+lib = { workspace = true, features = ["infrastructure-persistence-postgres"] }
 domain = { path = "../../../domain", package = "ad_platform-domain" }
 application = { path = "../../../application", package = "ad_platform-application" }
 

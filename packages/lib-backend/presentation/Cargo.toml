@@ -6,10 +6,10 @@ edition.workspace = true
 
 [features]
 api = ["dep:api"]
-api_rest = ["api", "api/rest"]
+api-rest = ["api", "api/rest"]
 
 bot = ["dep:bot"]
-bot_telegram = ["bot", "bot/telegram"]
+bot-telegram = ["bot", "bot/telegram"]
 
 [dependencies]
 api = { path = "./api", package = "lib-presentation-api", optional = true }

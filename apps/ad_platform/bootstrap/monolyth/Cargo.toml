@@ -13,16 +13,16 @@ path = "./src/bin/openapi.rs"
 
 [dependencies]
 lib = { workspace = true, features = [
-  "bootstrap_openapi",
-  "infrastructure_instrumentation_opentelemetry",
-  "infrastructure_persistence_postgres",
+  "bootstrap-openapi",
+  "infrastructure-instrumentation-opentelemetry-grpc-tonic",
+  "infrastructure-persistence-postgres",
 ] }
 domain = { path = "../../domain", package = "ad_platform-domain" }
 application = { path = "../../application", package = "ad_platform-application" }
 infrastructure = { path = "../../infrastructure", package = "ad_platform-infrastructure", features = [
-  "persistence_postgres",
-  "services_hasher_argon2",
-  "services_token_jwt",
+  "persistence-postgres",
+  "services-hasher-argon2",
+  "services-token-jwt",
 ] }
 presentation = { path = "../../presentation", package = "ad_platform-presentation", features = [
   "api-rest",

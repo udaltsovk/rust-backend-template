@@ -4,6 +4,11 @@ version = "0.1.0"
 authors.workspace = true
 edition.workspace = true
 
+[features]
+http-proto = ["opentelemetry-otlp/http-proto"]
+http-json = ["opentelemetry-otlp/http-json"]
+grpc-tonic = ["opentelemetry-otlp/grpc-tonic"]
+
 [dependencies]
 metrics.workspace = true
 tokio.workspace = true
@@ -25,8 +30,7 @@ opentelemetry-appender-tracing = { version = "0.30", features = [
   #    "spec_unstable_logs_enabled",
   "experimental_use_tracing_span_context",
 ] }
-opentelemetry-otlp = { version = "0.30", features = [
-  "grpc-tonic",
+opentelemetry-otlp = { version = "0.30", default-features = false, features = [
   "trace",
   "logs",
   "metrics",
