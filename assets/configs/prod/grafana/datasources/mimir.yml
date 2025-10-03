@@ -1,0 +1,14 @@
+apiVersion: 1
+prune: true
+datasources:
+- name: mimir
+  type: prometheus
+  access: proxy
+  orgId: 1
+  uid: mimir
+  url: http://mimir:9009/prometheus
+  isDefault: false
+  jsonData:
+    httpMethod: POST
+  version: 1
+  editable: false

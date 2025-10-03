@@ -1,0 +1,12 @@
+apiVersion: 1
+prune: true
+datasources:
+- name: tempo
+  type: tempo
+  access: proxy
+  orgId: 1
+  uid: tempo
+  url: http://tempo:3200
+  isDefault: false
+  version: 1
+  editable: false

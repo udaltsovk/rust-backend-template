@@ -1,12 +1,14 @@
-use std::{borrow::Cow, sync::Arc, time::Duration};
+use std::{borrow::Cow, net::SocketAddr, sync::Arc, time::Duration};
 
 use metrics_process::Collector;
 use metrics_tracing_context::MetricsLayer;
+use opentelemetry::KeyValue;
 use opentelemetry_otlp::{ExportConfig, Protocol};
 use opentelemetry_sdk::{
     Resource, error::OTelSdkResult, logs::SdkLoggerProvider,
     trace::SdkTracerProvider,
 };
+use opentelemetry_semantic_conventions::attribute;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod layers;
@@ -19,7 +21,7 @@ pub struct LGTM {
     otel_endpoint: Option<String>,
     otel_service_name: Cow<'static, str>,
     otel_timeout: Option<Duration>,
-    prometheus_address: Option<&'static str>,
+    prometheus_address: Option<SocketAddr>,
     resource: Resource,
     logger_provider: Option<Arc<SdkLoggerProvider>>,
     tracer_provider: Option<Arc<SdkTracerProvider>>,
@@ -48,16 +50,19 @@ impl LGTM {
         panic!("No OpenTelemetry protocol selected!") // that shouldn't happen
     };
 
-    pub fn new(
-        otel_service_namespace: &'static str,
-        otel_service_name: &'static str,
-    ) -> Self {
+    fn resource(otel_service_name: &'static str) -> Resource {
+        Resource::builder()
+            .with_attributes(vec![KeyValue::new(
+                attribute::SERVICE_NAME,
+                otel_service_name,
+            )])
+            .build()
+    }
+
+    pub fn new(otel_service_name: &'static str) -> Self {
         Self {
             otel_service_name: otel_service_name.into(),
-            resource: metrics::resource(
-                otel_service_namespace,
-                otel_service_name,
-            ),
+            resource: Self::resource(otel_service_name),
             prometheus_address: None,
             otel_endpoint: None,
             otel_timeout: None,
@@ -69,7 +74,7 @@ impl LGTM {
 
     pub fn with_prometheus_address(
         mut self,
-        prometheus_address: &'static str,
+        prometheus_address: SocketAddr,
     ) -> Self {
         self.prometheus_address = Some(prometheus_address);
         self

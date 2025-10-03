@@ -3,7 +3,7 @@ services:
     image: postgres:alpine
     restart: on-failure
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ad_platform
       POSTGRES_USER: postgres
@@ -18,6 +18,90 @@ services:
       - redis-data:/data
     ports:
       - "6379:6379"
+  s3:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+    volumes:
+      - s3-data:/data
+    command: server /data --console-address ":9001"
+  init-buckets:
+    image: minio/mc:latest
+    depends_on:
+      - s3
+    entrypoint: >
+      sh -c "until mc alias set myminio http://s3:9000 minioadmin minioadmin; do sleep 1; done &&
+
+        mc mb myminio/tempo &&
+        mc mb myminio/mimir &&
+        mc mb myminio/images &&
+        mc policy set public myminio/loki"
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - prometheus-data:/prometheus
+      - ./assets/configs/dev/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--enable-feature=native-histograms"
+    ports:
+      - "9091:9090"
+  loki:
+    image: grafana/loki:latest
+    restart: always
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./assets/configs/dev/loki.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    depends_on:
+      - s3
+  tempo:
+    image: grafana/tempo:latest
+    restart: always
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./assets/configs/dev/tempo.yml:/etc/tempo/tempo-config.yaml
+      - tempo-data:/var/tempo
+    command: -config.file=/etc/tempo/tempo-config.yaml
+    depends_on:
+      - s3
+  mimir:
+    image: grafana/mimir:latest
+    restart: always
+    ports:
+      - "9009:9009"
+    volumes:
+      - ./assets/configs/dev/mimir.yml:/etc/mimir/mimir.yaml
+    command: --config.file=/etc/mimir/mimir.yaml
+    depends_on:
+      - s3
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./assets/configs/dev/otel-collector.yml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - "4317:4317"
+      - "8888:8888"
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./assets/configs/dev/grafana/datasources/:/etc/grafana/provisioning/datasources
+      - ./assets/configs/dev/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./assets/configs/dev/grafana/dashboards/:/etc/grafana/dashboards
+      - grafana-data:/var/lib/grafana
 volumes:
-  db-data:
+  postgres-data:
   redis-data:
+  s3-data:
+  prometheus-data:
+  tempo-data:
+  grafana-data:

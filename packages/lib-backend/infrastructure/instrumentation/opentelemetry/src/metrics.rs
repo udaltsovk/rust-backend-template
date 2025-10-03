@@ -3,36 +3,22 @@ use std::{net::SocketAddr, str::FromStr as _, time::Duration};
 use metrics_exporter_prometheus::{Matcher, PrometheusBuilder};
 use metrics_tracing_context::TracingContextLayer;
 use metrics_util::{MetricKindMask, layers::Layer as _};
-use opentelemetry::KeyValue;
-use opentelemetry_sdk::Resource;
-use opentelemetry_semantic_conventions::attribute;
 
 use crate::LGTM;
 
-pub(super) fn resource(
-    otel_service_namespace: &'static str,
-    otel_service_name: &'static str,
-) -> Resource {
-    Resource::builder()
-        .with_attributes(vec![
-            KeyValue::new(attribute::SERVICE_NAMESPACE, otel_service_namespace),
-            KeyValue::new(attribute::SERVICE_NAME, otel_service_name),
-        ])
-        .build()
-}
-
 impl LGTM {
     const HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME: &str =
-        "http_server_request_duration_seconds";
+        "server_http_request_duration_seconds";
     const METRIC_SCRAPE_INTERVAL: Duration = Duration::from_secs(5);
 
     pub(super) fn setup_metrics(&self) {
         let (prometheus_recorder, serve_prometheus) = PrometheusBuilder::new()
+            .add_global_label("service_name", self.otel_service_name.clone())
             .with_http_listener(
-                SocketAddr::from_str(
-                    self.prometheus_address.unwrap_or("0.0.0.0:8081"),
-                )
-                .expect("a valid address"),
+                self.prometheus_address.unwrap_or(
+                    SocketAddr::from_str("0.0.0.0:8081")
+                        .expect("a valid socket address"),
+                ),
             )
             .idle_timeout(
                 MetricKindMask::ALL,

@@ -17,28 +17,33 @@ use crate::{Modules, bootstrappers::BootstraperExt, config};
 #[async_trait]
 impl BootstraperExt for RestApi {
     async fn bootstrap(modules: Modules) {
-        let mut api =
-            RestApi::new(ApiDoc::openapi(), routes::router(), modules);
+        let metric_layer = PrometheusMetricLayerBuilder::new()
+            .with_prefix("server")
+            .with_ignore_patterns(&[
+                "/openapi",
+                "/openapi.json",
+                "/favicon.ico",
+            ])
+            .build();
 
-        let middlewares = ServiceBuilder::new()
-            .layer(PrometheusMetricLayerBuilder::new().with_prefix("").build())
-            .layer(
-                TraceLayer::new_for_http()
-                    .make_span_with(
-                        DefaultMakeSpan::new().include_headers(true),
-                    )
-                    .on_request(DefaultOnRequest::new().level(Level::INFO))
-                    .on_response(
-                        DefaultOnResponse::new()
-                            .level(Level::INFO)
-                            .include_headers(true),
-                    )
-                    .on_failure(DefaultOnFailure::new().level(Level::WARN)),
-            );
+        let trace_layer = TraceLayer::new_for_http()
+            .make_span_with(DefaultMakeSpan::new().include_headers(true))
+            .on_request(DefaultOnRequest::new().level(Level::INFO))
+            .on_response(
+                DefaultOnResponse::new()
+                    .level(Level::INFO)
+                    .include_headers(true),
+            )
+            .on_failure(DefaultOnFailure::new().level(Level::WARN));
 
-        api.router = api.router.layer(middlewares);
-
-        api.run(SocketAddr::from((
+        RestApi::new(
+            ApiDoc::openapi(),
+            routes::router().layer(
+                ServiceBuilder::new().layer(metric_layer).layer(trace_layer),
+            ),
+            modules,
+        )
+        .run(SocketAddr::from((
             *config::SERVER_ADDRESS,
             *config::SERVER_PORT,
         )))

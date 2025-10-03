@@ -1,4 +1,7 @@
-use std::{net::IpAddr, str::FromStr as _};
+use std::{
+    net::{IpAddr, SocketAddr},
+    str::FromStr as _,
+};
 
 use env_vars_config::env_vars_config;
 
@@ -16,8 +19,7 @@ env_vars_config! {
     POSTGRES_PORT: u16 = 5432u16,
     POSTGRES_DATABASE: String = "ad_platform",
     OTEL_ENDPOINT: String = "http://localhost:4317",
-    OTEL_SERVICE_NAMESPACE: String = "ad_platform",
-    OTEL_SERVICE_NAME: String = "monolyth",
-    PROMETHEUS_ADDRESS: String = "0.0.0.0:8081",
+    OTEL_SERVICE_NAME: String = "ad_platform-monolyth",
+    PROMETHEUS_ADDRESS: SocketAddr = SocketAddr::from_str("0.0.0.0:8081").expect("a valid socket address"),
     JWT_SECRET: String = "changeme",
 }

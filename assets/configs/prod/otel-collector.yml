@@ -1,0 +1,73 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+  prometheus:
+    api_server:
+      enabled: true
+      server_config:
+        endpoint: "0.0.0.0:9090"
+    config:
+      global:
+        scrape_interval: 5s
+      scrape_configs:
+        - job_name: "minizord_api"
+          metrics_path: /metrics
+          static_configs:
+            - targets: ["api:8081"]
+
+processors:
+  batch:
+
+exporters:
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+    tls:
+      insecure: true
+  otlphttp/tempo:
+    endpoint: http://tempo:4319
+    tls:
+      insecure: true
+  otlphttp/mimir:
+    endpoint: http://mimir:9009/otlp
+    tls:
+      insecure: true
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    send_timestamps: true
+    enable_open_metrics: true
+    add_metric_suffixes: true
+    resource_to_telemetry_conversion:
+      enabled: true
+
+extensions:
+  health_check:
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/tempo]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/loki]
+    metrics/otlp:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/mimir]
+    metrics/scrape:
+      receivers: [prometheus]
+      exporters: [prometheus]
+  telemetry:
+    metrics:
+      level: detailed
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: "0.0.0.0"
+                port: 8888

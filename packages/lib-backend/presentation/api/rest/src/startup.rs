@@ -59,7 +59,7 @@ impl RestApi {
         let listener = TcpListener::bind(addr)
             .await
             .expect("TcpListener cannot bind.");
-        tracing::info!("Server listening on {}", addr);
+        tracing::info!("Server is listening on {}", addr);
 
         axum::serve(listener, app)
             .with_graceful_shutdown(Self::shutdown_signal())
