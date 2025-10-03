@@ -27,7 +27,7 @@
 in
   with pkgs;
     mkShell {
-      name = "axum-backend-template";
+      name = "rust-backend-template";
       buildInputs = packages ++ libraries;
 
       DIRENV_LOG_FORMAT = "";
