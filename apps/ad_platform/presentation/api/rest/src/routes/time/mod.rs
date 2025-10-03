@@ -1,5 +1,6 @@
 use axum::{Json, http::StatusCode, response::IntoResponse};
 use lib::presentation::api::rest::context::JsonErrorStruct;
+use tap::Pipe as _;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 use crate::{
@@ -22,9 +23,10 @@ pub fn router<M: ModulesExt>() -> OpenApiRouter<M> {
 pub async fn advance<M: ModulesExt>(
     Json(_source): Json<JsonTime>,
 ) -> Result<impl IntoResponse, AppError> {
-    Ok(JsonErrorStruct::new(
+    JsonErrorStruct::new(
         "not_implemented",
         vec!["Method `advance` is not implemented"],
     )
-    .as_response(StatusCode::NOT_IMPLEMENTED))
+    .as_response(StatusCode::NOT_IMPLEMENTED)
+    .pipe(Ok)
 }

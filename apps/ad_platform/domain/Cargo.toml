@@ -9,6 +9,7 @@ lib = { workspace = true, features = ["domain", "macros-proc"] }
 
 # async-trait.workspace = true
 derive-where.workspace = true
+tap.workspace = true
 # tracing.workspace = true
 thiserror.workspace = true
 uuid = { workspace = true, features = ["v7"] }

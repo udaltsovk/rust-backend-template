@@ -13,11 +13,13 @@ impl IntoResponse for AppError {
             AppError::Validation(validation_errors) => {
                 error!("{validation_errors:?}");
 
-                let mut messages: Vec<String> = Vec::new();
-                let errors = validation_errors.into_inner();
-                for (path, validation_error) in errors {
-                    messages.push(format!("{path}: {validation_error}"));
-                }
+                let messages = validation_errors
+                    .into_inner()
+                    .iter()
+                    .map(|(path, validation_error)| {
+                        format!("{path}: {validation_error}")
+                    })
+                    .collect();
 
                 JsonErrorStruct::new("invalid_request", messages)
                     .as_response(StatusCode::BAD_REQUEST)
@@ -26,6 +28,7 @@ impl IntoResponse for AppError {
                 error!("{rejection:?}");
 
                 let messages = vec![rejection];
+
                 JsonErrorStruct::new("invalid_request", messages)
                     .as_response(StatusCode::BAD_REQUEST)
             },
@@ -33,6 +36,7 @@ impl IntoResponse for AppError {
                 error!("{rejection:?}");
 
                 let messages = vec![rejection];
+
                 JsonErrorStruct::new("missing_api_version", messages)
                     .as_response(StatusCode::BAD_REQUEST)
             },
@@ -41,6 +45,7 @@ impl IntoResponse for AppError {
                 error!("{err}");
 
                 let messages = vec![err];
+
                 JsonErrorStruct::new(
                     "unknown_api_version".to_string(),
                     messages,
@@ -49,6 +54,7 @@ impl IntoResponse for AppError {
             },
             AppError::UseCase(err) => {
                 let messages = vec![err];
+
                 JsonErrorStruct::new(
                     "internal_server_error".to_string(),
                     messages,

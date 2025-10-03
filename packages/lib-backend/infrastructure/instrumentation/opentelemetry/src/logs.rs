@@ -5,6 +5,7 @@ use opentelemetry_otlp::{LogExporter, WithExportConfig as _};
 use opentelemetry_sdk::logs::{
     BatchLogProcessor, LogProcessor, SdkLogger, SdkLoggerProvider,
 };
+use tap::Pipe as _;
 
 use crate::LGTM;
 
@@ -38,11 +39,13 @@ impl LGTM {
 
     #[inline]
     pub(super) fn configure_logger_provider(mut self) -> Self {
-        let logger_provider = SdkLoggerProvider::builder()
+        self.logger_provider = SdkLoggerProvider::builder()
             .with_resource(self.resource.clone())
             .with_log_processor(self.log_processor())
-            .build();
-        self.logger_provider = Some(Arc::new(logger_provider));
+            .build()
+            .pipe(Arc::new)
+            .pipe(Some);
+
         self
     }
 

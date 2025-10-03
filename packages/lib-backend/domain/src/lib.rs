@@ -42,4 +42,10 @@ where
     fn cloned_inner(&self) -> T {
         self.value().clone()
     }
+
+    fn it_should_be_safe_to_unwrap<E>(
+        field: &'static str,
+    ) -> impl FnOnce(E) -> T {
+        move |_| panic!("We've validated {field} value, so it should be safe")
+    }
 }

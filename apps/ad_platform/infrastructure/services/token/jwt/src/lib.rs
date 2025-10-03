@@ -4,6 +4,7 @@ use jsonwebtoken::{
     Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
 };
 use lib::instrument_all;
+use tap::{Conv as _, Pipe as _, Tap as _};
 use uuid::Uuid;
 
 use crate::claims::Claims;
@@ -20,16 +21,18 @@ impl TokenService for JwtService {
     type AdapterError = jsonwebtoken::errors::Error;
 
     fn generate(&self, session: Session) -> Result<String, Self::AdapterError> {
-        let mut header = Header::new(Algorithm::RS256);
         let entity_id: Uuid = session.entity.clone().into();
-        header.kid = Some(entity_id.to_string());
+        let header = Header::new(Algorithm::RS256).tap_mut(|header| {
+            header.kid = entity_id.to_string().pipe(Some);
+        });
         encode(&header, &Claims::from(session), &self.encoding_key)
     }
 
     fn parse(&self, token: &str) -> Result<Session, Self::AdapterError> {
-        let claims: Claims =
-            decode(token, &self.decoding_key, &Validation::default())?.claims;
-        Ok(claims.into())
+        decode::<Claims>(token, &self.decoding_key, &Validation::default())?
+            .claims
+            .conv::<Session>()
+            .pipe(Ok)
     }
 }
 

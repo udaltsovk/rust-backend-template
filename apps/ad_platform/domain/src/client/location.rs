@@ -1,4 +1,5 @@
 use lib::{DomainType, domain::validation::error::ValidationErrors};
+use tap::Tap as _;
 
 #[derive(DomainType)]
 pub struct ClientLocation(String);
@@ -8,20 +9,22 @@ impl TryFrom<String> for ClientLocation {
 
     fn try_from(value: String) -> Result<Self, ValidationErrors> {
         const FIELD: &str = "location";
-        let mut errors = ValidationErrors::default();
 
-        if value.chars().count() < 5 {
-            errors.push(
-                FIELD,
-                "Location length must be at least 5 characters long",
-            );
-        }
-        if value.chars().count() > 100 {
-            errors.push(
-                FIELD,
-                "Location length must be at most 100 characters long",
-            );
-        }
-        errors.into_result(|_| Self(value))
+        ValidationErrors::default()
+            .tap_mut(|errors| {
+                if value.chars().count() < 5 {
+                    errors.push(
+                        FIELD,
+                        format!("Client {FIELD} length must be at least 5 characters long")
+                    );
+                }
+                if value.chars().count() > 100 {
+                    errors.push(
+                        FIELD,
+                        format!("Location {FIELD} must be at most 100 characters long")
+                    );
+                }
+            })
+            .into_result(|_| Self(value))
     }
 }

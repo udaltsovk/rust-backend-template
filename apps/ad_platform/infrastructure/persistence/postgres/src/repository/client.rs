@@ -7,6 +7,7 @@ use lib::{
     instrument_all,
 };
 use sqlx::query_file_as;
+use tap::{Conv as _, Pipe as _};
 
 use crate::{
     entity::client::{StoredClient, gender::StoredClientGender},
@@ -31,44 +32,35 @@ impl ClientRepository for PostgresRepositoryImpl<Client> {
         let mut clients = vec![];
 
         for client in source {
-            let gender: StoredClientGender = client.gender.clone().into();
-            let age: i32 = client.age.cloned_inner().into();
-
-            let result = query_file_as!(
+            query_file_as!(
                 StoredClient,
                 "./sql/client/upsert.sql",
                 client.id.value,
                 client.login.cloned_inner(),
-                age,
-                gender as StoredClientGender,
+                client.age.cloned_inner().conv::<i32>(),
+                client.gender.clone().conv::<StoredClientGender>()
+                    as StoredClientGender,
                 client.location.cloned_inner()
             )
             .fetch_one(&mut *transaction)
             .await
-            .map(Client::from)?;
-
-            clients.push(result);
+            .map(Client::from)?
+            .pipe(|c| clients.push(c))
         }
 
         transaction.commit().await?;
-        let result = clients;
 
-        Ok(result)
+        Ok(clients)
     }
 
     async fn find_by_id(
         &self,
         id: Id<Client>,
     ) -> Result<Option<Client>, Self::AdapterError> {
-        let result = query_file_as!(
-            StoredClient,
-            "./sql/client/find_by_id.sql",
-            id.value
-        )
-        .fetch_optional(&*self.db)
-        .await?
-        .map(Client::from);
-
-        Ok(result)
+        query_file_as!(StoredClient, "./sql/client/find_by_id.sql", id.value)
+            .fetch_optional(&*self.db)
+            .await?
+            .map(Client::from)
+            .pipe(Ok)
     }
 }

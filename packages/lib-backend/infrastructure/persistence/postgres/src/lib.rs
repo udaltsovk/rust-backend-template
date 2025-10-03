@@ -1,6 +1,7 @@
 use std::ops::Deref;
 
 use sqlx::{Pool, Postgres as PostgreSQL, postgres::PgPoolOptions};
+use tap::Pipe as _;
 
 pub mod entity;
 pub mod error;
@@ -11,12 +12,12 @@ pub struct Postgres(Pool<PostgreSQL>);
 
 impl Postgres {
     pub async fn new(database_url: &str) -> Self {
-        let pool = PgPoolOptions::new()
+        PgPoolOptions::new()
             .max_connections(8)
             .connect(database_url)
             .await
-            .expect("Cannot connect to the database. Please check your configuration.");
-        Self(pool)
+            .expect("Cannot connect to the database. Please check your configuration.")
+            .pipe(Self)
     }
 }
 

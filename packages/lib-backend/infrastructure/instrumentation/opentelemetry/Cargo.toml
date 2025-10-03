@@ -11,6 +11,7 @@ grpc-tonic = ["opentelemetry-otlp/grpc-tonic"]
 
 [dependencies]
 metrics.workspace = true
+tap.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 

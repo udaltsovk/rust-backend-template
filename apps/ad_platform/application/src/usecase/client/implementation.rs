@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use domain::client::{Client, UpsertClient};
 use lib::{domain::Id, instrument_all};
+use tap::Pipe as _;
 
 use crate::{
     repository::{RepositoriesModuleExt, client::ClientRepository as _},
@@ -22,25 +23,23 @@ where
         &self,
         source: &[UpsertClient],
     ) -> Result<Vec<Client>, ClientUseCaseError<R, S>> {
-        let result = self
-            .repositories
+        self.repositories
             .client_repository()
             .bulk_upsert(source)
             .await
-            .map_err(ClientUseCaseError::Repository)?;
-        Ok(result)
+            .map_err(ClientUseCaseError::Repository)?
+            .pipe(Ok)
     }
 
     async fn find_by_id(
         &self,
         id: Id<Client>,
     ) -> Result<Option<Client>, ClientUseCaseError<R, S>> {
-        let result = self
-            .repositories
+        self.repositories
             .client_repository()
             .find_by_id(id)
             .await
-            .map_err(ClientUseCaseError::Repository)?;
-        Ok(result)
+            .map_err(ClientUseCaseError::Repository)?
+            .pipe(Ok)
     }
 }

@@ -8,6 +8,7 @@ use axum::{
 use lib::presentation::api::rest::{
     context::JsonErrorStruct, model::ParseableJson as _,
 };
+use tap::Pipe as _;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
 
@@ -40,15 +41,16 @@ pub async fn bulk_upsert<M: ModulesExt>(
     Json(source): Json<Vec<UpsertJsonClient>>,
 ) -> Result<impl IntoResponse, AppError> {
     let clients = source.parse()?;
-    let result: Vec<JsonClient> = modules
+    let result = modules
         .client_usecase()
         .bulk_upsert(&clients)
         .await?
         .into_iter()
         .map(JsonClient::from)
-        .collect();
+        .collect::<Vec<JsonClient>>()
+        .pipe(Json);
 
-    Ok((StatusCode::OK, Json(result)))
+    (StatusCode::OK, result).pipe(Ok)
 }
 
 #[utoipa::path(
@@ -70,19 +72,19 @@ pub async fn find_by_id<M>(
 where
     M: ModulesExt,
 {
-    let result = match state
+    match state
         .client_usecase()
         .find_by_id(client_id.into())
         .await?
         .map(JsonClient::from)
+        .map(Json)
     {
-        Some(client) => (StatusCode::OK, Json(client)).into_response(),
+        Some(client) => (StatusCode::OK, client).into_response(),
         None => JsonErrorStruct::new(
             "client_not_found",
             vec![format!("Unable to find client with id `{client_id}`")],
         )
         .as_response(StatusCode::NOT_FOUND),
-    };
-
-    Ok(result)
+    }
+    .pipe(Ok)
 }

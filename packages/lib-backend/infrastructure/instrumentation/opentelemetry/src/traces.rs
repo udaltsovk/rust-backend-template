@@ -5,6 +5,7 @@ use opentelemetry_otlp::{SpanExporter, WithExportConfig as _};
 use opentelemetry_sdk::trace::{
     BatchSpanProcessor, SdkTracerProvider, SpanProcessor, Tracer,
 };
+use tap::{Pipe as _, Tap as _};
 use tracing::Subscriber;
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::registry::LookupSpan;
@@ -41,12 +42,16 @@ impl LGTM {
 
     #[inline]
     pub(super) fn configure_tracer_provider(mut self) -> Self {
-        let tracer_provider = SdkTracerProvider::builder()
+        self.tracer_provider = SdkTracerProvider::builder()
             .with_resource(self.resource.clone())
             .with_span_processor(self.span_processor())
-            .build();
-        global::set_tracer_provider(tracer_provider.clone());
-        self.tracer_provider = Some(Arc::new(tracer_provider));
+            .build()
+            .tap(|provider| {
+                global::set_tracer_provider(provider.clone());
+            })
+            .pipe(Arc::new)
+            .pipe(Some);
+
         self
     }
 
