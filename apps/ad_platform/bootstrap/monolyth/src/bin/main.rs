@@ -4,7 +4,8 @@ use ad_platform_monolyth::{
     Modules, bootstrappers::BootstraperExt as _, config,
 };
 use lib::{
-    configure_jemalloc, infrastructure::instrumentation::opentelemetry::LGTM,
+    bootstrap::{bootstrap, configure_jemalloc},
+    infrastructure::instrumentation::opentelemetry::LGTM,
     presentation::api::rest::startup::RestApi,
 };
 
@@ -15,7 +16,7 @@ async fn start() {
 
     let modules = Modules::init().await;
 
-    tokio::join!(RestApi::bootstrap(modules));
+    bootstrap!(modules, RestApi);
 }
 
 #[tokio::main]
