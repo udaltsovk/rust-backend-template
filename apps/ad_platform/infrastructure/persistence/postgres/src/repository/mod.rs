@@ -1,20 +1,5 @@
-use std::marker::PhantomData;
-
-use lib::infrastructure::persistence::postgres::Postgres;
+use lib::infrastructure::persistence::postgres::postgres_repository_impl_struct;
 
 mod client;
 
-#[derive(Clone)]
-pub struct PostgresRepositoryImpl<T: Send + Sync> {
-    db: Postgres,
-    _entity: PhantomData<T>,
-}
-
-impl<T: Send + Sync> PostgresRepositoryImpl<T> {
-    pub fn new(db: &Postgres) -> Self {
-        Self {
-            db: db.clone(),
-            _entity: PhantomData,
-        }
-    }
-}
+postgres_repository_impl_struct!();
