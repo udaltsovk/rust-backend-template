@@ -7,3 +7,5 @@ edition = "2024"
 derive-where.workspace = true
 tap.workspace = true
 uuid = { workspace = true, features = ["v7"] }
+
+regex = "1.12"

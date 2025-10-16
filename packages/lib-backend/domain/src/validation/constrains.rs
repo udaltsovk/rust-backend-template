@@ -7,10 +7,12 @@ mod ascii;
 mod ascii_alphanumeric;
 pub mod length;
 pub mod range;
+mod regex;
 
 pub use alphanumeric::IsAlphanumeric;
 pub use ascii::IsAscii;
 pub use ascii_alphanumeric::IsAsciiAlphanumeric;
+pub use regex::Matches;
 
 pub trait Constrain<T> {
     fn check(&self, value: &T) -> bool;
