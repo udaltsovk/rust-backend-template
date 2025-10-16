@@ -5,4 +5,5 @@ edition = "2024"
 
 [dependencies]
 derive-where.workspace = true
+tap.workspace = true
 uuid = { workspace = true, features = ["v7"] }

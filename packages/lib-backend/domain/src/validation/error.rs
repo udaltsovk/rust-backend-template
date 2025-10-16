@@ -22,10 +22,10 @@ impl ValidationErrors {
         self.0.push((path.to_string(), message.to_string()));
     }
 
-    pub fn into_result<T>(
-        self,
-        ok_fn: impl FnOnce(ValidationConfirmation) -> T,
-    ) -> Result<T, Self> {
+    pub fn into_result<T, F>(self, ok_fn: F) -> Result<T, Self>
+    where
+        F: FnOnce(ValidationConfirmation) -> T,
+    {
         let confirmation = ValidationConfirmation {
             _phantom: PhantomData,
         };
