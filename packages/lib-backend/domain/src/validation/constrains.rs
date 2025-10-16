@@ -66,10 +66,12 @@ impl<T> Constrains<T> {
     pub fn check(&self, value: &T) -> ValidationErrors {
         ValidationErrors::new().tap_mut(|errors| {
             self.constrains.iter().for_each(|constrain| {
-                if !constrain.check(value) {
-                    let message = constrain.error_msg();
-                    errors.push(self.name, message);
+                if constrain.check(value) {
+                    return;
                 }
+
+                let message = constrain.error_msg();
+                errors.push(self.name, message);
             });
         })
     }
