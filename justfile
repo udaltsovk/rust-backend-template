@@ -1,10 +1,11 @@
 export RUSTFLAGS := "-Z macro-backtrace --cfg tokio_unstable"
+dev_compose_file := "./dev.compose.yml"
 
 dev-compose-down:
-    docker compose -f ./compose.dev.yml down
+    docker compose -f {{ dev_compose_file }} down
 
 dev-compose-up:
-    docker compose -f ./compose.dev.yml up -d
+    docker compose -f {{ dev_compose_file }} up -d
 
 dev-compose-restart:
     just dev-compose-down
