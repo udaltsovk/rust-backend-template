@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use crate::validation::constrains::Constrain;
+use crate::validation::constraints::Constraint;
 
 pub struct Matches(pub Regex);
 
@@ -12,7 +12,7 @@ impl TryFrom<&str> for Matches {
     }
 }
 
-impl<T> Constrain<T> for Matches
+impl<T> Constraint<T> for Matches
 where
     T: ToString,
 {

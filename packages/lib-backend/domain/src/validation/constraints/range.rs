@@ -1,14 +1,14 @@
 use std::fmt::Display;
 
-use crate::validation::constrains::Constrain;
+use crate::validation::constraints::Constraint;
 
-macro_rules! range_constrain {
+macro_rules! range_constraint {
     ($name: ident, $func: ident, $msg: literal) => {
         pub struct $name<T>(pub T)
         where
             T: PartialOrd + Display;
 
-        impl<T> Constrain<T> for $name<T>
+        impl<T> Constraint<T> for $name<T>
         where
             T: PartialOrd + Display,
         {
@@ -23,10 +23,10 @@ macro_rules! range_constrain {
     };
 }
 
-range_constrain!(Max, le, "can't be greater");
+range_constraint!(Max, le, "can't be greater");
 
-range_constrain!(LessThan, lt, "must be less");
+range_constraint!(LessThan, lt, "must be less");
 
-range_constrain!(Min, ge, "can't be less");
+range_constraint!(Min, ge, "can't be less");
 
-range_constrain!(GreaterThan, gt, "must be greater");
+range_constraint!(GreaterThan, gt, "must be greater");

@@ -1,8 +1,8 @@
-use crate::validation::constrains::Constrain;
+use crate::validation::constraints::Constraint;
 
 pub struct IsAscii;
 
-impl<T> Constrain<T> for IsAscii
+impl<T> Constraint<T> for IsAscii
 where
     T: ToString,
 {

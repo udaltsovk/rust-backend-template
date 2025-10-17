@@ -2,10 +2,10 @@ use std::{any::type_name, marker::PhantomData};
 
 use crate::{DomainType, validation::error::ValidationErrors};
 
-pub mod constrains;
+pub mod constraints;
 pub mod error;
 
-pub use constrains::Constrains;
+pub use constraints::Constraints;
 
 pub struct Validator<T, I>
 where

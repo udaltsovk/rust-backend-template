@@ -1,8 +1,8 @@
-use crate::validation::constrains::Constrain;
+use crate::validation::constraints::Constraint;
 
 pub struct IsAsciiAlphanumeric;
 
-impl<T> Constrain<T> for IsAsciiAlphanumeric
+impl<T> Constraint<T> for IsAsciiAlphanumeric
 where
     T: ToString,
 {

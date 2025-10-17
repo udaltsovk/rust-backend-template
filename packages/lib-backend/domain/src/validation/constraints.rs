@@ -14,49 +14,49 @@ pub use ascii::IsAscii;
 pub use ascii_alphanumeric::IsAsciiAlphanumeric;
 pub use regex::Matches;
 
-pub trait Constrain<T> {
+pub trait Constraint<T> {
     fn check(&self, value: &T) -> bool;
 
     fn error_msg(&self) -> String;
 }
 
-pub struct ConstrainsBuilder<T> {
+pub struct ConstraintsBuilder<T> {
     name: &'static str,
-    constrains: Vec<Box<dyn Constrain<T> + Send + Sync>>,
+    constraints: Vec<Box<dyn Constraint<T> + Send + Sync>>,
 }
 
-impl<T> ConstrainsBuilder<T> {
+impl<T> ConstraintsBuilder<T> {
     pub fn new(name: &'static str) -> Self {
         Self {
             name,
-            constrains: Vec::new(),
+            constraints: Vec::new(),
         }
     }
 
-    pub fn add_constrain(
+    pub fn add_constraint(
         mut self,
-        constrain: impl Constrain<T> + Send + Sync + 'static,
+        constraint: impl Constraint<T> + Send + Sync + 'static,
     ) -> Self {
-        self.constrains.push(Box::new(constrain));
+        self.constraints.push(Box::new(constraint));
         self
     }
 
-    pub fn build(self) -> Constrains<T> {
-        Constrains {
+    pub fn build(self) -> Constraints<T> {
+        Constraints {
             name: self.name,
-            constrains: self.constrains,
+            constraints: self.constraints,
         }
     }
 }
 
-pub struct Constrains<T> {
+pub struct Constraints<T> {
     name: &'static str,
-    constrains: Vec<Box<dyn Constrain<T> + Send + Sync>>,
+    constraints: Vec<Box<dyn Constraint<T> + Send + Sync>>,
 }
 
-impl<T> Constrains<T> {
-    pub fn builder(name: &'static str) -> ConstrainsBuilder<T> {
-        ConstrainsBuilder::new(name)
+impl<T> Constraints<T> {
+    pub fn builder(name: &'static str) -> ConstraintsBuilder<T> {
+        ConstraintsBuilder::new(name)
     }
 
     pub fn name(&self) -> &'static str {
@@ -65,12 +65,12 @@ impl<T> Constrains<T> {
 
     pub fn check(&self, value: &T) -> ValidationErrors {
         ValidationErrors::new().tap_mut(|errors| {
-            self.constrains.iter().for_each(|constrain| {
-                if constrain.check(value) {
+            self.constraints.iter().for_each(|constraint| {
+                if constraint.check(value) {
                     return;
                 }
 
-                let message = constrain.error_msg();
+                let message = constraint.error_msg();
                 errors.push(self.name, message);
             });
         })

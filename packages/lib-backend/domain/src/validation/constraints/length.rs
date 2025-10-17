@@ -1,10 +1,10 @@
-use crate::validation::constrains::Constrain;
+use crate::validation::constraints::Constraint;
 
-macro_rules! length_constrain {
+macro_rules! length_constraint {
     ($name: ident, $func: ident, $msg: literal) => {
         pub struct $name(pub usize);
 
-        impl Constrain<String> for $name {
+        impl Constraint<String> for $name {
             fn check(&self, value: &String) -> bool {
                 value.chars().count().$func(&self.0)
             }
@@ -14,7 +14,7 @@ macro_rules! length_constrain {
             }
         }
 
-        impl<T> Constrain<Vec<T>> for $name {
+        impl<T> Constraint<Vec<T>> for $name {
             fn check(&self, value: &Vec<T>) -> bool {
                 value.len().$func(&self.0)
             }
@@ -26,10 +26,10 @@ macro_rules! length_constrain {
     };
 }
 
-length_constrain!(Max, le, "at most");
+length_constraint!(Max, le, "at most");
 
-length_constrain!(LessThan, lt, "less");
+length_constraint!(LessThan, lt, "less");
 
-length_constrain!(Min, ge, "at least");
+length_constraint!(Min, ge, "at least");
 
-length_constrain!(GreaterThan, gt, "greater");
+length_constraint!(GreaterThan, gt, "greater");
