@@ -1,16 +1,18 @@
 use std::fmt::Display;
 
+use num_traits::Num;
+
 use crate::validation::constraints::Constraint;
 
 macro_rules! range_constraint {
     ($name: ident, $func: ident, $msg: literal) => {
         pub struct $name<T>(pub T)
         where
-            T: PartialOrd + Display;
+            T: Num + PartialOrd + Display;
 
         impl<T> Constraint<T> for $name<T>
         where
-            T: PartialOrd + Display,
+            T: Num + PartialOrd + Display,
         {
             fn check(&self, value: &T) -> bool {
                 value.$func(&self.0)
