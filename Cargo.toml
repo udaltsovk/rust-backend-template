@@ -50,14 +50,14 @@ unnecessary_transmutes = "deny" # Prevent unsafe transmutation from integers to 
 
 [workspace.lints.clippy]
 # Arithmetic
-checked_conversions = "deny"            # Suggest using checked conversions between numeric types
-cast_possible_truncation = "deny"       # Detect when casting might truncate a value
-cast_sign_loss = "deny"                 # Detect when casting might lose sign information
-cast_possible_wrap = "deny"             # Detect when casting might cause value to wrap around
-cast_precision_loss = "deny"            # Detect when casting might lose precision
-integer_division = "deny"               # Highlight potential bugs from integer division truncation
-arithmetic_side_effects = "deny"        # Detect arithmetic operations with potential side effects
-unchecked_duration_subtraction = "deny" # Ensure duration subtraction won't cause underflow
+checked_conversions = "deny"        # Suggest using checked conversions between numeric types
+cast_possible_truncation = "deny"   # Detect when casting might truncate a value
+cast_sign_loss = "deny"             # Detect when casting might lose sign information
+cast_possible_wrap = "deny"         # Detect when casting might cause value to wrap around
+cast_precision_loss = "deny"        # Detect when casting might lose precision
+integer_division = "deny"           # Highlight potential bugs from integer division truncation
+arithmetic_side_effects = "deny"    # Detect arithmetic operations with potential side effects
+unchecked_time_subtraction = "deny" # Ensure duration subtraction won't cause underflow
 
 # Unwraps
 unwrap_used = "deny"       # Discourage using .unwrap() which can cause panics
