@@ -30,17 +30,15 @@ impl<T> From<Uuid> for Id<T> {
     }
 }
 
-pub trait DomainType<T>
+pub trait DomainType<T>: AsRef<T> + AsMut<T>
 where
     Self: Sized,
     T: Clone,
 {
-    fn value(&self) -> &T;
-    fn value_mut(&mut self) -> &mut T;
     fn into_inner(self) -> T;
 
     fn cloned_inner(&self) -> T {
-        self.value().clone()
+        self.as_ref().clone()
     }
 
     fn it_should_be_safe_to_unwrap<E>(

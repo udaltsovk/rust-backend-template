@@ -37,15 +37,20 @@ pub fn domain_type(input: TokenStream) -> TokenStream {
     };
 
     let expanded = quote! {
-        impl #impl_generics lib::domain::DomainType<#inner_type> for #ident #ty_generics #where_clause {
-            fn value(&self) -> &#inner_type {
+        impl AsRef<#inner_type> for #ident #ty_generics #where_clause {
+            fn as_ref(&self) -> &#inner_type {
                 #value_impl
             }
+        }
 
-            fn value_mut(&mut self) -> &mut #inner_type {
+
+        impl AsMut<#inner_type> for #ident #ty_generics #where_clause {
+            fn as_mut(&mut self) -> &mut #inner_type {
                 #value_mut_impl
             }
+        }
 
+        impl #impl_generics lib::domain::DomainType<#inner_type> for #ident #ty_generics #where_clause {
             fn into_inner(self) -> #inner_type {
                 #into_inner_impl
             }
