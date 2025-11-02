@@ -2,7 +2,7 @@ use std::net::SocketAddr;
 
 use async_trait::async_trait;
 use axum_prometheus::PrometheusMetricLayerBuilder;
-use lib::presentation::api::rest::startup::{RestApi, VersioningStrategy};
+use lib::presentation::api::rest::startup::RestApi;
 use presentation::api::rest::{context::openapi::ApiDoc, routes};
 use tower::ServiceBuilder;
 use tower_http::trace::{
@@ -11,6 +11,7 @@ use tower_http::trace::{
 };
 use tracing::Level;
 use utoipa::OpenApi as _;
+use utoipa_axum::router::OpenApiRouter;
 
 use crate::{Modules, bootstrappers::BootstraperExt, config};
 
@@ -36,18 +37,18 @@ impl BootstraperExt for RestApi {
             )
             .on_failure(DefaultOnFailure::new().level(Level::WARN));
 
-        RestApi::new(
-            VersioningStrategy::Path,
-            ApiDoc::openapi(),
+        let router = OpenApiRouter::new().nest(
+            "/{api_version}",
             routes::router().layer(
                 ServiceBuilder::new().layer(metric_layer).layer(trace_layer),
             ),
-            modules,
-        )
-        .run(SocketAddr::from((
-            *config::SERVER_ADDRESS,
-            *config::SERVER_PORT,
-        )))
-        .await;
+        );
+
+        RestApi::new(ApiDoc::openapi(), router, modules)
+            .run(SocketAddr::from((
+                *config::SERVER_ADDRESS,
+                *config::SERVER_PORT,
+            )))
+            .await;
     }
 }
