@@ -2,7 +2,7 @@ use std::net::SocketAddr;
 
 use async_trait::async_trait;
 use axum_prometheus::PrometheusMetricLayerBuilder;
-use lib::presentation::api::rest::startup::RestApi;
+use lib::presentation::api::rest::startup::{RestApi, VersioningStrategy};
 use presentation::api::rest::{context::openapi::ApiDoc, routes};
 use tower::ServiceBuilder;
 use tower_http::trace::{
@@ -37,6 +37,7 @@ impl BootstraperExt for RestApi {
             .on_failure(DefaultOnFailure::new().level(Level::WARN));
 
         RestApi::new(
+            VersioningStrategy::Path,
             ApiDoc::openapi(),
             routes::router().layer(
                 ServiceBuilder::new().layer(metric_layer).layer(trace_layer),

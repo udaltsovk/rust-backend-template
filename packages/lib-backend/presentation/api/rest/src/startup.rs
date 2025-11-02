@@ -13,6 +13,11 @@ use utoipa_scalar::{Scalar, Servable as _};
 
 use crate::routes::fallback;
 
+pub enum VersioningStrategy {
+    None,
+    Path,
+}
+
 pub struct RestApi {
     pub router: Router,
 }
@@ -22,6 +27,7 @@ impl RestApi {
         HeaderName::from_static("x-request-id");
 
     pub fn new<S>(
+        versioning_strategy: VersioningStrategy,
         openapi: OpenApi,
         router: OpenApiRouter<S>,
         modules: S,
@@ -42,8 +48,17 @@ impl RestApi {
             .layer(PropagateRequestIdLayer::new(Self::REQUEST_ID_HEADER))
             .layer(CatchPanicLayer::new());
 
-        let router = Router::new()
-            .nest("/{api_version}", routes)
+        let mut router = Router::new();
+
+        router = {
+            use VersioningStrategy as S;
+            match versioning_strategy {
+                S::None => router.merge(routes),
+                S::Path => router.nest("/{api_version}", routes),
+            }
+        };
+
+        router = router
             .merge(Scalar::with_url("/openapi", api.clone()))
             .route("/openapi.json", get(async move || Json(api.clone())))
             .fallback(fallback)
