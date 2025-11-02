@@ -8,6 +8,7 @@ edition.workspace = true
 postgres = ["dep:postgres"]
 
 [dependencies]
+domain = { path = "../../domain", package = "lib-domain" }
 postgres = { path = "./postgres", package = "lib-infrastructure-persistence-postgres", optional = true }
 
 

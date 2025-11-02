@@ -5,8 +5,6 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-domain = { path = "../../../domain", package = "lib-domain" }
-
 sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "uuid"] }
 tap.workspace = true
 thiserror.workspace = true

@@ -3,7 +3,6 @@ use std::ops::Deref;
 use sqlx::{Pool, Postgres as PostgreSQL, postgres::PgPoolOptions};
 use tap::Pipe as _;
 
-pub mod entity;
 pub mod error;
 pub mod repository;
 

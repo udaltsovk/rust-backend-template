@@ -1,5 +1,5 @@
 use domain::client::Client;
-use lib::infrastructure::persistence::postgres::entity::DomainTypeFromDb as _;
+use lib::infrastructure::persistence::entity::DomainTypeFromDb as _;
 use sqlx::FromRow;
 use uuid::Uuid;
 

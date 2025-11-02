@@ -1440,6 +1440,7 @@ dependencies = [
 name = "lib-infrastructure-persistence"
 version = "0.1.0"
 dependencies = [
+ "lib-domain",
  "lib-infrastructure-persistence-postgres",
 ]
 
@@ -1447,7 +1448,6 @@ dependencies = [
 name = "lib-infrastructure-persistence-postgres"
 version = "0.1.0"
 dependencies = [
- "lib-domain",
  "sqlx",
  "tap",
  "thiserror",
