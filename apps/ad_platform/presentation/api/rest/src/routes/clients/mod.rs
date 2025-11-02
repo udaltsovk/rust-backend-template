@@ -7,6 +7,7 @@ use axum::{
 };
 use lib::presentation::api::rest::{
     context::JsonErrorStruct, model::ParseableJson as _,
+    response::ResponseExt as _,
 };
 use tap::Pipe as _;
 use utoipa_axum::{router::OpenApiRouter, routes};
@@ -41,16 +42,17 @@ pub async fn bulk_upsert<M: ModulesExt>(
     Json(source): Json<Vec<UpsertJsonClient>>,
 ) -> Result<impl IntoResponse, AppError> {
     let clients = source.parse()?;
-    let result = modules
+    modules
         .client_usecase()
         .bulk_upsert(&clients)
         .await?
         .into_iter()
         .map(JsonClient::from)
         .collect::<Vec<JsonClient>>()
-        .pipe(Json);
-
-    (StatusCode::OK, result).pipe(Ok)
+        .pipe(Json)
+        .into_response()
+        .with_status(StatusCode::OK)
+        .pipe(Ok)
 }
 
 #[utoipa::path(
@@ -79,7 +81,7 @@ where
         .map(JsonClient::from)
         .map(Json)
     {
-        Some(client) => (StatusCode::OK, client).into_response(),
+        Some(client) => client.into_response().with_status(StatusCode::OK),
         None => JsonErrorStruct::new(
             "client_not_found",
             vec![format!("Unable to find client with id `{client_id}`")],
