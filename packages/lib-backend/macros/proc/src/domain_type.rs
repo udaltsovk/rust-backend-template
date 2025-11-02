@@ -13,14 +13,14 @@ pub fn domain_type(input: TokenStream) -> TokenStream {
         _ => panic!("DomainType can only be derived for structs"),
     };
 
-    let (value_impl, value_mut_impl, into_inner_impl) = match fields {
+    let (from_impl, value_impl, value_mut_impl) = match fields {
         Fields::Named(_) => {
             panic!("DomainType can only be derived for unnamed field structs")
         },
         Fields::Unnamed(fields) if fields.unnamed.len() == 1 => (
+            quote! { domain_type.0 },
             quote! { &self.0 },
             quote! { &mut self.0 },
-            quote! { self.0 },
         ),
         _ => panic!("DomainType requires exactly one field in the struct"),
     };
@@ -37,6 +37,12 @@ pub fn domain_type(input: TokenStream) -> TokenStream {
     };
 
     let expanded = quote! {
+        impl From<#ident #ty_generics> for #inner_type #where_clause {
+            fn from(domain_type: #ident #ty_generics) -> Self {
+                #from_impl
+            }
+        }
+
         impl AsRef<#inner_type> for #ident #ty_generics #where_clause {
             fn as_ref(&self) -> &#inner_type {
                 #value_impl
@@ -51,9 +57,6 @@ pub fn domain_type(input: TokenStream) -> TokenStream {
         }
 
         impl #impl_generics lib::domain::DomainType<#inner_type> for #ident #ty_generics #where_clause {
-            fn into_inner(self) -> #inner_type {
-                #into_inner_impl
-            }
         }
     };
 

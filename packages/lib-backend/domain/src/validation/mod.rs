@@ -9,7 +9,7 @@ pub use constraints::Constraints;
 
 pub struct Validator<T, I>
 where
-    I: Clone,
+    I: From<T> + Clone,
     T: DomainType<I>,
 {
     inner: Result<T, ValidationErrors>,
@@ -18,7 +18,7 @@ where
 
 impl<T, I> Validator<T, I>
 where
-    I: Clone,
+    I: From<T> + Clone,
     T: DomainType<I>,
 {
     pub fn new<F>(value: F, errors: &mut ValidationErrors) -> Self
@@ -52,7 +52,7 @@ pub struct ValidationConfirmation {
 pub trait IntoValidator<T, I>
 where
     Self: Sized,
-    I: Clone,
+    I: From<T> + Clone,
     T: DomainType<I> + TryFrom<Self, Error = ValidationErrors>,
 {
     fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T, I> {
@@ -62,7 +62,7 @@ where
 
 impl<F, T, I> IntoValidator<T, I> for F
 where
-    I: Clone,
+    I: From<T> + Clone,
     T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
 {
 }

@@ -6,7 +6,7 @@ pub trait DomainTypeFromDb<T, I>
 where
     Self: Sized,
     T: DomainType<I> + TryFrom<Self, Error = ValidationErrors>,
-    I: Clone,
+    I: From<T> + Clone,
 {
     fn into_domain(self) -> T;
 }
@@ -14,7 +14,7 @@ where
 impl<F, T, I> DomainTypeFromDb<T, I> for F
 where
     T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
-    I: Clone,
+    I: From<T> + Clone,
 {
     fn into_domain(self) -> T {
         self.try_into().unwrap_or_else(|_| {

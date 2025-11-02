@@ -33,9 +33,11 @@ impl<T> From<Uuid> for Id<T> {
 pub trait DomainType<T>: AsRef<T> + AsMut<T>
 where
     Self: Sized,
-    T: Clone,
+    T: From<Self> + Clone,
 {
-    fn into_inner(self) -> T;
+    fn into_inner(self) -> T {
+        self.into()
+    }
 
     fn cloned_inner(&self) -> T {
         self.as_ref().clone()
