@@ -3,16 +3,27 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use lib::presentation::api::rest::context::JsonErrorStruct;
-use tracing::log::error;
+use tracing::{log::error, warn};
 
 use crate::context::errors::AppError;
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         match self {
+            Self::Validation(_)
+            | Self::JsonRejection(_)
+            | Self::ApiPathRejection(_)
+            | Self::UnknownApiVerRejection(_) => warn!("{self:?}"),
+            Self::UseCase {
+                status_code, ..
+            } => match status_code {
+                c if c.is_server_error() => error!("{self:?}"),
+                c if c.is_client_error() => warn!("{self:?}"),
+                _ => (),
+            },
+        }
+        match self {
             AppError::Validation(validation_errors) => {
-                error!("{validation_errors:?}");
-
                 let messages = validation_errors
                     .into_inner()
                     .iter()
@@ -25,16 +36,12 @@ impl IntoResponse for AppError {
                     .as_response(StatusCode::BAD_REQUEST)
             },
             AppError::JsonRejection(rejection) => {
-                error!("{rejection:?}");
-
                 let messages = vec![rejection];
 
                 JsonErrorStruct::new("invalid_request", messages)
                     .as_response(StatusCode::BAD_REQUEST)
             },
             AppError::ApiPathRejection(rejection) => {
-                error!("{rejection:?}");
-
                 let messages = vec![rejection];
 
                 JsonErrorStruct::new("missing_api_version", messages)
@@ -42,7 +49,6 @@ impl IntoResponse for AppError {
             },
             AppError::UnknownApiVerRejection(version) => {
                 let err = format!("Unknown api version ({version}).");
-                error!("{err}");
 
                 let messages = vec![err];
 
