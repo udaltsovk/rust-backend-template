@@ -66,3 +66,20 @@ where
     T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
 {
 }
+
+#[macro_export]
+macro_rules! into_validators {
+    ($($field: expr),*) => {
+        {
+            use $crate::validation::{IntoValidator as _, error::ValidationErrors};
+
+            let mut errors = ValidationErrors::new();
+
+            let validators = ($(
+              $field.into_validator(&mut errors)
+            ),*);
+
+            (errors, validators)
+        }
+    };
+}

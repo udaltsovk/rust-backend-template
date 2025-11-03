@@ -1,8 +1,7 @@
 use domain::client::{Client, UpsertClient};
 use lib::{
     domain::{
-        DomainType as _,
-        validation::{IntoValidator as _, error::ValidationErrors},
+        DomainType as _, into_validators, validation::error::ValidationErrors,
     },
     presentation::api::rest::model::ParseableJson,
 };
@@ -55,11 +54,8 @@ pub struct UpsertJsonClient {
 
 impl ParseableJson<UpsertClient> for UpsertJsonClient {
     fn parse(self) -> Result<UpsertClient, ValidationErrors> {
-        let mut errors = ValidationErrors::new();
-
-        let login = self.login.into_validator(&mut errors);
-        let age = self.age.into_validator(&mut errors);
-        let location = self.location.into_validator(&mut errors);
+        let (errors, (login, age, location)) =
+            into_validators!(self.login, self.age, self.location);
 
         errors.into_result(|ok| UpsertClient {
             id: self.id.into(),
