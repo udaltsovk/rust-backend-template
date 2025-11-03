@@ -9,7 +9,7 @@ use crate::LGTM;
 impl LGTM {
     const HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME: &str =
         "server_http_request_duration_seconds";
-    const METRIC_SCRAPE_INTERVAL: Duration = Duration::from_secs(5);
+    const METRIC_SCRAPE_INTERVAL: Duration = Duration::from_secs(1);
 
     pub(super) fn setup_metrics(&self) {
         let (prometheus_recorder, serve_prometheus) = PrometheusBuilder::new()
@@ -22,7 +22,7 @@ impl LGTM {
             )
             .idle_timeout(
                 MetricKindMask::ALL,
-                Some(LGTM::METRIC_SCRAPE_INTERVAL),
+                Some(LGTM::METRIC_SCRAPE_INTERVAL.saturating_mul(10)),
             )
             .set_buckets_for_metric(
                 Matcher::Full(
