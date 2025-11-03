@@ -1,6 +1,7 @@
+use utoipa::OpenApi as _;
 use utoipa_axum::router::OpenApiRouter;
 
-use crate::module::ModulesExt;
+use crate::{context::openapi::ApiDoc, module::ModulesExt};
 
 pub mod ads;
 pub mod advertisers;
@@ -11,7 +12,7 @@ pub mod statistics;
 pub mod time;
 
 pub fn router<M: ModulesExt>() -> OpenApiRouter<M> {
-    OpenApiRouter::new()
+    OpenApiRouter::with_openapi(ApiDoc::openapi())
         .nest("/clients", clients::router())
         .merge(advertisers::router())
         .nest("/ads", ads::router())

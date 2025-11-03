@@ -5,7 +5,6 @@ use tokio::{net::TcpListener, signal};
 use tower::ServiceBuilder;
 use tower_http::catch_panic::CatchPanicLayer;
 use utoipa::openapi::OpenApi;
-use utoipa_axum::router::OpenApiRouter;
 use utoipa_scalar::{Scalar, Servable as _};
 
 use crate::routes::fallback;
@@ -15,25 +14,16 @@ pub struct RestApi {
 }
 
 impl RestApi {
-    pub fn new<S>(
-        openapi: OpenApi,
-        router: OpenApiRouter<S>,
-        modules: S,
-    ) -> Self
+    pub fn new<S>(openapi: OpenApi, router: Router<S>, modules: S) -> Self
     where
         S: Send + Sync + Clone + 'static,
     {
-        let (routes, api) = OpenApiRouter::with_openapi(openapi)
-            .merge(router)
-            .with_state(modules)
-            .split_for_parts();
-
         let middlewares = ServiceBuilder::new().layer(CatchPanicLayer::new());
 
         let router = Router::new()
-            .merge(routes)
-            .merge(Scalar::with_url("/openapi", api.clone()))
-            .route("/openapi.json", get(async move || Json(api.clone())))
+            .merge(router.with_state(modules))
+            .merge(Scalar::with_url("/openapi", openapi.clone()))
+            .route("/openapi.json", get(async move || Json(openapi.clone())))
             .fallback(fallback)
             .layer(middlewares);
 

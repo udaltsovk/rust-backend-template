@@ -1,17 +1,12 @@
 use std::net::SocketAddr;
 
 use async_trait::async_trait;
+use axum::Router;
 use axum_prometheus::PrometheusMetricLayerBuilder;
+use axum_tracing_opentelemetry::middleware::OtelAxumLayer;
 use lib::presentation::api::rest::startup::RestApi;
-use presentation::api::rest::{context::openapi::ApiDoc, routes};
+use presentation::api::rest::routes;
 use tower::ServiceBuilder;
-use tower_http::trace::{
-    DefaultMakeSpan, DefaultOnFailure, DefaultOnRequest, DefaultOnResponse,
-    TraceLayer,
-};
-use tracing::Level;
-use utoipa::OpenApi as _;
-use utoipa_axum::router::OpenApiRouter;
 
 use crate::{Modules, bootstrappers::BootstraperExt, config};
 
@@ -27,28 +22,23 @@ impl BootstraperExt for RestApi {
             ])
             .build();
 
-        let trace_layer = TraceLayer::new_for_http()
-            .make_span_with(DefaultMakeSpan::new().include_headers(true))
-            .on_request(DefaultOnRequest::new().level(Level::INFO))
-            .on_response(
-                DefaultOnResponse::new()
-                    .level(Level::INFO)
-                    .include_headers(true),
+        let (router, openapi) = routes::router()
+            .layer(
+                ServiceBuilder::new()
+                    .layer(metric_layer)
+                    .layer(OtelAxumLayer::default()),
             )
-            .on_failure(DefaultOnFailure::new().level(Level::WARN));
+            .split_for_parts();
 
-        let router = OpenApiRouter::new().nest(
-            "/{api_version}",
-            routes::router().layer(
-                ServiceBuilder::new().layer(metric_layer).layer(trace_layer),
-            ),
-        );
-
-        RestApi::new(ApiDoc::openapi(), router, modules)
-            .run(SocketAddr::from((
-                *config::SERVER_ADDRESS,
-                *config::SERVER_PORT,
-            )))
-            .await;
+        RestApi::new(
+            openapi,
+            Router::new().nest("/{api_version}", router),
+            modules,
+        )
+        .run(SocketAddr::from((
+            *config::SERVER_ADDRESS,
+            *config::SERVER_PORT,
+        )))
+        .await;
     }
 }
