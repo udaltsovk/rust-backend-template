@@ -1,12 +1,9 @@
 use std::net::SocketAddr;
 
-use axum::{Json, Router, http::HeaderName, routing::get};
+use axum::{Json, Router, routing::get};
 use tokio::{net::TcpListener, signal};
 use tower::ServiceBuilder;
-use tower_http::{
-    catch_panic::CatchPanicLayer,
-    request_id::{MakeRequestUuid, PropagateRequestIdLayer, SetRequestIdLayer},
-};
+use tower_http::catch_panic::CatchPanicLayer;
 use utoipa::openapi::OpenApi;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_scalar::{Scalar, Servable as _};
@@ -18,9 +15,6 @@ pub struct RestApi {
 }
 
 impl RestApi {
-    const REQUEST_ID_HEADER: HeaderName =
-        HeaderName::from_static("x-request-id");
-
     pub fn new<S>(
         openapi: OpenApi,
         router: OpenApiRouter<S>,
@@ -34,13 +28,7 @@ impl RestApi {
             .with_state(modules)
             .split_for_parts();
 
-        let middlewares = ServiceBuilder::new()
-            .layer(SetRequestIdLayer::new(
-                Self::REQUEST_ID_HEADER,
-                MakeRequestUuid,
-            ))
-            .layer(PropagateRequestIdLayer::new(Self::REQUEST_ID_HEADER))
-            .layer(CatchPanicLayer::new());
+        let middlewares = ServiceBuilder::new().layer(CatchPanicLayer::new());
 
         let router = Router::new()
             .merge(routes)
