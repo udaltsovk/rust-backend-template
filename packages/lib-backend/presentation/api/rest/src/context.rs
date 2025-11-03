@@ -8,7 +8,7 @@ use axum::{
 use serde::Serialize;
 use utoipa::ToSchema;
 
-#[derive(Serialize, ToSchema)]
+#[derive(Serialize, ToSchema, Debug)]
 pub struct JsonErrorStruct {
     error_code: String,
     errors: Vec<String>,
