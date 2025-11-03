@@ -13,7 +13,6 @@ impl LGTM {
 
     pub(super) fn setup_metrics(&self) {
         let (prometheus_recorder, serve_prometheus) = PrometheusBuilder::new()
-            .add_global_label("service_name", self.otel_service_name.clone())
             .with_http_listener(
                 self.prometheus_address.unwrap_or(
                     SocketAddr::from_str("0.0.0.0:8081")
