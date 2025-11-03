@@ -3,7 +3,9 @@ use std::sync::Arc;
 use application::repository::RepositoriesModuleExt;
 use domain::client::Client;
 use infrastructure::persistence::postgres::repository::PostgresRepositoryImpl;
-use lib::infrastructure::persistence::postgres::Postgres;
+use lib::infrastructure::persistence::postgres::{
+    Postgres, error::PostgresAdapterError,
+};
 
 #[derive(Clone)]
 pub struct RepositoriesModule {
@@ -20,8 +22,15 @@ impl RepositoriesModule {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
+pub enum RepositoryError {
+    #[error(transparent)]
+    Postgres(#[from] PostgresAdapterError),
+}
+
 impl RepositoriesModuleExt for RepositoriesModule {
     type ClientRepo = PostgresRepositoryImpl<Client>;
+    type Error = RepositoryError;
 
     fn client_repository(&self) -> Arc<Self::ClientRepo> {
         self.client_repository.clone()

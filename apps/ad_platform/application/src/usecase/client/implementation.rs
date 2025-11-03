@@ -27,6 +27,7 @@ where
             .client_repository()
             .bulk_upsert(source)
             .await
+            .map_err(R::Error::from)
             .map_err(ClientUseCaseError::Repository)?
             .pipe(Ok)
     }
@@ -39,6 +40,7 @@ where
             .client_repository()
             .find_by_id(id)
             .await
+            .map_err(R::Error::from)
             .map_err(ClientUseCaseError::Repository)?
             .pipe(Ok)
     }

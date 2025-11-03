@@ -1,19 +1,14 @@
-use derive_where::derive_where;
+use crate::{repository::RepositoriesModuleExt, service::ServicesModuleExt};
 
-use crate::{
-    repository::{RepositoriesModuleExt, client::ClientRepository},
-    service::{ServicesModuleExt, token::TokenService},
-};
-
-#[derive(thiserror::Error)]
-#[derive_where(Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum ClientUseCaseError<R, S>
 where
     R: RepositoriesModuleExt,
     S: ServicesModuleExt,
 {
+    #[error("Repository error: {0}")]
+    Repository(R::Error),
+
     #[error(transparent)]
-    Repository(<R::ClientRepo as ClientRepository>::AdapterError),
-    #[error(transparent)]
-    Service(<S::TokenService as TokenService>::AdapterError),
+    Service(S::Error),
 }

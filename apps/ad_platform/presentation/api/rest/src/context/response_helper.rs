@@ -46,20 +46,18 @@ impl IntoResponse for AppError {
 
                 let messages = vec![err];
 
-                JsonErrorStruct::new(
-                    "unknown_api_version".to_string(),
-                    messages,
-                )
-                .as_response(StatusCode::NOT_FOUND)
+                JsonErrorStruct::new("unknown_api_version", messages)
+                    .as_response(StatusCode::NOT_FOUND)
             },
-            AppError::UseCase(err) => {
-                let messages = vec![err];
+            AppError::UseCase {
+                status_code,
+                error_code,
+                message,
+            } => {
+                let messages = vec![message];
 
-                JsonErrorStruct::new(
-                    "internal_server_error".to_string(),
-                    messages,
-                )
-                .as_response(StatusCode::INTERNAL_SERVER_ERROR)
+                JsonErrorStruct::new(error_code, messages)
+                    .as_response(status_code)
             },
         }
         .into_response()

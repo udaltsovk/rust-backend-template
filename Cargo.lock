@@ -131,6 +131,7 @@ dependencies = [
  "axum-prometheus",
  "env-vars-config",
  "lib",
+ "thiserror",
  "tikv-jemallocator",
  "tokio",
  "tower",

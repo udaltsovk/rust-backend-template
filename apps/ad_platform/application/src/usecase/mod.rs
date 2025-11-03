@@ -10,6 +10,7 @@ where
     R: RepositoriesModuleExt + Send + Sync,
     S: ServicesModuleExt + Send + Sync,
 {
+    #[allow(unused)]
     repositories: R,
     #[allow(unused)]
     services: S,

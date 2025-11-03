@@ -1,5 +1,6 @@
 use application::service::token::TokenService;
 use domain::session::Session;
+pub use jsonwebtoken::errors::Error as JwtAdapterError;
 use jsonwebtoken::{
     Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
 };
@@ -18,7 +19,7 @@ pub struct JwtService {
 
 #[instrument_all("JwtService")]
 impl TokenService for JwtService {
-    type AdapterError = jsonwebtoken::errors::Error;
+    type AdapterError = JwtAdapterError;
 
     fn generate(&self, session: Session) -> Result<String, Self::AdapterError> {
         let entity_id: Uuid = session.entity.clone().into();
