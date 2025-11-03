@@ -30,6 +30,12 @@ impl<T> From<Uuid> for Id<T> {
     }
 }
 
+impl<T> From<Id<T>> for Uuid {
+    fn from(id: Id<T>) -> Self {
+        id.value
+    }
+}
+
 pub trait DomainType<T>: AsRef<T> + AsMut<T>
 where
     Self: Sized,
