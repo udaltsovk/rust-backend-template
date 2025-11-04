@@ -1,12 +1,11 @@
-use std::{borrow::Cow, net::SocketAddr, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
-use metrics_process::Collector;
 use metrics_tracing_context::MetricsLayer;
 use opentelemetry::KeyValue;
 use opentelemetry_otlp::{ExportConfig, Protocol};
 use opentelemetry_sdk::{
     Resource, error::OTelSdkResult, logs::SdkLoggerProvider,
-    trace::SdkTracerProvider,
+    metrics::SdkMeterProvider, trace::SdkTracerProvider,
 };
 use opentelemetry_semantic_conventions::attribute;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -19,13 +18,12 @@ mod traces;
 #[derive(Clone, Debug)]
 pub struct LGTM {
     otel_endpoint: Option<String>,
-    otel_service_name: Cow<'static, str>,
+    otel_service_name: &'static str,
     otel_timeout: Option<Duration>,
-    prometheus_address: Option<SocketAddr>,
     resource: Resource,
     logger_provider: Option<Arc<SdkLoggerProvider>>,
+    meter_provider: Option<Arc<SdkMeterProvider>>,
     tracer_provider: Option<Arc<SdkTracerProvider>>,
-    metrics_process_collector: Arc<Collector>,
 }
 
 impl LGTM {
@@ -61,23 +59,14 @@ impl LGTM {
 
     pub fn new(otel_service_name: &'static str) -> Self {
         Self {
-            otel_service_name: otel_service_name.into(),
+            otel_service_name,
             resource: Self::resource(otel_service_name),
-            prometheus_address: None,
             otel_endpoint: None,
             otel_timeout: None,
             logger_provider: None,
+            meter_provider: None,
             tracer_provider: None,
-            metrics_process_collector: Arc::new(Collector::default()),
         }
-    }
-
-    pub fn with_prometheus_address(
-        mut self,
-        prometheus_address: SocketAddr,
-    ) -> Self {
-        self.prometheus_address = Some(prometheus_address);
-        self
     }
 
     pub fn with_otel_endpoint(mut self, otel_endpoint: &'static str) -> Self {
@@ -100,7 +89,10 @@ impl LGTM {
     }
 
     pub async fn wrap(self, body: impl AsyncFnOnce()) {
-        let lgtm = self.configure_logger_provider().configure_tracer_provider();
+        let lgtm = self
+            .configure_logger_provider()
+            .configure_meter_provider()
+            .configure_tracer_provider();
 
         tracing_subscriber::registry()
             .with(Self::filter_layer())
@@ -118,6 +110,7 @@ impl LGTM {
 
         let r: OTelSdkResult = (|| {
             lgtm.get_tracer_provider().shutdown()?;
+            lgtm.get_meter_provider().shutdown()?;
             lgtm.get_logger_provider().shutdown()?;
 
             Ok(())

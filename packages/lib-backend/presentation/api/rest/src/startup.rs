@@ -32,6 +32,10 @@ impl RestApi {
         }
     }
 
+    pub fn is_openapi_route(path: &str) -> bool {
+        ["/openapi", "/openapi.json"].contains(&path)
+    }
+
     pub async fn run(self, addr: SocketAddr) {
         let app = self.router.into_make_service();
         let listener = TcpListener::bind(addr)

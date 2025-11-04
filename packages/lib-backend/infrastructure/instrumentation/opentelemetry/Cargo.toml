@@ -15,7 +15,8 @@ tap.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 
-metrics-exporter-prometheus = "0.17"
+# metrics-exporter-prometheus = "0.17"
+metrics-exporter-otel = "0.2"
 metrics-process = "2.4"
 metrics-tracing-context = "0.18"
 metrics-util = "0.20"
@@ -25,6 +26,8 @@ opentelemetry_sdk = { version = "0.30", features = [
   "trace",
   "logs",
   "metrics",
+  "experimental_metrics_custom_reader",
+  "experimental_metrics_periodicreader_with_async_runtime",
 ] }
 opentelemetry-appender-tracing = { version = "0.30", features = [
   "experimental_metadata_attributes",

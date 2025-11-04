@@ -60,10 +60,7 @@ impl LGTM {
         &self,
     ) -> OpenTelemetryLayer<S, Tracer> {
         OpenTelemetryLayer::new(
-            self.tracer_provider
-                .clone()
-                .expect("Called `LGTM::trace_layer` too early")
-                .tracer(self.otel_service_name.clone()),
+            self.get_tracer_provider().tracer(self.otel_service_name),
         )
     }
 }

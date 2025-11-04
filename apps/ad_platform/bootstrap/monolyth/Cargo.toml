@@ -38,7 +38,8 @@ tracing.workspace = true
 utoipa.workspace = true
 utoipa-axum.workspace = true
 
-axum-prometheus = "0.9"
+# axum-prometheus = "0.9"
+axum-otel-metrics = "0.12"
 axum-tracing-opentelemetry = { version = "0.30", features = [
   "tracing_level_info",
 ] }
