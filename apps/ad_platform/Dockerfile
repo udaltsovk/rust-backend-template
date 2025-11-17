@@ -1,4 +1,3 @@
-
 FROM lukemathwalker/cargo-chef:latest-rust-1.91-trixie AS chef
 WORKDIR /usr/src/app
 
@@ -25,7 +24,7 @@ LABEL org.opencontainers.image.title=ad_platform
 LABEL org.opencontainers.image.description="Ad Platform"
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends ca-certificates dumb-init curl \
+	&& apt-get install -y --no-install-recommends ca-certificates  \
 	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
