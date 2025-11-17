@@ -1,24 +1,19 @@
-name: minizord-prod
+name: ad_platform-prod
 services:
-  db:
-    image: surrealdb/surrealdb:latest
+  postgres:
+    image: postgres:alpine
     restart: on-failure
-    user: root
     volumes:
-      - db:/var/lib/surrealdb
-    command:
-      - start
+      - postgres-data:/var/lib/postgresql/data
     environment:
-      SURREAL_USER: ${DB_USER}
-      SURREAL_PASS: ${DB_PASSWORD}
-      SURREAL_PATH: rocksdb:/var/lib/surrealdb
-      SURREAL_TELEMETRY_PROVIDER: otlp
-      SURREAL_TELEMETRY_DISABLE_METRICS: false
-      SURREAL_TELEMETRY_DISABLE_TRACING: false
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  redis:
+    image: redis:alpine
+    restart: on-failure
+    volumes:
+      - redis-data:/data
   s3:
     image: minio/minio:latest
     environment:
@@ -26,11 +21,10 @@ services:
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
       MINIO_PROMETHEUS_AUTH_TYPE: public
     volumes:
-      - s3:/data
+      - s3-data:/data
     command: server /data --console-address ":9001"
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-
   init-buckets:
     image: minio/mc:latest
     depends_on:
@@ -40,6 +34,9 @@ services:
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
     entrypoint: >
       sh -c "until mc alias set myminio http://s3:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD; do sleep 1; done &&
+
+
+
              mc mb myminio/loki &&
              mc mb myminio/tempo &&
              mc mb myminio/mimir &&
@@ -47,24 +44,22 @@ services:
              mc policy set public myminio/loki"
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - prometheus:/prometheus
+      - prometheus-data:/prometheus
       - ./assets/configs/prod/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--enable-feature=native-histograms"
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-
   loki:
     image: grafana/loki:latest
     restart: always
     volumes:
       - ./assets/configs/prod/loki.yml:/etc/loki/local-config.yaml
-    command: 
+    command:
       - "--config.file=/etc/loki/local-config.yaml"
       - "--config.expand-env=true"
     environment:
@@ -74,14 +69,13 @@ services:
       - s3
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-
   tempo:
     image: grafana/tempo:latest
     restart: always
     volumes:
       - ./assets/configs/prod/tempo.yml:/etc/tempo/tempo-config.yaml
-      - tempo:/var/tempo
-    command: 
+      - tempo-data:/var/tempo
+    command:
       - "--config.file=/etc/tempo/tempo-config.yaml"
       - "--config.expand-env=true"
     environment:
@@ -91,13 +85,12 @@ services:
       - s3
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-
   mimir:
     image: grafana/mimir:latest
     restart: always
     volumes:
       - ./assets/configs/prod/mimir.yml:/etc/mimir/mimir.yaml
-    command: 
+    command:
       - "--config.file=/etc/mimir/mimir.yaml"
       - "--config.expand-env=true"
     environment:
@@ -107,14 +100,12 @@ services:
       - s3
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
       - ./assets/configs/prod/otel-collector.yml:/etc/otelcol-contrib/config.yaml
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-
   grafana:
     image: grafana/grafana:latest
     environment:
@@ -123,88 +114,78 @@ services:
       - ./assets/configs/prod/grafana/datasources/:/etc/grafana/provisioning/datasources
       - ./assets/configs/prod/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml
       - ./assets/configs/prod/grafana/dashboards/:/etc/grafana/dashboards
-      - grafana:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
-
-  api:
-    image: ghcr.io/udaltsovk/minizord-api:master
+  backend:
+    image: localhost/ad_platform-backend
     restart: on-failure
     depends_on:
-      - db
+      - postgres
       - s3
       - otel-collector
     environment:
       RUST_LOG: ${LOG_LEVEL}
-      SERVER_ADDRESS: 0.0.0.0:8080
-      METRICS_ADDRESS: 0.0.0.0:8081
-      DB_ADDRESS: db:8000
-      DB_NAMESPACE: minizord
-      DB_NAME: api
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_MAX_POOL_SIZE: 32
-      JWT_SECRET: ${JWT_SECRET}
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 8080
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ad_platform
       OTEL_ENDPOINT: http://otel-collector:4317
-      OTEL_SERVICE_NAME: minizord_api
-      S3_BASE_URL: http://s3:9000
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
-      S3_SECRET_KEY: ${S3_SECRET_KEY}
-      S3_REGION: ${S3_REGION}
-      DEPLOY_DOMAIN: ${DEPLOY_DOMAIN}
-      BASE_API_URL: ${BASE_API_URL}
+      OTEL_SERVICE_NAMESPACE: ad_platform
+      OTEL_SERVICE_NAME: monolyth
+      JWT_SECRET: ${JWT_SECRET}
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-
-  frontend:
-    image: ghcr.io/udaltsovk/minizord-frontend:master
-    restart: on-failure
-    depends_on:
-      - api
-    environment:
-      PORT: 3000
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
-
+  # frontend:
+  #   image: ghcr.io/udaltsovk/project-frontend:master
+  #   restart: on-failure
+  #   depends_on:
+  #     - api
+  #   environment:
+  #     PORT: 3000
+  #   labels:
+  #     - "com.centurylinklabs.watchtower.enable=true"
   proxy:
     image: haproxy:latest
     restart: unless-stopped
     volumes:
       - ./assets/configs/prod/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     depends_on:
-      - api
-      - frontend
+      - backend
+      # - frontend
       - grafana
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
     ports:
       - "3000:3000"
-
-  tunnel:
-    image: cloudflare/cloudflared:latest
-    restart: always
-    command: tunnel --no-autoupdate run
-    environment:
-      TUNNEL_TOKEN: ${CLOUDFLARED_TOKEN}
-    depends_on:
-      - proxy
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-
-  watchtower:
-    image: containrrr/watchtower:latest
-    environment:
-      WATCHTOWER_POLL_INTERVAL: 60
-      WATCHTOWER_HTTP_API_METRICS: true
-      WATCHTOWER_HTTP_API_TOKEN: token
-    volumes:
-      - /run/user/1000/containers/auth.json:/config.json
-      - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
+      # tunnel:
+      #   image: cloudflare/cloudflared:latest
+      #   restart: always
+      #   command: tunnel --no-autoupdate run
+      #   environment:
+      #     TUNNEL_TOKEN: ${CLOUDFLARED_TOKEN}
+      #   depends_on:
+      #     - proxy
+      #   labels:
+      #     - "com.centurylinklabs.watchtower.enable=false"
+      # watchtower:
+      #   image: containrrr/watchtower:latest
+      #   environment:
+      #     WATCHTOWER_POLL_INTERVAL: 60
+      #     WATCHTOWER_HTTP_API_METRICS: true
+      #     WATCHTOWER_HTTP_API_TOKEN: token
+      #   volumes:
+      #     - /run/user/1000/containers/auth.json:/config.json
+      #     - /var/run/docker.sock:/var/run/docker.sock
+      #   labels:
+      #     - "com.centurylinklabs.watchtower.enable=false"
 volumes:
-  db:
-  s3:
-  prometheus:
-  tempo:
-  grafana:
+  postgres-data:
+  redis-data:
+  s3-data:
+  prometheus-data:
+  tempo-data:
+  grafana-data:
