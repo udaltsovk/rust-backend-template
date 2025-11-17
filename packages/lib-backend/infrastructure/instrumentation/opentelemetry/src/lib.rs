@@ -48,19 +48,26 @@ impl LGTM {
         panic!("No OpenTelemetry protocol selected!") // that shouldn't happen
     };
 
-    fn resource(otel_service_name: &'static str) -> Resource {
+    fn resource(
+        otel_service_namespace: &'static str,
+        otel_service_name: &'static str,
+    ) -> Resource {
         Resource::builder()
-            .with_attributes(vec![KeyValue::new(
-                attribute::SERVICE_NAME,
-                otel_service_name,
-            )])
+            .with_attribute(KeyValue::new(
+                attribute::SERVICE_NAMESPACE,
+                otel_service_namespace,
+            ))
+            .with_service_name(otel_service_name)
             .build()
     }
 
-    pub fn new(otel_service_name: &'static str) -> Self {
+    pub fn new(
+        otel_service_namespace: &'static str,
+        otel_service_name: &'static str,
+    ) -> Self {
         Self {
             otel_service_name,
-            resource: Self::resource(otel_service_name),
+            resource: Self::resource(otel_service_namespace, otel_service_name),
             otel_endpoint: None,
             otel_timeout: None,
             logger_provider: None,
@@ -88,7 +95,7 @@ impl LGTM {
         }
     }
 
-    pub async fn wrap(self, body: impl AsyncFnOnce()) {
+    pub async fn wrap(self, future: impl Future<Output = ()>) {
         let lgtm = self
             .configure_logger_provider()
             .configure_meter_provider()
@@ -104,7 +111,7 @@ impl LGTM {
 
         lgtm.setup_metrics();
 
-        body().await;
+        future.await;
 
         tracing::info!("Shutting down LGTM stuff");
 

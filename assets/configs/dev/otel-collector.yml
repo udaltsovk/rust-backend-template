@@ -5,6 +5,12 @@ receivers:
         endpoint: 0.0.0.0:4317
 processors:
   batch:
+  transform:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(attributes["service_namespace"], resource.attributes["service.namespace"])
+          - set(attributes["service_name"], resource.attributes["service.name"])
 exporters:
   otlphttp/loki:
     endpoint: http://loki:3100/otlp
@@ -30,7 +36,7 @@ service:
       exporters: [otlphttp/loki]
     metrics:
       receivers: [otlp]
-      processors: [batch]
+      processors: [transform, batch]
       exporters: [otlphttp/mimir]
   telemetry:
     metrics:
