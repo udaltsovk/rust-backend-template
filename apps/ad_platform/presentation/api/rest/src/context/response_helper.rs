@@ -24,7 +24,7 @@ impl IntoResponse for AppError {
         }
         match self {
             AppError::Validation(validation_errors) => {
-                let messages = validation_errors
+                let errors = validation_errors
                     .into_inner()
                     .iter()
                     .map(|(path, validation_error)| {
@@ -32,39 +32,32 @@ impl IntoResponse for AppError {
                     })
                     .collect();
 
-                JsonErrorStruct::new("invalid_request", messages)
-                    .as_response(StatusCode::BAD_REQUEST)
+                JsonErrorStruct::new(
+                    StatusCode::BAD_REQUEST,
+                    "invalid_request",
+                    errors,
+                )
             },
-            AppError::JsonRejection(rejection) => {
-                let messages = vec![rejection];
-
-                JsonErrorStruct::new("invalid_request", messages)
-                    .as_response(StatusCode::BAD_REQUEST)
-            },
-            AppError::ApiPathRejection(rejection) => {
-                let messages = vec![rejection];
-
-                JsonErrorStruct::new("missing_api_version", messages)
-                    .as_response(StatusCode::BAD_REQUEST)
-            },
-            AppError::UnknownApiVerRejection(version) => {
-                let err = format!("Unknown api version ({version}).");
-
-                let messages = vec![err];
-
-                JsonErrorStruct::new("unknown_api_version", messages)
-                    .as_response(StatusCode::NOT_FOUND)
-            },
+            AppError::JsonRejection(rejection) => JsonErrorStruct::new(
+                StatusCode::BAD_REQUEST,
+                "invalid_request",
+                vec![rejection],
+            ),
+            AppError::ApiPathRejection(rejection) => JsonErrorStruct::new(
+                StatusCode::BAD_REQUEST,
+                "missing_api_version",
+                vec![rejection],
+            ),
+            AppError::UnknownApiVerRejection(version) => JsonErrorStruct::new(
+                StatusCode::NOT_FOUND,
+                "unknown_api_version",
+                vec![format!("Unknown api version ({version}).")],
+            ),
             AppError::UseCase {
                 status_code,
                 error_code,
-                message,
-            } => {
-                let messages = vec![message];
-
-                JsonErrorStruct::new(error_code, messages)
-                    .as_response(status_code)
-            },
+                error,
+            } => JsonErrorStruct::new(status_code, error_code, vec![error]),
         }
         .into_response()
     }

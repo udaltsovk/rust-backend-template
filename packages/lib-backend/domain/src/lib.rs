@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 pub mod validation;
 
-#[derive_where(Clone, Debug)]
+#[derive_where(Copy, Clone, Debug)]
 pub struct Id<T> {
     pub value: Uuid,
     _entity: PhantomData<T>,

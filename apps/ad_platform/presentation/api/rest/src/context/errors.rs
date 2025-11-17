@@ -25,11 +25,11 @@ pub enum AppError {
     #[error("{0}")]
     UnknownApiVerRejection(String),
 
-    #[error("{message}")]
+    #[error("{error}")]
     UseCase {
         status_code: StatusCode,
         error_code: &'static str,
-        message: String,
+        error: String,
     },
 }
 
@@ -52,7 +52,7 @@ where
         AppError::UseCase {
             status_code,
             error_code,
-            message: error.to_string(),
+            error: error.to_string(),
         }
     }
 }

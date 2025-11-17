@@ -1,12 +1,11 @@
 use application::usecase::client::ClientUseCase as _;
 use axum::{
-    Json,
     extract::{Path, State},
     http::StatusCode,
     response::IntoResponse,
 };
 use lib::presentation::api::rest::{
-    context::JsonErrorStruct, model::ParseableJson as _,
+    context::JsonErrorStruct, extract::Json, model::ParseableJson as _,
     response::ResponseExt as _,
 };
 use tap::Pipe as _;
@@ -83,10 +82,11 @@ where
     {
         Some(client) => client.into_response().with_status(StatusCode::OK),
         None => JsonErrorStruct::new(
+            StatusCode::NOT_FOUND,
             "client_not_found",
             vec![format!("Unable to find client with id `{client_id}`")],
         )
-        .as_response(StatusCode::NOT_FOUND),
+        .into_response(),
     }
     .pipe(Ok)
 }

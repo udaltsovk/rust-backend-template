@@ -24,9 +24,10 @@ pub async fn advance<M: ModulesExt>(
     Json(_source): Json<JsonTime>,
 ) -> Result<impl IntoResponse, AppError> {
     JsonErrorStruct::new(
+        StatusCode::NOT_IMPLEMENTED,
         "not_implemented",
         vec!["Method `advance` is not implemented"],
     )
-    .as_response(StatusCode::NOT_IMPLEMENTED)
+    .into_response()
     .pipe(Ok)
 }
