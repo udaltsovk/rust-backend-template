@@ -1,11 +1,11 @@
 #[macro_export]
 macro_rules! configure_jemalloc {
     ($conf:literal) => {
-        #[cfg(target_os = "linux")]
+        #[cfg(not(target_env = "msvc"))]
         #[global_allocator]
         static ALLOC: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 
-        #[cfg(target_os = "linux")]
+        #[cfg(not(target_env = "msvc"))]
         #[unsafe(export_name = "malloc_conf")]
         pub static MALLOC_CONF: &std::ffi::CStr = $conf;
     };

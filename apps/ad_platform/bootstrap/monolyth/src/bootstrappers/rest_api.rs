@@ -8,10 +8,10 @@ use lib::presentation::api::rest::startup::RestApi;
 use presentation::api::rest::routes;
 use tower::ServiceBuilder;
 
-use crate::{Modules, bootstrappers::BootstraperExt, config};
+use crate::{Modules, bootstrappers::BootstrapperExt, config};
 
 #[async_trait]
-impl BootstraperExt for RestApi {
+impl BootstrapperExt for RestApi {
     async fn bootstrap(modules: Modules) {
         let metric_layer = HttpMetricsLayerBuilder::new()
             .with_skipper(PathSkipper::new(Self::is_openapi_route))
@@ -31,7 +31,7 @@ impl BootstraperExt for RestApi {
             modules,
         )
         .run(SocketAddr::from((
-            *config::SERVER_ADDRESS,
+            *config::SERVER_HOST,
             *config::SERVER_PORT,
         )))
         .await;

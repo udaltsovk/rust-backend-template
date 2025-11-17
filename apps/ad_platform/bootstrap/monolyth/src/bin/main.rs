@@ -1,8 +1,6 @@
 use std::time::Duration;
 
-use ad_platform_monolyth::{
-    Modules, bootstrappers::BootstraperExt as _, config,
-};
+use ad_platform_monolyth::{Modules, config};
 use lib::{
     bootstrap::{bootstrap, configure_jemalloc},
     infrastructure::instrumentation::opentelemetry::LGTM,
@@ -11,24 +9,16 @@ use lib::{
 
 configure_jemalloc!();
 
-async fn start() {
-    config::test_values();
-
-    let modules = Modules::init().await;
-
-    bootstrap!(modules, RestApi);
-}
-
 #[tokio::main]
 async fn main() {
     config::init();
 
     // Without opentelemetry
-    // start().await
+    // bootstrap!(ad_platform_monolyth, [RestApi], Modules::init());
 
     // With opentelemetry
-    LGTM::new(&config::OTEL_SERVICE_NAME)
+    LGTM::new(&config::OTEL_SERVICE_NAMESPACE, &config::OTEL_SERVICE_NAME)
         .with_otel_timeout(Duration::from_secs(30))
-        .wrap(start)
+        .wrap(bootstrap!(ad_platform_monolyth, [RestApi], Modules::init()))
         .await
 }

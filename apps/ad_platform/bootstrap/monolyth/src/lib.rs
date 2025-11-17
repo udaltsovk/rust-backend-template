@@ -8,14 +8,15 @@ mod modules;
 pub use modules::Modules;
 
 env_vars_config! {
-    SERVER_ADDRESS: IpAddr = IpAddr::from_str("0.0.0.0").expect("a valid IP address"),
+    SERVER_HOST: IpAddr = IpAddr::from_str("0.0.0.0").expect("a valid IP address"),
     SERVER_PORT: u16 = 8080u16,
+    POSTGRES_HOST: String = "localhost",
+    POSTGRES_PORT: u16 = 5432u16,
     POSTGRES_USER: String = "postgres",
     POSTGRES_PASSWORD: String = "postgres",
-    POSTGRES_ADDRESS: String = "localhost",
-    POSTGRES_PORT: u16 = 5432u16,
     POSTGRES_DATABASE: String = "ad_platform",
     OTEL_ENDPOINT: String = "http://localhost:4317",
-    OTEL_SERVICE_NAME: String = "ad_platform-monolyth",
+    OTEL_SERVICE_NAMESPACE: String = "ad_platform",
+    OTEL_SERVICE_NAME: String = "monolyth",
     JWT_SECRET: String = "changeme",
 }
