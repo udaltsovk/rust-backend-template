@@ -14,7 +14,7 @@ axum = "0.8"
 bon = "3.7"
 derive-where = "1.6"
 chrono = "0.4"
-env-vars-config = "0.5"
+env-vars-config = "1.0"
 metrics = "0.24"
 rstest = "0.26"
 serde = "1.0"
@@ -37,7 +37,7 @@ utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa" }
 lto = "fat"
 strip = true
 opt-level = 3
-panic = "abort"
+panic = "unwind"
 codegen-units = 1
 
 [workspace.lints.rust]
