@@ -10,3 +10,7 @@ tap.workspace = true
 uuid = { workspace = true, features = ["v7"] }
 
 regex = "1.12"
+
+[dev-dependencies]
+rstest = { workspace = true }
+tokio = { workspace = true }
