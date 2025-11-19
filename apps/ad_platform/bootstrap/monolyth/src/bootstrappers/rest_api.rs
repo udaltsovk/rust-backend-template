@@ -25,15 +25,13 @@ impl BootstrapperExt for RestApi {
             )
             .split_for_parts();
 
-        RestApi::new(
-            openapi,
-            Router::new().nest("/{api_version}", router),
-            modules,
-        )
-        .run(SocketAddr::from((
-            *config::SERVER_HOST,
-            *config::SERVER_PORT,
-        )))
-        .await;
+        RestApi::builder(Router::new().nest("/{api_version}", router), modules)
+            .with_openapi(openapi)
+            .build()
+            .run(SocketAddr::from((
+                *config::SERVER_HOST,
+                *config::SERVER_PORT,
+            )))
+            .await;
     }
 }
