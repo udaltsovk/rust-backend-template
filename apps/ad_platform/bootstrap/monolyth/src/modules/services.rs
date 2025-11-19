@@ -27,7 +27,7 @@ impl ServicesModuleExt for ServicesModule {
     type Error = ServiceError;
     type TokenService = JwtService;
 
-    fn token_service(&self) -> Arc<Self::TokenService> {
-        self.token_service.clone()
+    fn token_service(&self) -> &Self::TokenService {
+        &self.token_service
     }
 }

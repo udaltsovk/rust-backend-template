@@ -1,7 +1,4 @@
-use std::{
-    fmt::{Debug, Display},
-    sync::Arc,
-};
+use std::fmt::{Debug, Display};
 
 use crate::repository::client::ClientRepository;
 
@@ -14,5 +11,5 @@ pub trait RepositoriesModuleExt: Send + Sync {
 
     type ClientRepo: ClientRepository + Send + Sync;
 
-    fn client_repository(&self) -> Arc<Self::ClientRepo>;
+    fn client_repository(&self) -> &Self::ClientRepo;
 }

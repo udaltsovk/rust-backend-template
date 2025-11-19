@@ -32,7 +32,7 @@ impl RepositoriesModuleExt for RepositoriesModule {
     type ClientRepo = PostgresRepositoryImpl<Client>;
     type Error = RepositoryError;
 
-    fn client_repository(&self) -> Arc<Self::ClientRepo> {
-        self.client_repository.clone()
+    fn client_repository(&self) -> &Self::ClientRepo {
+        &self.client_repository
     }
 }

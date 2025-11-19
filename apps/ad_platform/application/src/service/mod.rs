@@ -1,7 +1,4 @@
-use std::{
-    fmt::{Debug, Display},
-    sync::Arc,
-};
+use std::fmt::{Debug, Display};
 
 use crate::service::token::TokenService;
 
@@ -15,5 +12,5 @@ pub trait ServicesModuleExt: Send + Sync {
 
     type TokenService: TokenService + Send + Sync;
 
-    fn token_service(&self) -> Arc<Self::TokenService>;
+    fn token_service(&self) -> &Self::TokenService;
 }
