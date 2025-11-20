@@ -43,7 +43,8 @@ watch-rs crate:
         -e rs,toml \
         "just check {{ crate }}"
 
-sqlx-prepare:
+sqlx-prepare crate db="postgres":
+    cd ./apps/{{ crate }}/infrastructure/persistence/{{ db }} && \
     cargo sqlx prepare
 
 watch-sql:
