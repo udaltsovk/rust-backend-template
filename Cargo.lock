@@ -6,7 +6,25 @@ version = 4
 name = "ad_platform"
 version = "0.1.0"
 dependencies = [
- "ad_platform-bootstrap",
+ "ad_platform-application",
+ "ad_platform-domain",
+ "ad_platform-infrastructure",
+ "ad_platform-presentation",
+ "async-trait",
+ "axum",
+ "axum-otel-metrics",
+ "axum-tracing-opentelemetry",
+ "derive-where",
+ "env-vars-config",
+ "lib",
+ "thiserror",
+ "tikv-jemallocator",
+ "tokio",
+ "tower",
+ "tracing",
+ "tracing-subscriber",
+ "utoipa",
+ "utoipa-axum",
 ]
 
 [[package]]
@@ -20,13 +38,6 @@ dependencies = [
  "tap",
  "thiserror",
  "tracing",
-]
-
-[[package]]
-name = "ad_platform-bootstrap"
-version = "0.1.0"
-dependencies = [
- "ad_platform-monolyth",
 ]
 
 [[package]]
@@ -118,31 +129,6 @@ dependencies = [
  "thiserror",
  "tracing",
  "uuid",
-]
-
-[[package]]
-name = "ad_platform-monolyth"
-version = "0.1.0"
-dependencies = [
- "ad_platform-application",
- "ad_platform-domain",
- "ad_platform-infrastructure",
- "ad_platform-presentation",
- "async-trait",
- "axum",
- "axum-otel-metrics",
- "axum-tracing-opentelemetry",
- "derive-where",
- "env-vars-config",
- "lib",
- "thiserror",
- "tikv-jemallocator",
- "tokio",
- "tower",
- "tracing",
- "tracing-subscriber",
- "utoipa",
- "utoipa-axum",
 ]
 
 [[package]]

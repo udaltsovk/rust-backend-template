@@ -1,4 +1,4 @@
-use ad_platform_monolyth::Modules;
+use ad_platform::Modules;
 use lib::bootstrap::openapi::{OpenAPISaver as _, OpenAPISaverResult};
 use presentation::api::rest::routes;
 
