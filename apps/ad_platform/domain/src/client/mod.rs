@@ -11,7 +11,7 @@ pub mod location;
 pub mod login;
 
 pub struct Client {
-    pub id: Id<Client>,
+    pub id: Id<Self>,
     pub login: ClientLogin,
     pub age: ClientAge,
     pub gender: ClientGender,

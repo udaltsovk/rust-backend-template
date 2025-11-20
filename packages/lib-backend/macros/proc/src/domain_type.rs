@@ -33,7 +33,7 @@ pub fn domain_type(input: TokenStream) -> TokenStream {
                 .expect("We've checked for field count so it's safe")
                 .ty
         },
-        _ => unreachable!(),
+        _ => panic!("That shouldn't happen"),
     };
 
     let expanded = quote! {

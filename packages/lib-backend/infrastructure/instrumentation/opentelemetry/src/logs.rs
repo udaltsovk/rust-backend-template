@@ -10,7 +10,7 @@ use tap::Pipe as _;
 use crate::LGTM;
 
 impl LGTM {
-    pub fn get_logger_provider(&self) -> SdkLoggerProvider {
+    pub(super) fn get_logger_provider(&self) -> SdkLoggerProvider {
         self.logger_provider
             .clone()
             .expect("Called `LGTM::get_logger_provider` too early")

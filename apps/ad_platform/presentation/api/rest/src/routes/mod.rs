@@ -11,6 +11,7 @@ pub mod clients;
 pub mod statistics;
 pub mod time;
 
+#[must_use]
 pub fn router<M: ModulesExt>() -> OpenApiRouter<M> {
     OpenApiRouter::with_openapi(ApiDoc::openapi())
         .nest("/clients", clients::router())

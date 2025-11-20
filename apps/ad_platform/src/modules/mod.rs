@@ -40,14 +40,11 @@ impl Modules {
         );
         let postgres = Postgres::new(&postgres_url).await;
 
-        let repositories_module = RepositoriesModule::new(postgres);
+        let repositories_module = RepositoriesModule::new(&postgres);
         let services_module = ServicesModule::new(&config::JWT_SECRET);
 
         Self {
-            client_usecase: UseCase::new(
-                repositories_module.clone(),
-                services_module.clone(),
-            ),
+            client_usecase: UseCase::new(repositories_module, services_module),
         }
     }
 }

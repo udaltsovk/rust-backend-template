@@ -45,7 +45,7 @@ impl ClientRepository for PostgresRepositoryImpl<Client> {
             .fetch_one(&mut *transaction)
             .await
             .map(Client::from)?
-            .pipe(|c| clients.push(c))
+            .pipe(|c| clients.push(c));
         }
 
         transaction.commit().await?;

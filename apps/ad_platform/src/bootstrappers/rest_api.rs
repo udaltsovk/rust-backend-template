@@ -25,7 +25,7 @@ impl BootstrapperExt for RestApi {
             )
             .split_for_parts();
 
-        RestApi::builder(Router::new().nest("/{api_version}", router), modules)
+        Self::builder(Router::new().nest("/{api_version}", router), modules)
             .with_openapi(openapi)
             .build()
             .run(SocketAddr::from((

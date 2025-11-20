@@ -49,7 +49,7 @@ where
             }
         };
 
-        AppError::UseCase {
+        Self::UseCase {
             status_code,
             error_code,
             error: error.to_string(),

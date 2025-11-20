@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::entity::client::gender::StoredClientGender;
 
-pub(crate) mod gender;
+pub mod gender;
 
 #[derive(FromRow, Debug)]
 pub struct StoredClient {

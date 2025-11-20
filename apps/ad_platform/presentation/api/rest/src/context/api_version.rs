@@ -34,7 +34,7 @@ where
         })?;
 
         match version.as_str() {
-            "v0" => Ok(ApiVersion::V0),
+            "v0" => Ok(Self::V0),
             _ => Err(AppError::UnknownApiVerRejection(version.clone())),
         }
     }

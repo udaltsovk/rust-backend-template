@@ -12,7 +12,7 @@ pub struct Id<T> {
 }
 
 impl<T> Id<T> {
-    pub fn new(value: Uuid) -> Self {
+    pub const fn new(value: Uuid) -> Self {
         Self {
             value,
             _entity: PhantomData,

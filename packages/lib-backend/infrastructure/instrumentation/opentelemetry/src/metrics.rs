@@ -3,7 +3,7 @@ use std::{ops::Deref as _, sync::Arc, time::Duration};
 use metrics_exporter_otel::OpenTelemetryRecorder;
 use metrics_process::Collector;
 use opentelemetry::{global, metrics::MeterProvider as _};
-use opentelemetry_otlp::{MetricExporter, WithExportConfig};
+use opentelemetry_otlp::{MetricExporter, WithExportConfig as _};
 use opentelemetry_sdk::{
     metrics::{
         SdkMeterProvider, periodic_reader_with_async_runtime::PeriodicReader,
@@ -70,17 +70,18 @@ impl LGTM {
         let metrics_process_collector = Collector::default();
         metrics_process_collector.describe();
 
+        let interval = Self::METRIC_SCRAPE_INTERVAL;
         tokio::spawn(
             tokio_metrics::RuntimeMetricsReporterBuilder::default()
-                .with_interval(LGTM::METRIC_SCRAPE_INTERVAL)
+                .with_interval(interval)
                 .describe_and_run(),
         );
 
-        let collector = metrics_process_collector.clone();
+        let collector = metrics_process_collector;
         tokio::spawn(async move {
             loop {
                 collector.collect();
-                tokio::time::sleep(LGTM::METRIC_SCRAPE_INTERVAL).await;
+                tokio::time::sleep(interval).await;
             }
         });
     }

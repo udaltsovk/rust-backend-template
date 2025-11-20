@@ -14,19 +14,19 @@ pub struct Argon2Service {
 impl HasherService for Argon2Service {
     type AdapterError = argon2::password_hash::Error;
 
-    fn hash(&self, password: &[u8]) -> Result<String, Self::AdapterError> {
+    fn hash(&self, data: &[u8]) -> Result<String, Self::AdapterError> {
         self.hasher
-            .hash_password(password, &Self::gen_salt())
+            .hash_password(data, &Self::gen_salt())
             .map(|hashed| hashed.to_string())
     }
 
     fn verify(
         &self,
-        password: &[u8],
+        data: &[u8],
         original_hash: &str,
     ) -> Result<(), Self::AdapterError> {
         self.hasher
-            .verify_password(password, &PasswordHash::new(original_hash)?)
+            .verify_password(data, &PasswordHash::new(original_hash)?)
     }
 }
 

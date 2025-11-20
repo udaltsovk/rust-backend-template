@@ -34,20 +34,24 @@ pub async fn find_by_id<M>(
 where
     M: ModulesExt,
 {
-    match state
+    state
         .client_usecase()
         .find_by_id(client_id.into())
         .await?
         .map(JsonClient::from)
         .map(Json)
-    {
-        Some(client) => client.into_response().with_status(StatusCode::OK),
-        None => JsonErrorStruct::new(
-            StatusCode::NOT_FOUND,
-            "client_not_found",
-            vec![format!("Unable to find client with id `{client_id}`")],
+        .map_or_else(
+            || {
+                JsonErrorStruct::new(
+                    StatusCode::NOT_FOUND,
+                    "client_not_found",
+                    vec![format!(
+                        "Unable to find client with id `{client_id}`"
+                    )],
+                )
+                .into_response()
+            },
+            |c| c.into_response().with_status(StatusCode::OK),
         )
-        .into_response(),
-    }
-    .pipe(Ok)
+        .pipe(Ok)
 }

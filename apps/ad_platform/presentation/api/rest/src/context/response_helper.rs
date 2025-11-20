@@ -23,7 +23,7 @@ impl IntoResponse for AppError {
             },
         }
         match self {
-            AppError::Validation(validation_errors) => {
+            Self::Validation(validation_errors) => {
                 let errors = validation_errors
                     .into_inner()
                     .iter()
@@ -38,22 +38,22 @@ impl IntoResponse for AppError {
                     errors,
                 )
             },
-            AppError::JsonRejection(rejection) => JsonErrorStruct::new(
+            Self::JsonRejection(rejection) => JsonErrorStruct::new(
                 StatusCode::BAD_REQUEST,
                 "invalid_request",
                 vec![rejection],
             ),
-            AppError::ApiPathRejection(rejection) => JsonErrorStruct::new(
+            Self::ApiPathRejection(rejection) => JsonErrorStruct::new(
                 StatusCode::BAD_REQUEST,
                 "missing_api_version",
                 vec![rejection],
             ),
-            AppError::UnknownApiVerRejection(version) => JsonErrorStruct::new(
+            Self::UnknownApiVerRejection(version) => JsonErrorStruct::new(
                 StatusCode::NOT_FOUND,
                 "unknown_api_version",
                 vec![format!("Unknown api version ({version}).")],
             ),
-            AppError::UseCase {
+            Self::UseCase {
                 status_code,
                 error_code,
                 error,

@@ -1,6 +1,7 @@
 use axum::http::{Response, StatusCode};
 
 pub trait ResponseExt {
+    #[must_use]
     fn with_status(self, status: StatusCode) -> Self;
 }
 

@@ -8,7 +8,9 @@ use opentelemetry_sdk::{
     metrics::SdkMeterProvider, trace::SdkTracerProvider,
 };
 use opentelemetry_semantic_conventions::attribute;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::{
+    layer::SubscriberExt as _, util::SubscriberInitExt as _,
+};
 
 mod layers;
 mod logs;
@@ -61,6 +63,7 @@ impl LGTM {
             .build()
     }
 
+    #[must_use]
     pub fn new(
         otel_service_namespace: &'static str,
         otel_service_name: &'static str,
@@ -76,12 +79,14 @@ impl LGTM {
         }
     }
 
+    #[must_use]
     pub fn with_otel_endpoint(mut self, otel_endpoint: &'static str) -> Self {
         self.otel_endpoint = Some(otel_endpoint.into());
         self
     }
 
-    pub fn with_otel_timeout(mut self, otel_timeout: Duration) -> Self {
+    #[must_use]
+    pub const fn with_otel_timeout(mut self, otel_timeout: Duration) -> Self {
         self.otel_timeout = Some(otel_timeout);
         self
     }
@@ -95,7 +100,10 @@ impl LGTM {
         }
     }
 
-    pub async fn wrap(self, future: impl Future<Output = ()>) {
+    pub async fn wrap<F>(self, future: F)
+    where
+        F: Future<Output = ()>,
+    {
         let lgtm = self
             .configure_logger_provider()
             .configure_meter_provider()
@@ -115,7 +123,7 @@ impl LGTM {
 
         tracing::info!("Shutting down LGTM stuff");
 
-        let r: OTelSdkResult = (|| {
+        let result: OTelSdkResult = (|| {
             lgtm.get_tracer_provider().shutdown()?;
             lgtm.get_meter_provider().shutdown()?;
             lgtm.get_logger_provider().shutdown()?;
@@ -123,6 +131,6 @@ impl LGTM {
             Ok(())
         })();
 
-        r.expect("Failed to shut down LGTM");
+        result.expect("Failed to shut down LGTM");
     }
 }

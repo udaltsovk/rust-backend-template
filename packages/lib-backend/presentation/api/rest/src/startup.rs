@@ -22,7 +22,7 @@ impl<M> RestApiBuilder<M>
 where
     M: Send + Sync + Clone + 'static,
 {
-    pub fn new(router: Router<M>, modules: M) -> Self {
+    pub const fn new(router: Router<M>, modules: M) -> Self {
         Self {
             router,
             modules,
@@ -30,6 +30,7 @@ where
         }
     }
 
+    #[must_use]
     pub fn with_openapi(mut self, openapi: OpenApi) -> Self {
         self.openapi = Some(openapi);
         self
@@ -66,13 +67,14 @@ pub struct RestApi {
 }
 
 impl RestApi {
-    pub fn builder<M>(router: Router<M>, modules: M) -> RestApiBuilder<M>
+    pub const fn builder<M>(router: Router<M>, modules: M) -> RestApiBuilder<M>
     where
         M: Send + Sync + Clone + 'static,
     {
         RestApiBuilder::new(router, modules)
     }
 
+    #[must_use]
     pub fn is_openapi_route(path: &str) -> bool {
         ["/openapi", "/openapi.json"].contains(&path)
     }
@@ -109,8 +111,8 @@ impl RestApi {
         let terminate = std::future::pending::<()>();
 
         tokio::select! {
-            _ = ctrl_c => {},
-            _ = terminate => {},
+            () = ctrl_c => {},
+            () = terminate => {},
         }
     }
 }

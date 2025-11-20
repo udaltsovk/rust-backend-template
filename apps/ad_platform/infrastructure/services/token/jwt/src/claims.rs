@@ -11,17 +11,17 @@ pub enum JWTAud {
 }
 
 impl JWTAud {
-    fn from_session_entity(entity: SessionEntity) -> (Self, Uuid) {
-        use SessionEntity as SE;
+    const fn from_session_entity(entity: &SessionEntity) -> (Self, Uuid) {
+        use SessionEntity as E;
         match entity {
-            SE::Client(id) => (Self::Client, id.value),
+            E::Client(id) => (Self::Client, id.value),
         }
     }
 
     fn into_session_entity(self, id: Uuid) -> SessionEntity {
-        use SessionEntity as SE;
+        use SessionEntity as E;
         match self {
-            Self::Client => SE::Client(id.into()),
+            Self::Client => E::Client(id.into()),
         }
     }
 }
@@ -39,7 +39,7 @@ impl From<Session> for Claims {
     fn from(session: Session) -> Self {
         let current_time =
             usize::try_from(Utc::now().timestamp()).unwrap_or(usize::MAX);
-        let (aud, sub) = JWTAud::from_session_entity(session.entity);
+        let (aud, sub) = JWTAud::from_session_entity(&session.entity);
         Self {
             exp: current_time.saturating_add(TOKEN_LIFETIME),
             iat: current_time,

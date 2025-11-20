@@ -13,8 +13,8 @@ pub struct ClientAge(u16);
 
 static CONSTRAINTS: LazyLock<Constraints<i32>> = LazyLock::new(|| {
     Constraints::builder("age")
-        .add_constraint(constraints::range::Min(0))
-        .add_constraint(constraints::range::Max(255))
+        .add_constraint(constraints::range::Min(0_i32))
+        .add_constraint(constraints::range::Max(255_i32))
         .build()
 });
 

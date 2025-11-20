@@ -23,11 +23,12 @@ pub struct JsonErrorStruct {
 }
 
 impl JsonErrorStruct {
-    pub fn new(
-        status_code: impl Into<StatusCode>,
-        error_code: impl Display,
-        errors: Vec<impl Display>,
-    ) -> Self {
+    pub fn new<S, E, D>(status_code: S, error_code: E, errors: Vec<D>) -> Self
+    where
+        S: Into<StatusCode>,
+        E: Display,
+        D: Display,
+    {
         Self {
             status_code: status_code.into(),
             error_code: error_code.to_string(),

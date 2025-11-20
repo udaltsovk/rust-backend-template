@@ -11,8 +11,8 @@ pub struct RepositoriesModule {
 }
 
 impl RepositoriesModule {
-    pub fn new(postgres: Postgres) -> Self {
-        let client_repository = PostgresRepositoryImpl::new(&postgres);
+    pub fn new(postgres: &Postgres) -> Self {
+        let client_repository = PostgresRepositoryImpl::new(postgres);
 
         Self {
             client_repository,
