@@ -5,7 +5,7 @@ use crate::service::token::TokenService;
 pub mod hasher;
 pub mod token;
 
-pub trait ServicesModuleExt: Send + Sync {
+pub trait ServicesModuleExt: Clone + Send + Sync {
     type Error: Debug
         + Display
         + From<<Self::TokenService as TokenService>::AdapterError>;

@@ -5,6 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
+derive-where.workspace = true
 sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "uuid"] }
 tap.workspace = true
 thiserror.workspace = true

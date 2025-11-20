@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
 use application::usecase::{UseCase, client::ClientUseCase};
 use domain::client::Client;
 use lib::infrastructure::persistence::postgres::Postgres;
-use presentation::api::rest::module::ModulesExt;
+use presentation::api::rest::module::{ModulesExt, UseCaseImpl};
 
 use crate::{
     config,
@@ -15,7 +13,7 @@ mod services;
 
 #[derive(Clone)]
 pub struct Modules {
-    client_usecase: Arc<UseCase<RepositoriesModule, ServicesModule, Client>>,
+    client_usecase: UseCaseImpl<Self, Client>,
 }
 
 impl ModulesExt for Modules {
@@ -26,7 +24,7 @@ impl ModulesExt for Modules {
         &self,
     ) -> &impl ClientUseCase<Self::RepositoriesModule, Self::ServicesModule>
     {
-        &*self.client_usecase
+        &self.client_usecase
     }
 }
 
@@ -42,16 +40,14 @@ impl Modules {
         );
         let postgres = Postgres::new(&postgres_url).await;
 
-        let repositories_module = RepositoriesModule::new(&postgres);
+        let repositories_module = RepositoriesModule::new(postgres);
         let services_module = ServicesModule::new(&config::JWT_SECRET);
 
-        let client_usecase = Arc::new(UseCase::new(
-            repositories_module.clone(),
-            services_module.clone(),
-        ));
-
         Self {
-            client_usecase,
+            client_usecase: UseCase::new(
+                repositories_module.clone(),
+                services_module.clone(),
+            ),
         }
     }
 }

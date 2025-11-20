@@ -5,6 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
+application = ["dep:application"]
 bootstrap = ["dep:bootstrap"]
 bootstrap-openapi = ["bootstrap", "bootstrap/openapi"]
 
@@ -50,6 +51,7 @@ presentation-bot = ["presentation/bot"]
 presentation-bot-telegram = ["presentation/bot", "presentation/bot-telegram"]
 
 [dependencies]
+application = { path = "./application", package = "lib-application", optional = true }
 bootstrap = { path = "./bootstrap", package = "lib-bootstrap", optional = true }
 infrastructure = { path = "./infrastructure", package = "lib-infrastructure", optional = true }
 domain = { path = "./domain", package = "lib-domain", optional = true }

@@ -1,0 +1,14 @@
+
+[package]
+name = "lib-application"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+
+[dependencies]
+derive-where.workspace = true
+
+[lints]
+workspace = true

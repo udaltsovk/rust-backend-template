@@ -1,3 +1,5 @@
+#[cfg(feature = "application")]
+pub use application;
 #[cfg(feature = "bootstrap")]
 pub use bootstrap;
 #[cfg(feature = "domain")]

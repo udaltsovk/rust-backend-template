@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use application::repository::RepositoriesModuleExt;
 use domain::client::Client;
 use infrastructure::persistence::postgres::repository::PostgresRepositoryImpl;
@@ -9,12 +7,12 @@ use lib::infrastructure::persistence::postgres::{
 
 #[derive(Clone)]
 pub struct RepositoriesModule {
-    client_repository: Arc<PostgresRepositoryImpl<Client>>,
+    client_repository: PostgresRepositoryImpl<Client>,
 }
 
 impl RepositoriesModule {
-    pub fn new(postgres: &Postgres) -> Self {
-        let client_repository = Arc::new(PostgresRepositoryImpl::new(postgres));
+    pub fn new(postgres: Postgres) -> Self {
+        let client_repository = PostgresRepositoryImpl::new(&postgres);
 
         Self {
             client_repository,

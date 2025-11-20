@@ -4,7 +4,7 @@ use crate::repository::client::ClientRepository;
 
 pub mod client;
 
-pub trait RepositoriesModuleExt: Send + Sync {
+pub trait RepositoriesModuleExt: Clone + Send + Sync {
     type Error: Debug
         + Display
         + From<<Self::ClientRepo as ClientRepository>::AdapterError>;

@@ -30,6 +30,7 @@ presentation = { path = "../../presentation", package = "ad_platform-presentatio
 
 async-trait.workspace = true
 axum.workspace = true
+derive-where.workspace = true
 env-vars-config.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

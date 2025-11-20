@@ -1,5 +1,7 @@
 use std::ops::Deref;
 
+#[doc(hidden)]
+pub use derive_where::derive_where;
 use sqlx::{Pool, Postgres as PostgreSQL, postgres::PgPoolOptions};
 use tap::Pipe as _;
 
