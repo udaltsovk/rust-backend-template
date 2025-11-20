@@ -10,6 +10,7 @@ domain = { path = "../../../domain", package = "ad_platform-domain" }
 application = { path = "../../../application", package = "ad_platform-application" }
 
 async-trait.workspace = true
+derive-where.workspace = true
 tap.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
