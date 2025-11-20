@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use axum::{
-    RequestPartsExt,
+    RequestPartsExt as _,
     extract::{FromRequestParts, Path},
     http::request::Parts,
 };
@@ -12,7 +12,7 @@ use crate::context::errors::AppError;
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ApiVersion {
-    V1,
+    V0,
 }
 
 impl<S> FromRequestParts<S> for ApiVersion
@@ -34,8 +34,8 @@ where
         })?;
 
         match version.as_str() {
-            "v1" => Ok(ApiVersion::V1),
-            _ => Err(AppError::UnknownApiVerRejection(version.to_string())),
+            "v0" => Ok(ApiVersion::V0),
+            _ => Err(AppError::UnknownApiVerRejection(version.clone())),
         }
     }
 }
