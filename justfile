@@ -35,7 +35,7 @@ check crate:
     just fmt && \
     just lint && \
     just test && \
-    just build {{ crate }}
+    cargo check --bin {{ crate }}
 
 run crate:
     cargo run --bin {{ crate }}
