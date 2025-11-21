@@ -36,17 +36,37 @@ length_constraint!(GreaterThan, gt, "greater");
 
 #[cfg(test)]
 mod tests {
-    use rstest::rstest;
+    use rstest::{fixture, rstest};
 
     use super::{GreaterThan, LessThan, Max, Min};
     use crate::validation::constraints::Constraint;
+
+    #[fixture]
+    fn max_5() -> Max {
+        Max(5)
+    }
+
+    #[fixture]
+    fn min_3() -> Min {
+        Min(3)
+    }
+
+    #[fixture]
+    fn less_than_6() -> LessThan {
+        LessThan(6)
+    }
+
+    #[fixture]
+    fn greater_than_4() -> GreaterThan {
+        GreaterThan(4)
+    }
 
     #[rstest]
     #[case(5, "hello", true)]
     #[case(3, "hello", false)]
     #[case(5, "world", true)]
     #[case(4, "hello", false)]
-    fn test_max_string_constraint(
+    fn max_string_constraint(
         #[case] max_len: usize,
         #[case] input: &str,
         #[case] expected: bool,
@@ -64,7 +84,7 @@ mod tests {
     #[case(2, vec![1, 2, 3], false)]
     #[case(5, vec![1, 2, 3], true)]
     #[case(3, vec![], true)]
-    fn test_max_vec_constraint(
+    fn max_vec_constraint(
         #[case] max_len: usize,
         #[case] input: Vec<i32>,
         #[case] expected: bool,
@@ -82,7 +102,7 @@ mod tests {
     #[case(4, "hello", false)]
     #[case(6, "hello", true)]
     #[case(3, "hello", false)]
-    fn test_less_than_string_constraint(
+    fn less_than_string_constraint(
         #[case] limit: usize,
         #[case] input: &str,
         #[case] expected: bool,
@@ -100,7 +120,7 @@ mod tests {
     #[case(3, vec![1, 2, 3], false)]
     #[case(2, vec![1, 2, 3], false)]
     #[case(1, vec![], true)]
-    fn test_less_than_vec_constraint(
+    fn less_than_vec_constraint(
         #[case] limit: usize,
         #[case] input: Vec<i32>,
         #[case] expected: bool,
@@ -118,7 +138,7 @@ mod tests {
     #[case(6, "hello", false)]
     #[case(3, "hello", true)]
     #[case(5, "", false)]
-    fn test_min_string_constraint(
+    fn min_string_constraint(
         #[case] min_len: usize,
         #[case] input: &str,
         #[case] expected: bool,
@@ -136,7 +156,7 @@ mod tests {
     #[case(4, vec![1, 2, 3], false)]
     #[case(2, vec![1, 2, 3], true)]
     #[case(0, vec![], true)]
-    fn test_min_vec_constraint(
+    fn min_vec_constraint(
         #[case] min_len: usize,
         #[case] input: Vec<i32>,
         #[case] expected: bool,
@@ -154,7 +174,7 @@ mod tests {
     #[case(5, "hello", false)]
     #[case(6, "hello", false)]
     #[case(3, "hello", true)]
-    fn test_greater_than_string_constraint(
+    fn greater_than_string_constraint(
         #[case] limit: usize,
         #[case] input: &str,
         #[case] expected: bool,
@@ -172,7 +192,7 @@ mod tests {
     #[case(3, vec![1, 2, 3], false)]
     #[case(4, vec![1, 2, 3], false)]
     #[case(0, vec![1], true)]
-    fn test_greater_than_vec_constraint(
+    fn greater_than_vec_constraint(
         #[case] limit: usize,
         #[case] input: Vec<i32>,
         #[case] expected: bool,
@@ -186,7 +206,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_unicode_string_length() {
+    fn unicode_string_length() {
         // Test that we count characters, not bytes
         let constraint = Max(3);
         assert!(!constraint.check(&"café".to_string())); // 4 bytes, 4 chars - should fail for Max(3)
@@ -206,7 +226,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_empty_collections() {
+    fn empty_collections() {
         let max_constraint = Max(0);
         let min_constraint = Min(0);
         let less_than_constraint = LessThan(1);

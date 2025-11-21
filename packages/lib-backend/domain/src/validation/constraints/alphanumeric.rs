@@ -17,100 +17,79 @@ where
 
 #[cfg(test)]
 mod tests {
-    use rstest::rstest;
+    use rstest::{fixture, rstest};
 
     use super::IsAlphanumeric;
     use crate::validation::constraints::Constraint;
 
+    #[fixture]
+    #[default(impl Constraint<String>)]
+    fn constraint<T>() -> impl Constraint<T>
+    where
+        T: ToString,
+    {
+        IsAlphanumeric
+    }
+
     #[rstest]
-    #[case("hello123", true)]
-    #[case("Hello123", true)]
-    #[case("123", true)]
-    #[case("abc", true)]
-    #[case("ABC", true)]
+    #[case("hello123", true)] // mixed letters and numbers
+    #[case("Hello123", true)] // mixed case with numbers
+    #[case("123", true)] // numbers only
+    #[case("abc", true)] // lowercase letters
+    #[case("ABC", true)] // uppercase letters
+    #[case("123456", true)] // numbers only
+    #[case("0", true)] // single digit
+    #[case("999", true)] // multiple same digits
+    #[case("abcdef", true)] // lowercase letters
+    #[case("ABCDEF", true)] // uppercase letters
+    #[case("AbCdEf", true)] // mixed case letters
+    #[case("a1b2c3", true)] // mixed letters and numbers
+    #[case("", true)] // empty string is vacuously true
+    #[case("café", true)] // accented characters are alphanumeric
+    #[case("αβγ", true)] // Greek letters are alphanumeric
+    #[case("中文", true)] // Chinese characters are alphanumeric
+    #[case("ñoño", true)] // Spanish
+    #[case("naïve", true)] // French
+    #[case("Москва", true)] // Russian
+    #[case("東京", true)] // Japanese
+    #[case("서울", true)] // Korean
+    #[case("٠١٢٣", true)] // Arabic numerals
+    #[case("零一二三", true)] // Chinese numerals
     #[case("hello world", false)] // space is not alphanumeric
     #[case("hello-world", false)] // hyphen is not alphanumeric
     #[case("hello_world", false)] // underscore is not alphanumeric
     #[case("hello.world", false)] // dot is not alphanumeric
     #[case("hello@world", false)] // @ is not alphanumeric
-    #[case("", true)] // empty string is vacuously true
-    #[case("café", true)] // accented characters are alphanumeric
-    #[case("αβγ", true)] // Greek letters are alphanumeric
-    #[case("中文", true)] // Chinese characters are alphanumeric
     #[case("🚀", false)] // emoji is not alphanumeric
     #[case("hello!", false)] // exclamation mark is not alphanumeric
     #[case("123.45", false)] // decimal point is not alphanumeric
-    #[case("a1b2c3", true)] // mixed letters and numbers
-    fn test_is_alphanumeric_constraint(
+    #[case("hello,world", false)] // comma
+    #[case("hello;world", false)] // semicolon
+    #[case("hello:world", false)] // colon
+    #[case("hello/world", false)] // slash
+    #[case("hello\\world", false)] // backslash
+    #[case("hello|world", false)] // pipe
+    #[case("hello&world", false)] // ampersand
+    #[case("hello*world", false)] // asterisk
+    #[case("hello+world", false)] // plus
+    #[case("hello=world", false)] // equals
+    #[case("hello(world)", false)] // parentheses
+    #[case("hello[world]", false)] // brackets
+    #[case("hello{world}", false)] // braces
+    #[case("hello<world>", false)] // angle brackets
+    fn is_alphanumeric_constraint(
+        constraint: impl Constraint<String>,
         #[case] input: &str,
         #[case] expected: bool,
     ) {
-        let constraint = IsAlphanumeric;
         assert_eq!(constraint.check(&input.to_string()), expected);
     }
 
     #[rstest]
-    fn test_is_alphanumeric_error_message() {
-        let constraint = IsAlphanumeric;
+    fn is_alphanumeric_error_message(constraint: impl Constraint<String>) {
         assert_eq!(
-            <IsAlphanumeric as Constraint<String>>::error_msg(&constraint),
+            constraint.error_msg(),
             "must contain only alphanumeric characters"
         );
-    }
-
-    #[rstest]
-    fn test_is_alphanumeric_with_numbers() {
-        let constraint = IsAlphanumeric;
-
-        assert!(constraint.check(&"123456".to_string()));
-        assert!(constraint.check(&"0".to_string()));
-        assert!(constraint.check(&"999".to_string()));
-    }
-
-    #[rstest]
-    fn test_is_alphanumeric_with_letters() {
-        let constraint = IsAlphanumeric;
-
-        assert!(constraint.check(&"abcdef".to_string()));
-        assert!(constraint.check(&"ABCDEF".to_string()));
-        assert!(constraint.check(&"AbCdEf".to_string()));
-    }
-
-    #[rstest]
-    fn test_is_alphanumeric_with_special_chars() {
-        let constraint = IsAlphanumeric;
-
-        // Common special characters should fail
-        assert!(!constraint.check(&"hello world".to_string())); // space
-        assert!(!constraint.check(&"hello,world".to_string())); // comma
-        assert!(!constraint.check(&"hello;world".to_string())); // semicolon
-        assert!(!constraint.check(&"hello:world".to_string())); // colon
-        assert!(!constraint.check(&"hello/world".to_string())); // slash
-        assert!(!constraint.check(&"hello\\world".to_string())); // backslash
-        assert!(!constraint.check(&"hello|world".to_string())); // pipe
-        assert!(!constraint.check(&"hello&world".to_string())); // ampersand
-        assert!(!constraint.check(&"hello*world".to_string())); // asterisk
-        assert!(!constraint.check(&"hello+world".to_string())); // plus
-        assert!(!constraint.check(&"hello=world".to_string())); // equals
-        assert!(!constraint.check(&"hello(world)".to_string())); // parentheses
-        assert!(!constraint.check(&"hello[world]".to_string())); // brackets
-        assert!(!constraint.check(&"hello{world}".to_string())); // braces
-        assert!(!constraint.check(&"hello<world>".to_string())); // angle brackets
-    }
-
-    #[rstest]
-    fn test_is_alphanumeric_unicode() {
-        let constraint = IsAlphanumeric;
-
-        // Unicode letters should pass
-        assert!(constraint.check(&"ñoño".to_string())); // Spanish
-        assert!(constraint.check(&"naïve".to_string())); // French
-        assert!(constraint.check(&"Москва".to_string())); // Russian
-        assert!(constraint.check(&"東京".to_string())); // Japanese
-        assert!(constraint.check(&"서울".to_string())); // Korean
-
-        // Unicode numbers should pass
-        assert!(constraint.check(&"٠١٢٣".to_string())); // Arabic numerals
-        assert!(constraint.check(&"零一二三".to_string())); // Chinese numerals
     }
 }

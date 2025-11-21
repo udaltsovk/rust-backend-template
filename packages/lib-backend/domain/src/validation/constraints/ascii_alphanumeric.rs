@@ -17,10 +17,15 @@ where
 
 #[cfg(test)]
 mod tests {
-    use rstest::rstest;
+    use rstest::{fixture, rstest};
 
     use super::IsAsciiAlphanumeric;
     use crate::validation::constraints::Constraint;
+
+    #[fixture]
+    fn constraint() -> IsAsciiAlphanumeric {
+        IsAsciiAlphanumeric
+    }
 
     #[rstest]
     #[case("hello123", true)]
@@ -49,17 +54,71 @@ mod tests {
     #[case("\n\t\r", false)] // ASCII control characters are not alphanumeric
     #[case("\\", false)] // backslash is not alphanumeric
     #[case("\"'", false)] // quotes are not alphanumeric
-    fn test_is_ascii_alphanumeric_constraint(
+    #[case("abcdefghijklmnopqrstuvwxyz", true)] // lowercase letters
+    #[case("ABCDEFGHIJKLMNOPQRSTUVWXYZ", true)] // uppercase letters
+    #[case("AbCdEf", true)] // mixed case letters
+    #[case("0123456789", true)] // all digits
+    #[case("123456", true)] // some digits
+    #[case("0", true)] // single digit
+    #[case("999", true)] // repeated digits
+    #[case("hello123", true)] // mixed letters and numbers
+    #[case("ABC123def", true)] // mixed case with numbers
+    #[case("test2023", true)] // letters with year
+    #[case("user1password2", true)] // complex alphanumeric
+    #[case("helloworld", true)] // pure ASCII alphanumeric
+    #[case("test123", true)] // pure ASCII alphanumeric
+    #[case("UserName123", true)] // pure ASCII alphanumeric mixed case
+    #[case("", true)] // empty string is vacuously true
+    #[case("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~", false)] // ASCII punctuation
+    #[case(" ", false)] // space
+    #[case("\t", false)] // tab
+    #[case("\n", false)] // newline
+    #[case("\r", false)] // carriage return
+    #[case("hello world", false)] // space separator
+    #[case("hello,world", false)] // comma separator
+    #[case("hello;world", false)] // semicolon separator
+    #[case("hello:world", false)] // colon separator
+    #[case("hello/world", false)] // slash separator
+    #[case("hello\\world", false)] // backslash separator
+    #[case("hello|world", false)] // pipe separator
+    #[case("hello&world", false)] // ampersand separator
+    #[case("hello*world", false)] // asterisk separator
+    #[case("hello+world", false)] // plus separator
+    #[case("hello=world", false)] // equals separator
+    #[case("hello(world)", false)] // parentheses
+    #[case("hello[world]", false)] // brackets
+    #[case("hello{world}", false)] // braces
+    #[case("hello<world>", false)] // angle brackets
+    #[case("ñoño", false)] // Spanish characters
+    #[case("naïve", false)] // French characters
+    #[case("ü", false)] // German umlaut
+    #[case("ç", false)] // cedilla
+    #[case("Москва", false)] // Russian
+    #[case("東京", false)] // Japanese
+    #[case("서울", false)] // Korean
+    #[case("αβγ", false)] // Greek
+    #[case("٠١٢٣", false)] // Arabic numerals
+    #[case("零一二三", false)] // Chinese numerals
+    #[case("🚀", false)] // emoji
+    #[case("hello🎉", false)] // text with emoji
+    #[case("hello café", false)] // mixed ASCII and non-ASCII
+    #[case("test 🚀 rocket", false)] // text with emoji and space
+    #[case("naïve123", false)] // non-ASCII with numbers
+    #[case("user_name", false)] // underscore is not alphanumeric
+    #[case("user@example.com", false)] // email format
+    #[case("hello-world", false)] // hyphen separator
+    #[case("test.file", false)] // dot separator
+    #[case("password!123", false)] // exclamation mark
+    fn is_ascii_alphanumeric_constraint(
+        constraint: IsAsciiAlphanumeric,
         #[case] input: &str,
         #[case] expected: bool,
     ) {
-        let constraint = IsAsciiAlphanumeric;
         assert_eq!(constraint.check(&input.to_string()), expected);
     }
 
     #[rstest]
-    fn test_is_ascii_alphanumeric_error_message() {
-        let constraint = IsAsciiAlphanumeric;
+    fn is_ascii_alphanumeric_error_message(constraint: IsAsciiAlphanumeric) {
         assert_eq!(
             <IsAsciiAlphanumeric as Constraint<String>>::error_msg(&constraint),
             "must contain only ascii alphanumeric characters"
@@ -67,115 +126,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_is_ascii_alphanumeric_with_ascii_letters() {
-        let constraint = IsAsciiAlphanumeric;
-
-        assert!(constraint.check(&"abcdefghijklmnopqrstuvwxyz".to_string()));
-        assert!(constraint.check(&"ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()));
-        assert!(constraint.check(&"AbCdEf".to_string()));
-    }
-
-    #[rstest]
-    fn test_is_ascii_alphanumeric_with_ascii_numbers() {
-        let constraint = IsAsciiAlphanumeric;
-
-        assert!(constraint.check(&"0123456789".to_string()));
-        assert!(constraint.check(&"123456".to_string()));
-        assert!(constraint.check(&"0".to_string()));
-        assert!(constraint.check(&"999".to_string()));
-    }
-
-    #[rstest]
-    fn test_is_ascii_alphanumeric_with_mixed_ascii() {
-        let constraint = IsAsciiAlphanumeric;
-
-        assert!(constraint.check(&"hello123".to_string()));
-        assert!(constraint.check(&"ABC123def".to_string()));
-        assert!(constraint.check(&"test2023".to_string()));
-        assert!(constraint.check(&"user1password2".to_string()));
-    }
-
-    #[rstest]
-    fn test_is_ascii_alphanumeric_with_special_chars() {
-        let constraint = IsAsciiAlphanumeric;
-
-        // ASCII punctuation and symbols should fail
-        assert!(
-            !constraint
-                .check(&"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".to_string())
-        );
-        assert!(!constraint.check(&" ".to_string())); // space
-        assert!(!constraint.check(&"\t".to_string())); // tab
-        assert!(!constraint.check(&"\n".to_string())); // newline
-        assert!(!constraint.check(&"\r".to_string())); // carriage return
-
-        // Common separators should fail
-        assert!(!constraint.check(&"hello world".to_string())); // space
-        assert!(!constraint.check(&"hello,world".to_string())); // comma
-        assert!(!constraint.check(&"hello;world".to_string())); // semicolon
-        assert!(!constraint.check(&"hello:world".to_string())); // colon
-        assert!(!constraint.check(&"hello/world".to_string())); // slash
-        assert!(!constraint.check(&"hello\\world".to_string())); // backslash
-        assert!(!constraint.check(&"hello|world".to_string())); // pipe
-        assert!(!constraint.check(&"hello&world".to_string())); // ampersand
-        assert!(!constraint.check(&"hello*world".to_string())); // asterisk
-        assert!(!constraint.check(&"hello+world".to_string())); // plus
-        assert!(!constraint.check(&"hello=world".to_string())); // equals
-        assert!(!constraint.check(&"hello(world)".to_string())); // parentheses
-        assert!(!constraint.check(&"hello[world]".to_string())); // brackets
-        assert!(!constraint.check(&"hello{world}".to_string())); // braces
-        assert!(!constraint.check(&"hello<world>".to_string())); // angle brackets
-    }
-
-    #[rstest]
-    fn test_is_ascii_alphanumeric_with_non_ascii_unicode() {
-        let constraint = IsAsciiAlphanumeric;
-
-        // Extended Latin should fail (not ASCII)
-        assert!(!constraint.check(&"ñoño".to_string())); // Spanish
-        assert!(!constraint.check(&"naïve".to_string())); // French
-        assert!(!constraint.check(&"ü".to_string())); // German umlaut
-        assert!(!constraint.check(&"ç".to_string())); // cedilla
-
-        // Non-Latin scripts should fail
-        assert!(!constraint.check(&"Москва".to_string())); // Russian
-        assert!(!constraint.check(&"東京".to_string())); // Japanese
-        assert!(!constraint.check(&"서울".to_string())); // Korean
-        assert!(!constraint.check(&"αβγ".to_string())); // Greek
-
-        // Unicode numbers should fail (not ASCII)
-        assert!(!constraint.check(&"٠١٢٣".to_string())); // Arabic numerals
-        assert!(!constraint.check(&"零一二三".to_string())); // Chinese numerals
-
-        // Emoji should fail
-        assert!(!constraint.check(&"🚀".to_string()));
-        assert!(!constraint.check(&"hello🎉".to_string()));
-    }
-
-    #[rstest]
-    fn test_is_ascii_alphanumeric_mixed_content() {
-        let constraint = IsAsciiAlphanumeric;
-
-        // Mixed ASCII alphanumeric with non-ASCII should fail
-        assert!(!constraint.check(&"hello café".to_string()));
-        assert!(!constraint.check(&"test 🚀 rocket".to_string()));
-        assert!(!constraint.check(&"naïve123".to_string()));
-        assert!(!constraint.check(&"user_name".to_string())); // underscore is not alphanumeric
-
-        // Mixed ASCII alphanumeric with ASCII special chars should fail
-        assert!(!constraint.check(&"user@example.com".to_string()));
-        assert!(!constraint.check(&"hello-world".to_string()));
-        assert!(!constraint.check(&"test.file".to_string()));
-        assert!(!constraint.check(&"password!123".to_string()));
-
-        // Pure ASCII alphanumeric should pass
-        assert!(constraint.check(&"helloworld".to_string()));
-        assert!(constraint.check(&"test123".to_string()));
-        assert!(constraint.check(&"UserName123".to_string()));
-    }
-
-    #[rstest]
-    fn test_is_ascii_alphanumeric_boundary_values() {
+    fn is_ascii_alphanumeric_boundary_values() {
         let constraint = IsAsciiAlphanumeric;
 
         // Test ASCII boundary characters
@@ -201,7 +152,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_is_ascii_alphanumeric_empty_and_whitespace() {
+    fn is_ascii_alphanumeric_empty_and_whitespace() {
         let constraint = IsAsciiAlphanumeric;
 
         // Empty string should pass (vacuously true)

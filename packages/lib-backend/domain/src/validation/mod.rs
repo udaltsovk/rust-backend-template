@@ -88,7 +88,7 @@ macro_rules! into_validators {
 mod tests {
     use std::marker::PhantomData;
 
-    use rstest::rstest;
+    use rstest::{fixture, rstest};
 
     use super::{IntoValidator, ValidationConfirmation, Validator};
     use crate::validation::error::ValidationErrors;
@@ -140,102 +140,136 @@ mod tests {
         }
     }
 
-    #[rstest]
-    fn test_validator_new_success() {
-        let mut errors = ValidationErrors::new();
-        let validator = Validator::<TestValue, String>::new(
-            "valid".to_string(),
-            &mut errors,
-        );
-
-        assert!(errors.into_inner().is_empty());
-        assert!(validator.inner.is_ok());
+    #[fixture]
+    fn valid_string() -> String {
+        "valid".to_string()
     }
 
-    #[rstest]
-    fn test_validator_new_failure() {
-        let mut errors = ValidationErrors::new();
-        let validator =
-            Validator::<TestValue, String>::new("".to_string(), &mut errors);
-
-        assert!(!errors.into_inner().is_empty());
-        assert!(validator.inner.is_err());
+    #[fixture]
+    fn empty_string() -> String {
+        String::new()
     }
 
-    #[rstest]
-    fn test_validator_validated_success() {
-        let mut errors = ValidationErrors::new();
-        let validator = Validator::<TestValue, String>::new(
-            "valid".to_string(),
-            &mut errors,
-        );
+    #[fixture]
+    fn validation_errors() -> ValidationErrors {
+        ValidationErrors::new()
+    }
 
-        let confirmation = ValidationConfirmation {
+    #[fixture]
+    fn validation_confirmation() -> ValidationConfirmation {
+        ValidationConfirmation {
             _phantom: PhantomData,
-        };
+        }
+    }
+
+    #[rstest]
+    #[case("valid", true)] // valid input should succeed
+    #[case("test", true)] // valid input should succeed
+    #[case("hello", true)] // valid input should succeed
+    #[case("", false)] // empty string should fail
+    fn validator_new(
+        mut validation_errors: ValidationErrors,
+        #[case] input: &str,
+        #[case] should_succeed: bool,
+    ) {
+        let validator = Validator::<TestValue, String>::new(
+            input.to_string(),
+            &mut validation_errors,
+        );
+
+        if should_succeed {
+            assert!(validation_errors.into_inner().is_empty());
+            assert!(validator.inner.is_ok());
+        } else {
+            assert!(!validation_errors.into_inner().is_empty());
+            assert!(validator.inner.is_err());
+        }
+    }
+
+    #[rstest]
+    #[case("valid")]
+    #[case("test")]
+    #[case("hello")]
+    fn validator_validated_success(
+        mut validation_errors: ValidationErrors,
+        validation_confirmation: ValidationConfirmation,
+        #[case] input: &str,
+    ) {
+        let validator = Validator::<TestValue, String>::new(
+            input.to_string(),
+            &mut validation_errors,
+        );
 
         // This should not panic since validation passed
-        let result = validator.validated(confirmation);
-        assert_eq!(result.inner, "valid");
+        let result = validator.validated(validation_confirmation);
+        assert_eq!(result.inner, input);
     }
 
     #[rstest]
     #[should_panic(
         expected = "`lib_domain::validation::Validator<lib_domain::validation::tests::TestValue, alloc::string::String>` should be Ok because error vec is empty"
     )]
-    fn test_validator_validated_panic_on_error() {
-        let mut errors = ValidationErrors::new();
+    fn validator_validated_panic_on_error(
+        mut validation_errors: ValidationErrors,
+        empty_string: String,
+        validation_confirmation: ValidationConfirmation,
+    ) {
         let validator: Validator<TestValue, String> =
-            Validator::<TestValue, String>::new("".to_string(), &mut errors);
-
-        let confirmation = ValidationConfirmation {
-            _phantom: PhantomData,
-        };
+            Validator::<TestValue, String>::new(
+                empty_string,
+                &mut validation_errors,
+            );
 
         // This should panic since validation failed
-        validator.validated(confirmation);
+        validator.validated(validation_confirmation);
     }
 
     #[rstest]
-    fn test_into_validator_trait() {
-        let mut errors = ValidationErrors::new();
+    #[case("valid", true)] // valid input should succeed
+    #[case("test", true)] // valid input should succeed
+    #[case("", false)] // empty string should fail
+    fn into_validator_trait(
+        mut validation_errors: ValidationErrors,
+        #[case] input: &str,
+        #[case] should_succeed: bool,
+    ) {
         let validator: Validator<TestValue, String> =
-            "valid".to_string().into_validator(&mut errors);
+            input.to_string().into_validator(&mut validation_errors);
 
-        assert!(errors.into_inner().is_empty());
-        assert!(validator.inner.is_ok());
+        if should_succeed {
+            assert!(validation_errors.into_inner().is_empty());
+            assert!(validator.inner.is_ok());
+        } else {
+            let error_list = validation_errors.into_inner();
+            assert_eq!(error_list.len(), 1);
+            assert_eq!(error_list[0].0, "value");
+            assert_eq!(error_list[0].1, "cannot be empty");
+            assert!(validator.inner.is_err());
+        }
     }
 
     #[rstest]
-    fn test_into_validator_trait_with_error() {
-        let mut errors = ValidationErrors::new();
-        let validator: Validator<TestValue, String> =
-            "".to_string().into_validator(&mut errors);
-
-        let error_list = errors.into_inner();
-        assert_eq!(error_list.len(), 1);
-        assert_eq!(error_list[0].0, "value");
-        assert_eq!(error_list[0].1, "cannot be empty");
-        assert!(validator.inner.is_err());
-    }
-
-    #[rstest]
-    fn test_into_validators_macro_single_field() {
+    fn into_validators_macro_single_field(valid_string: String) {
         let (errors, validator): (
             ValidationErrors,
             Validator<TestValue, String>,
-        ) = crate::into_validators!("valid".to_string());
+        ) = crate::into_validators!(valid_string);
 
         assert!(errors.into_inner().is_empty());
         assert!(validator.inner.is_ok());
     }
 
     #[rstest]
-    fn test_into_validators_macro_multiple_fields() {
+    #[case(("valid1", "valid2", "valid3"))]
+    #[case(("test1", "test2", "test3"))]
+    fn into_validators_macro_multiple_fields(
+        #[case] inputs: (&str, &str, &str),
+    ) {
+        let (input1, input2, input3) = inputs;
         let (errors, validators): (ValidationErrors, ThreeValidators) = crate::into_validators!(
-            "valid1".to_string(),
-            "valid2".to_string(),
-            "valid3".to_string()
+            input1.to_string(),
+            input2.to_string(),
+            input3.to_string()
         );
 
         assert!(errors.into_inner().is_empty());
@@ -246,10 +280,13 @@ mod tests {
     }
 
     #[rstest]
-    fn test_into_validators_macro_with_errors() {
+    fn into_validators_macro_with_errors(
+        valid_string: String,
+        empty_string: String,
+    ) {
         let (errors, validators): (ValidationErrors, ThreeValidators) = crate::into_validators!(
-            "valid".to_string(),
-            "".to_string(),
+            valid_string,
+            empty_string,
             "also_valid".to_string()
         );
 
@@ -265,9 +302,9 @@ mod tests {
     }
 
     #[rstest]
-    fn test_into_validators_macro_multiple_errors() {
+    fn into_validators_macro_multiple_errors(empty_string: String) {
         let (errors, validators): (ValidationErrors, TwoValidators) =
-            crate::into_validators!("".to_string(), "".to_string());
+            crate::into_validators!(empty_string.clone(), empty_string);
 
         let error_list = errors.into_inner();
         assert_eq!(error_list.len(), 2);
@@ -282,19 +319,17 @@ mod tests {
     }
 
     #[rstest]
-    fn test_validation_confirmation_copy() {
-        let confirmation = ValidationConfirmation {
-            _phantom: PhantomData,
-        };
-
+    fn validation_confirmation_copy(
+        validation_confirmation: ValidationConfirmation,
+    ) {
         // Should be Copy
-        let copied_confirmation = confirmation;
-        let _another_copy = confirmation;
+        let copied_confirmation = validation_confirmation;
+        let _another_copy = validation_confirmation;
         let _cloned = copied_confirmation;
 
         // Just verify they exist and can be used
         assert_eq!(
-            std::mem::size_of_val(&confirmation),
+            std::mem::size_of_val(&validation_confirmation),
             std::mem::size_of_val(&copied_confirmation)
         );
     }

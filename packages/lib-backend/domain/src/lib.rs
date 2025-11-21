@@ -70,7 +70,7 @@ mod tests {
     struct Product;
 
     #[rstest]
-    fn test_id_new() {
+    fn id_new() {
         let uuid = Uuid::now_v7();
         let id: Id<User> = Id::new(uuid);
 
@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_id_generate() {
+    fn id_generate() {
         let id1: Id<User> = Id::generate();
         let id2: Id<User> = Id::generate();
 
@@ -91,7 +91,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_id_from_uuid() {
+    fn id_from_uuid() {
         let uuid = Uuid::now_v7();
         let id: Id<Product> = Id::from(uuid);
 
@@ -99,7 +99,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_uuid_from_id() {
+    fn uuid_from_id() {
         let original_uuid = Uuid::now_v7();
         let id: Id<User> = Id::new(original_uuid);
         let converted_uuid: Uuid = id.into();
@@ -108,7 +108,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_id_copy_clone_debug() {
+    fn id_copy_clone_debug() {
         let uuid = Uuid::now_v7();
         let id: Id<User> = Id::new(uuid);
 
@@ -128,7 +128,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_id_type_safety() {
+    fn id_type_safety() {
         let uuid = Uuid::now_v7();
         let user_id: Id<User> = Id::new(uuid);
         let product_id: Id<Product> = Id::new(uuid);
@@ -170,7 +170,7 @@ mod tests {
     impl DomainType<String> for TestDomainValue {}
 
     #[rstest]
-    fn test_domain_type_into_inner() {
+    fn domain_type_into_inner() {
         let test_value = TestDomainValue {
             inner: "test".to_string(),
         };
@@ -180,7 +180,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_domain_type_cloned_inner() {
+    fn domain_type_cloned_inner() {
         let test_value = TestDomainValue {
             inner: "test".to_string(),
         };
@@ -195,14 +195,14 @@ mod tests {
     #[should_panic(
         expected = "We've validated test_field value, so it should be safe"
     )]
-    fn test_domain_type_safe_unwrap_panics() {
+    fn domain_type_safe_unwrap_panics() {
         let unwrap_fn =
             TestDomainValue::it_should_be_safe_to_unwrap::<()>("test_field");
         unwrap_fn(());
     }
 
     #[rstest]
-    fn test_domain_type_as_ref_as_mut() {
+    fn domain_type_as_ref_as_mut() {
         let mut test_value = TestDomainValue {
             inner: "test".to_string(),
         };

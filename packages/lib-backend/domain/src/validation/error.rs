@@ -77,45 +77,58 @@ impl FromIterator<ValidationErrors> for ValidationErrors {
 
 #[cfg(test)]
 mod tests {
-    use rstest::rstest;
+    use rstest::{fixture, rstest};
 
     use super::ValidationErrors;
 
-    #[rstest]
-    fn test_validation_errors_new() {
-        let errors = ValidationErrors::new();
-        assert!(errors.0.is_empty());
+    #[fixture]
+    fn validation_errors() -> ValidationErrors {
+        ValidationErrors::new()
     }
 
-    #[rstest]
-    fn test_validation_errors_default() {
-        let errors = ValidationErrors::default();
-        assert!(errors.0.is_empty());
-    }
-
-    #[rstest]
-    fn test_validation_errors_push() {
+    #[fixture]
+    fn validation_errors_with_data() -> ValidationErrors {
         let mut errors = ValidationErrors::new();
         errors.push("field1", "error message 1");
         errors.push("field2", "error message 2");
+        errors
+    }
 
-        assert_eq!(errors.0.len(), 2);
+    #[fixture]
+    fn single_error() -> ValidationErrors {
+        let mut errors = ValidationErrors::new();
+        errors.push("test_field", "test error");
+        errors
+    }
+
+    #[rstest]
+    #[case(ValidationErrors::new())] // new constructor
+    #[case(ValidationErrors::default())] // default constructor
+    fn validation_errors_constructors(#[case] errors: ValidationErrors) {
+        assert!(errors.0.is_empty());
+    }
+
+    #[rstest]
+    #[case("field1", "error message 1")]
+    #[case("username", "must be valid")]
+    #[case("email", "invalid format")]
+    fn validation_errors_push(
+        mut validation_errors: ValidationErrors,
+        #[case] field: &str,
+        #[case] message: &str,
+    ) {
+        validation_errors.push(field, message);
+
+        assert_eq!(validation_errors.0.len(), 1);
         assert_eq!(
-            errors.0[0],
-            ("field1".to_string(), "error message 1".to_string())
-        );
-        assert_eq!(
-            errors.0[1],
-            ("field2".to_string(), "error message 2".to_string())
+            validation_errors.0[0],
+            (field.to_string(), message.to_string())
         );
     }
 
     #[rstest]
-    fn test_validation_errors_into_inner() {
-        let mut errors = ValidationErrors::new();
-        errors.push("test_field", "test error");
-
-        let inner = errors.into_inner();
+    fn validation_errors_into_inner(single_error: ValidationErrors) {
+        let inner = single_error.into_inner();
         assert_eq!(inner.len(), 1);
         assert_eq!(
             inner[0],
@@ -124,52 +137,56 @@ mod tests {
     }
 
     #[rstest]
-    fn test_validation_errors_extend() {
-        let mut errors1 = ValidationErrors::new();
-        errors1.push("field1", "error1");
-
+    fn validation_errors_extend(mut single_error: ValidationErrors) {
         let mut errors2 = ValidationErrors::new();
         errors2.push("field2", "error2");
         errors2.push("field3", "error3");
 
-        errors1.extend(errors2);
+        single_error.extend(errors2);
 
-        assert_eq!(errors1.0.len(), 3);
-        assert_eq!(errors1.0[0], ("field1".to_string(), "error1".to_string()));
-        assert_eq!(errors1.0[1], ("field2".to_string(), "error2".to_string()));
-        assert_eq!(errors1.0[2], ("field3".to_string(), "error3".to_string()));
+        assert_eq!(single_error.0.len(), 3);
+        assert_eq!(
+            single_error.0[0],
+            ("test_field".to_string(), "test error".to_string())
+        );
+        assert_eq!(
+            single_error.0[1],
+            ("field2".to_string(), "error2".to_string())
+        );
+        assert_eq!(
+            single_error.0[2],
+            ("field3".to_string(), "error3".to_string())
+        );
     }
 
     #[rstest]
-    fn test_validation_errors_into_result_success() {
-        let errors = ValidationErrors::new(); // Empty errors
-
-        let result = errors.into_result(|_confirmation| "success");
+    fn validation_errors_into_result_success(
+        validation_errors: ValidationErrors,
+    ) {
+        let result = validation_errors.into_result(|_confirmation| "success");
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), "success");
     }
 
     #[rstest]
-    fn test_validation_errors_into_result_failure() {
-        let mut errors = ValidationErrors::new();
-        errors.push("field", "error");
-
-        let result = errors.into_result(|_confirmation| "success");
+    fn validation_errors_into_result_failure(single_error: ValidationErrors) {
+        let result = single_error.into_result(|_confirmation| "success");
 
         assert!(result.is_err());
         let err = result.unwrap_err();
         assert_eq!(err.0.len(), 1);
-        assert_eq!(err.0[0], ("field".to_string(), "error".to_string()));
+        assert_eq!(
+            err.0[0],
+            ("test_field".to_string(), "test error".to_string())
+        );
     }
 
     #[rstest]
-    fn test_validation_errors_display() {
-        let mut errors = ValidationErrors::new();
-        errors.push("field1", "error message 1");
-        errors.push("field2", "error message 2");
-
-        let display_str = format!("{}", errors);
+    fn validation_errors_display(
+        validation_errors_with_data: ValidationErrors,
+    ) {
+        let display_str = format!("{}", validation_errors_with_data);
 
         assert!(display_str.contains("Validation errors:"));
         assert!(display_str.contains("field1: error message 1"));
@@ -177,15 +194,14 @@ mod tests {
     }
 
     #[rstest]
-    fn test_validation_errors_display_empty() {
-        let errors = ValidationErrors::new();
-        let display_str = format!("{}", errors);
+    fn validation_errors_display_empty(validation_errors: ValidationErrors) {
+        let display_str = format!("{}", validation_errors);
 
         assert_eq!(display_str, "Validation errors: [\n\n]");
     }
 
     #[rstest]
-    fn test_validation_errors_from_vec() {
+    fn validation_errors_from_vec() {
         let mut errors1 = ValidationErrors::new();
         errors1.push("field1", "error1");
 
@@ -214,7 +230,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_validation_errors_from_iter() {
+    fn validation_errors_from_iter() {
         let mut errors1 = ValidationErrors::new();
         errors1.push("field1", "error1");
 
@@ -236,14 +252,14 @@ mod tests {
     }
 
     #[rstest]
-    fn test_validation_errors_from_empty_vec() {
+    fn validation_errors_from_empty_vec() {
         let combined_errors =
             ValidationErrors::from(vec![] as Vec<ValidationErrors>);
         assert!(combined_errors.0.is_empty());
     }
 
     #[rstest]
-    fn test_validation_errors_multiple_errors_in_single_validation() {
+    fn validation_errors_multiple_errors_in_single_validation() {
         let mut errors1 = ValidationErrors::new();
         errors1.push("field1", "error1");
         errors1.push("field1", "error2"); // Same field, multiple errors
@@ -269,25 +285,19 @@ mod tests {
     }
 
     #[rstest]
-    fn test_validation_errors_clone() {
-        let mut errors = ValidationErrors::new();
-        errors.push("field", "error");
+    fn validation_errors_clone(single_error: ValidationErrors) {
+        let cloned_errors = single_error.clone();
 
-        let cloned_errors = errors.clone();
-
-        assert_eq!(errors.0.len(), cloned_errors.0.len());
-        assert_eq!(errors.0[0], cloned_errors.0[0]);
+        assert_eq!(single_error.0.len(), cloned_errors.0.len());
+        assert_eq!(single_error.0[0], cloned_errors.0[0]);
     }
 
     #[rstest]
-    fn test_validation_errors_debug() {
-        let mut errors = ValidationErrors::new();
-        errors.push("field", "error");
-
-        let debug_str = format!("{:?}", errors);
+    fn validation_errors_debug(single_error: ValidationErrors) {
+        let debug_str = format!("{:?}", single_error);
 
         assert!(debug_str.contains("ValidationErrors"));
-        assert!(debug_str.contains("field"));
-        assert!(debug_str.contains("error"));
+        assert!(debug_str.contains("test_field"));
+        assert!(debug_str.contains("test error"));
     }
 }
