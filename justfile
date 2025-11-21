@@ -21,13 +21,13 @@ fmt:
     cargo fmt --all
 
 lint:
-    cargo clippy --all -- -D warnings
+    cargo clippy --workspace --all-targets -- -D warnings
 
 test:
     cargo test --all
 
-run crate:
-    cargo run --bin {{ crate }}
+build crate:
+    cargo build --bin {{ crate }}
 
 check crate:
     just udeps && \
@@ -35,13 +35,16 @@ check crate:
     just fmt && \
     just lint && \
     just test && \
-    just run {{ crate }}
+    just build {{ crate }}
+
+run crate:
+    cargo run --bin {{ crate }}
 
 watch-rs crate:
     watchexec \
         -rqc reset \
-        -e rs,toml \
-        "just check {{ crate }}"
+        -e rs,toml,lock \
+        "just check {{ crate }} && just run {{ crate }}"
 
 sqlx-prepare crate db="postgres":
     cd ./apps/{{ crate }}/infrastructure/persistence/{{ db }} && \
