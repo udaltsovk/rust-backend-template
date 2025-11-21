@@ -1,5 +1,6 @@
 use application::usecase::{UseCase, client::ClientUseCase};
 use domain::client::Client;
+use infrastructure::persistence::postgres::migrate;
 use lib::infrastructure::persistence::postgres::Postgres;
 use presentation::api::rest::module::{ModulesExt, UseCaseImpl};
 
@@ -39,6 +40,8 @@ impl Modules {
             *config::POSTGRES_DATABASE,
         );
         let postgres = Postgres::new(&postgres_url).await;
+
+        migrate(&postgres).await;
 
         let repositories_module = RepositoriesModule::new(&postgres);
         let services_module = ServicesModule::new(&config::JWT_SECRET);

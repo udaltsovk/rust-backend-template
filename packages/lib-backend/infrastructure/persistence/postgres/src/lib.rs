@@ -2,7 +2,9 @@ use std::ops::Deref;
 
 #[doc(hidden)]
 pub use derive_where::derive_where;
-use sqlx::{Pool, Postgres as PostgreSQL, postgres::PgPoolOptions};
+use sqlx::{
+    Pool, Postgres as PostgreSQL, migrate::Migrator, postgres::PgPoolOptions,
+};
 use tap::Pipe as _;
 
 pub mod error;
@@ -19,6 +21,16 @@ impl Postgres {
             .await
             .expect("Cannot connect to the database. Please check your configuration.")
             .pipe(Self)
+    }
+
+    pub async fn migrate(&self, migrator: Migrator) -> Result<(), sqlx::Error> {
+        let mut transaction = self.begin().await?;
+
+        migrator.run(&mut transaction).await?;
+
+        transaction.commit().await?;
+
+        Ok(())
     }
 }
 
