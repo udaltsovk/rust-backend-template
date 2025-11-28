@@ -1,7 +1,8 @@
 use application::usecase::{UseCase, client::ClientUseCase};
 use domain::client::Client;
-use infrastructure::persistence::postgres::migrate;
-use lib::infrastructure::persistence::postgres::Postgres;
+use infrastructure::persistence::postgres::POSTGRES_MIGRATOR;
+use lib::infrastructure::persistence::mobc_sqlx::MigratorExt as _;
+use mobc_sqlx::{SqlxConnectionManager, mobc::Pool};
 use presentation::api::rest::module::{ModulesExt, UseCaseImpl};
 
 use crate::{
@@ -39,9 +40,9 @@ impl Modules {
             *config::POSTGRES_PORT,
             *config::POSTGRES_DATABASE,
         );
-        let postgres = Postgres::new(&postgres_url).await;
+        let postgres = Pool::new(SqlxConnectionManager::new(&postgres_url));
 
-        migrate(&postgres).await;
+        POSTGRES_MIGRATOR.migrate(&postgres).await;
 
         let repositories_module = RepositoriesModule::new(&postgres);
         let services_module = ServicesModule::new(&config::JWT_SECRET);

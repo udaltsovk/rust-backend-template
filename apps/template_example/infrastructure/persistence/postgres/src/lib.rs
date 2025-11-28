@@ -1,11 +1,6 @@
-use lib::infrastructure::persistence::postgres::Postgres;
+use sqlx::migrate::Migrator;
 
 pub mod entity;
 pub mod repository;
 
-pub async fn migrate(postgres: &Postgres) {
-    postgres
-        .migrate(sqlx::migrate!("./migrations"))
-        .await
-        .expect("failed to run migrations");
-}
+pub static POSTGRES_MIGRATOR: Migrator = sqlx::migrate!("./migrations");

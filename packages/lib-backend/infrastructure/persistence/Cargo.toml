@@ -5,11 +5,16 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
-postgres = ["dep:postgres"]
+mobc-sqlx = ["dep:mobc-sqlx"]
+postgres = ["mobc-sqlx", "dep:postgres"]
 
 [dependencies]
 domain = { path = "../../domain", package = "lib-domain" }
 postgres = { path = "./postgres", package = "lib-infrastructure-persistence-postgres", optional = true }
+
+derive-where.workspace = true
+mobc-sqlx = { workspace = true, optional = true }
+pastey.workspace = true
 
 
 [lints]

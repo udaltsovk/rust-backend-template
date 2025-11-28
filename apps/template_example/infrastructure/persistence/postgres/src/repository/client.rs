@@ -6,7 +6,7 @@ use lib::{
     infrastructure::persistence::postgres::error::PostgresAdapterError,
     instrument_all,
 };
-use sqlx::query_file_as;
+use sqlx::{Acquire as _, query_file_as};
 use tap::{Conv as _, Pipe as _};
 
 use crate::{
@@ -27,7 +27,8 @@ impl ClientRepository for PostgresRepositoryImpl<Client> {
             return Ok(vec![]);
         }
 
-        let mut transaction = self.db.begin().await?;
+        let mut connection = self.pool.get().await?;
+        let mut transaction = connection.begin().await?;
 
         let mut clients = vec![];
 
@@ -57,8 +58,10 @@ impl ClientRepository for PostgresRepositoryImpl<Client> {
         &self,
         id: Id<Client>,
     ) -> Result<Option<Client>, Self::AdapterError> {
+        let mut connection = self.pool.get().await?;
+
         query_file_as!(StoredClient, "./sql/client/find_by_id.sql", id.value)
-            .fetch_optional(&*self.db)
+            .fetch_optional(&mut *connection)
             .await?
             .map(Client::from)
             .pipe(Ok)
