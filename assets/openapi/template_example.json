@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Advertisement Platform API",
+    "title": "Example Template API",
     "description": "",
     "contact": {
       "name": "Kirill Udaltsov",
@@ -14,8 +14,17 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080/v0",
-      "description": "Local instance (v0)"
+      "url": "/{api_version}",
+      "description": "Default server",
+      "variables": {
+        "api_version": {
+          "default": "v0",
+          "description": "Api version to use",
+          "enum": [
+            "v0"
+          ]
+        }
+      }
     }
   ],
   "paths": {
