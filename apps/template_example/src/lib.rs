@@ -19,4 +19,5 @@ env_vars_config! {
     OTEL_SERVICE_NAMESPACE: String = "template_example",
     OTEL_SERVICE_NAME: String = "monolyth",
     JWT_SECRET: String = "changeme",
+    DEPLOY_DOMAIN: String = "localhost",
 }

@@ -37,6 +37,7 @@ services:
 
 
 
+
              mc mb myminio/loki &&
              mc mb myminio/tempo &&
              mc mb myminio/mimir &&
@@ -137,6 +138,7 @@ services:
       OTEL_SERVICE_NAMESPACE: template_example
       OTEL_SERVICE_NAME: monolyth
       JWT_SECRET: ${JWT_SECRET}
+      DEPLOY_DOMAIN: localhost
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
   # frontend:
