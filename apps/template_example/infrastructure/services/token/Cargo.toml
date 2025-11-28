@@ -1,0 +1,14 @@
+[package]
+name = "template_example-infrastructure-services-token"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+jwt = ["dep:jwt"]
+
+[dependencies]
+jwt = { path = "./jwt", package = "template_example-infrastructure-services-token-jwt", optional = true }
+
+[lints]
+workspace = true

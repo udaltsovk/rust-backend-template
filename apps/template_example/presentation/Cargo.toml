@@ -1,0 +1,18 @@
+[package]
+name = "template_example-presentation"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+api = ["dep:api"]
+api-rest = ["api", "api/rest"]
+
+bot = ["dep:bot"]
+
+[dependencies]
+api = { path = "./api", package = "template_example-presentation-api", optional = true }
+bot = { path = "./bot", package = "template_example-presentation-bot", optional = true }
+
+[lints]
+workspace = true

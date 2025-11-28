@@ -1,0 +1,14 @@
+[package]
+name = "template_example-presentation-api"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+rest = ["dep:rest"]
+
+[dependencies]
+rest = { path = "./rest", package = "template_example-presentation-api-rest", optional = true }
+
+[lints]
+workspace = true

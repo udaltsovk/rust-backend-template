@@ -1,0 +1,14 @@
+[package]
+name = "template_example-infrastructure-persistence"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+postgres = ["dep:postgres"]
+
+[dependencies]
+postgres = { path = "./postgres", package = "template_example-infrastructure-persistence-postgres", optional = true }
+
+[lints]
+workspace = true

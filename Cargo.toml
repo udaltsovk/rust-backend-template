@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["packages/lib-backend", "apps/ad_platform"]
+members = ["packages/lib-backend", "apps/template_example"]
 
 [workspace.package]
 authors = ["Kirill Udaltsov <me@udaltsovk.ru>"]

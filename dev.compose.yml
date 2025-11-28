@@ -1,4 +1,4 @@
-name: ad_platform-dev
+name: template_example-dev
 services:
   postgres_db:
     image: postgres:alpine
@@ -6,7 +6,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: ad_platform
+      POSTGRES_DB: template_example
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: trust

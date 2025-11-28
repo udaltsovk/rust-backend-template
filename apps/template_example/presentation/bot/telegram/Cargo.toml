@@ -1,0 +1,11 @@
+[package]
+name = "template_example-presentation-bot-telegram"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+# tokio = { workspace = true, features = ["full", "rt-multi-thread"] }
+
+[lints]
+workspace = true

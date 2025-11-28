@@ -1,0 +1,19 @@
+[package]
+name = "template_example-infrastructure-services"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+hasher = ["dep:hasher"]
+hasher-argon2 = ["hasher/argon2"]
+
+token = ["dep:token"]
+token-jwt = ["token/jwt"]
+
+[dependencies]
+hasher = { path = "./hasher", package = "template_example-infrastructure-services-hasher", optional = true }
+token = { path = "./token", package = "template_example-infrastructure-services-token", optional = true }
+
+[lints]
+workspace = true

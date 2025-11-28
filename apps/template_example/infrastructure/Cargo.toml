@@ -1,0 +1,24 @@
+[package]
+name = "template_example-infrastructure"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+persistence = ["dep:persistence"]
+persistence-postgres = ["persistence", "persistence/postgres"]
+
+
+services = ["dep:services"]
+services-hasher = ["services", "services/hasher"]
+services-hasher-argon2 = ["services-hasher", "services/hasher-argon2"]
+
+services-token = ["services", "services/token"]
+services-token-jwt = ["services-token", "services/token-jwt"]
+
+[dependencies]
+persistence = { path = "./persistence", package = "template_example-infrastructure-persistence", optional = true }
+services = { path = "./services", package = "template_example-infrastructure-services", optional = true }
+
+[lints]
+workspace = true

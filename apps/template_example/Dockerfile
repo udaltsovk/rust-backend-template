@@ -1,0 +1,38 @@
+FROM lukemathwalker/cargo-chef:latest-rust-1.91-trixie AS chef
+COPY rust-toolchain.toml rust-toolchain.toml
+WORKDIR /usr/src
+
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder
+
+ENV OPENSSL_STATIC=1
+
+COPY --from=planner /usr/src/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json --bin template_example-monolyth
+
+COPY . .
+COPY .git .git
+RUN SQLX_OFFLINE=true cargo build --release --bin template_example-monolyth
+
+
+FROM debian:trixie-slim
+
+LABEL org.opencontainers.image.source=https://github.com/udaltsovk/rust-backend-template
+LABEL org.opencontainers.image.title=rust_template_example
+LABEL org.opencontainers.image.description="Rust Template Backend App Example"
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends ca-certificates  \
+	&& rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN useradd -MN app
+USER app
+
+COPY --from=builder /usr/src/target/release/template_example-monolyth app
+
+CMD ["/app"]

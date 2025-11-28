@@ -3,178 +3,6 @@
 version = 4
 
 [[package]]
-name = "ad_platform"
-version = "0.1.0"
-dependencies = [
- "ad_platform-application",
- "ad_platform-domain",
- "ad_platform-infrastructure",
- "ad_platform-presentation",
- "async-trait",
- "axum",
- "axum-otel-metrics",
- "axum-tracing-opentelemetry",
- "derive-where",
- "env-vars-config",
- "lib",
- "thiserror",
- "tikv-jemallocator",
- "tokio",
- "tower",
- "tracing",
- "tracing-subscriber",
- "utoipa",
- "utoipa-axum",
-]
-
-[[package]]
-name = "ad_platform-application"
-version = "0.1.0"
-dependencies = [
- "ad_platform-domain",
- "async-trait",
- "derive-where",
- "lib",
- "tap",
- "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "ad_platform-domain"
-version = "0.1.0"
-dependencies = [
- "derive-where",
- "lib",
- "tap",
- "thiserror",
- "uuid",
-]
-
-[[package]]
-name = "ad_platform-infrastructure"
-version = "0.1.0"
-dependencies = [
- "ad_platform-infrastructure-persistence",
- "ad_platform-infrastructure-services",
-]
-
-[[package]]
-name = "ad_platform-infrastructure-persistence"
-version = "0.1.0"
-dependencies = [
- "ad_platform-infrastructure-persistence-postgres",
-]
-
-[[package]]
-name = "ad_platform-infrastructure-persistence-postgres"
-version = "0.1.0"
-dependencies = [
- "ad_platform-application",
- "ad_platform-domain",
- "async-trait",
- "derive-where",
- "lib",
- "sqlx",
- "tap",
- "thiserror",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "ad_platform-infrastructure-services"
-version = "0.1.0"
-dependencies = [
- "ad_platform-infrastructure-services-hasher",
- "ad_platform-infrastructure-services-token",
-]
-
-[[package]]
-name = "ad_platform-infrastructure-services-hasher"
-version = "0.1.0"
-dependencies = [
- "ad_platform-infrastructure-services-hasher-argon2",
-]
-
-[[package]]
-name = "ad_platform-infrastructure-services-hasher-argon2"
-version = "0.1.0"
-dependencies = [
- "ad_platform-application",
- "argon2",
- "lib",
- "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "ad_platform-infrastructure-services-token"
-version = "0.1.0"
-dependencies = [
- "ad_platform-infrastructure-services-token-jwt",
-]
-
-[[package]]
-name = "ad_platform-infrastructure-services-token-jwt"
-version = "0.1.0"
-dependencies = [
- "ad_platform-application",
- "ad_platform-domain",
- "chrono",
- "jsonwebtoken",
- "lib",
- "serde",
- "tap",
- "thiserror",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "ad_platform-presentation"
-version = "0.1.0"
-dependencies = [
- "ad_platform-presentation-api",
- "ad_platform-presentation-bot",
-]
-
-[[package]]
-name = "ad_platform-presentation-api"
-version = "0.1.0"
-dependencies = [
- "ad_platform-presentation-api-rest",
-]
-
-[[package]]
-name = "ad_platform-presentation-api-rest"
-version = "0.1.0"
-dependencies = [
- "ad_platform-application",
- "ad_platform-domain",
- "axum",
- "lib",
- "serde",
- "tap",
- "thiserror",
- "tracing",
- "utoipa",
- "utoipa-axum",
- "uuid",
-]
-
-[[package]]
-name = "ad_platform-presentation-bot"
-version = "0.1.0"
-dependencies = [
- "ad_platform-presentation-bot-telegram",
-]
-
-[[package]]
-name = "ad_platform-presentation-bot-telegram"
-version = "0.1.0"
-
-[[package]]
 name = "addr2line"
 version = "0.25.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1929,10 +1757,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "paste"
-version = "1.0.15"
+name = "pastey"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
+checksum = "57d6c094ee800037dff99e02cab0eaf3142826586742a270ab3d7a62656bd27a"
 
 [[package]]
 name = "pem"
@@ -2854,6 +2682,178 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
 
 [[package]]
+name = "template_example"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "axum",
+ "axum-otel-metrics",
+ "axum-tracing-opentelemetry",
+ "derive-where",
+ "env-vars-config",
+ "lib",
+ "template_example-application",
+ "template_example-domain",
+ "template_example-infrastructure",
+ "template_example-presentation",
+ "thiserror",
+ "tikv-jemallocator",
+ "tokio",
+ "tower",
+ "tracing",
+ "tracing-subscriber",
+ "utoipa",
+ "utoipa-axum",
+]
+
+[[package]]
+name = "template_example-application"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "derive-where",
+ "lib",
+ "tap",
+ "template_example-domain",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "template_example-domain"
+version = "0.1.0"
+dependencies = [
+ "derive-where",
+ "lib",
+ "tap",
+ "thiserror",
+ "uuid",
+]
+
+[[package]]
+name = "template_example-infrastructure"
+version = "0.1.0"
+dependencies = [
+ "template_example-infrastructure-persistence",
+ "template_example-infrastructure-services",
+]
+
+[[package]]
+name = "template_example-infrastructure-persistence"
+version = "0.1.0"
+dependencies = [
+ "template_example-infrastructure-persistence-postgres",
+]
+
+[[package]]
+name = "template_example-infrastructure-persistence-postgres"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "derive-where",
+ "lib",
+ "sqlx",
+ "tap",
+ "template_example-application",
+ "template_example-domain",
+ "thiserror",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "template_example-infrastructure-services"
+version = "0.1.0"
+dependencies = [
+ "template_example-infrastructure-services-hasher",
+ "template_example-infrastructure-services-token",
+]
+
+[[package]]
+name = "template_example-infrastructure-services-hasher"
+version = "0.1.0"
+dependencies = [
+ "template_example-infrastructure-services-hasher-argon2",
+]
+
+[[package]]
+name = "template_example-infrastructure-services-hasher-argon2"
+version = "0.1.0"
+dependencies = [
+ "argon2",
+ "lib",
+ "template_example-application",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "template_example-infrastructure-services-token"
+version = "0.1.0"
+dependencies = [
+ "template_example-infrastructure-services-token-jwt",
+]
+
+[[package]]
+name = "template_example-infrastructure-services-token-jwt"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "jsonwebtoken",
+ "lib",
+ "serde",
+ "tap",
+ "template_example-application",
+ "template_example-domain",
+ "thiserror",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "template_example-presentation"
+version = "0.1.0"
+dependencies = [
+ "template_example-presentation-api",
+ "template_example-presentation-bot",
+]
+
+[[package]]
+name = "template_example-presentation-api"
+version = "0.1.0"
+dependencies = [
+ "template_example-presentation-api-rest",
+]
+
+[[package]]
+name = "template_example-presentation-api-rest"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "lib",
+ "serde",
+ "tap",
+ "template_example-application",
+ "template_example-domain",
+ "thiserror",
+ "tracing",
+ "utoipa",
+ "utoipa-axum",
+ "uuid",
+]
+
+[[package]]
+name = "template_example-presentation-bot"
+version = "0.1.0"
+dependencies = [
+ "template_example-presentation-bot-telegram",
+]
+
+[[package]]
+name = "template_example-presentation-bot-telegram"
+version = "0.1.0"
+
+[[package]]
 name = "thiserror"
 version = "2.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3301,7 +3301,7 @@ checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
 [[package]]
 name = "utoipa"
 version = "5.4.0"
-source = "git+https://github.com/NikSneMC/utoipa#f5eaef5dd791c0f17a35f86f2ba4fca96c1cef97"
+source = "git+https://github.com/NikSneMC/utoipa#f0f74fc02c494bbc05b1f33ee7d1ad79ab89539a"
 dependencies = [
  "indexmap",
  "serde",
@@ -3312,10 +3312,10 @@ dependencies = [
 [[package]]
 name = "utoipa-axum"
 version = "0.2.0"
-source = "git+https://github.com/NikSneMC/utoipa#f5eaef5dd791c0f17a35f86f2ba4fca96c1cef97"
+source = "git+https://github.com/NikSneMC/utoipa#f0f74fc02c494bbc05b1f33ee7d1ad79ab89539a"
 dependencies = [
  "axum",
- "paste",
+ "pastey",
  "tower-layer",
  "tower-service",
  "utoipa",
@@ -3324,7 +3324,7 @@ dependencies = [
 [[package]]
 name = "utoipa-gen"
 version = "5.4.0"
-source = "git+https://github.com/NikSneMC/utoipa#f5eaef5dd791c0f17a35f86f2ba4fca96c1cef97"
+source = "git+https://github.com/NikSneMC/utoipa#f0f74fc02c494bbc05b1f33ee7d1ad79ab89539a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3336,7 +3336,7 @@ dependencies = [
 [[package]]
 name = "utoipa-scalar"
 version = "0.3.0"
-source = "git+https://github.com/NikSneMC/utoipa#f5eaef5dd791c0f17a35f86f2ba4fca96c1cef97"
+source = "git+https://github.com/NikSneMC/utoipa#f0f74fc02c494bbc05b1f33ee7d1ad79ab89539a"
 dependencies = [
  "axum",
  "serde",

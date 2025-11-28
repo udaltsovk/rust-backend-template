@@ -1,0 +1,22 @@
+[package]
+name = "template_example-infrastructure-services-token-jwt"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+lib = { workspace = true }
+domain = { path = "../../../../domain", package = "template_example-domain" }
+application = { path = "../../../../application", package = "template_example-application" }
+
+chrono.workspace = true
+serde = { workspace = true, features = ["derive"] }
+tap.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+jsonwebtoken = "9.3"
+
+[lints]
+workspace = true

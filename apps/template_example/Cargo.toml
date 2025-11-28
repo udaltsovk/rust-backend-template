@@ -1,0 +1,56 @@
+[package]
+name = "template_example"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "template_example-monolyth"
+path = "./src/bin/main.rs"
+
+[[bin]]
+name = "template_example-openapi"
+path = "./src/bin/openapi.rs"
+
+[dependencies]
+lib = { workspace = true, features = [
+  "bootstrap-openapi",
+  "infrastructure-instrumentation-opentelemetry-grpc-tonic",
+  "infrastructure-persistence-postgres",
+] }
+domain = { path = "./domain", package = "template_example-domain" }
+application = { path = "./application", package = "template_example-application" }
+infrastructure = { path = "./infrastructure", package = "template_example-infrastructure", features = [
+  "persistence-postgres",
+  "services-hasher-argon2",
+  "services-token-jwt",
+] }
+presentation = { path = "./presentation", package = "template_example-presentation", features = [
+  "api-rest",
+] }
+
+async-trait.workspace = true
+axum.workspace = true
+derive-where.workspace = true
+env-vars-config.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tower.workspace = true
+tracing.workspace = true
+utoipa.workspace = true
+utoipa-axum.workspace = true
+
+axum-otel-metrics = "0.12"
+axum-tracing-opentelemetry = { version = "0.30", features = [
+  "tracing_level_info",
+] }
+tracing-subscriber = "0.3"
+
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
+tikv-jemallocator = { workspace = true, features = [
+  "profiling",
+  "unprefixed_malloc_on_supported_platforms",
+] }
+
+[lints]
+workspace = true

@@ -1,0 +1,19 @@
+[package]
+name = "template_example-application"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+lib = { workspace = true, features = ["domain", "application"] }
+domain = { path = "../domain", package = "template_example-domain" }
+
+async-trait.workspace = true
+derive-where.workspace = true
+tap.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+# uuid = { workspace = true, features = ["v7"] }
+
+[lints]
+workspace = true
