@@ -1,5 +1,6 @@
 use domain::client::Client;
-use lib::infrastructure::persistence::entity::DomainTypeFromDb as _;
+use lib::infrastructure::persistence::entity::DomainTypeFromDb;
+use model_mapper::Mapper;
 use sqlx::FromRow;
 use uuid::Uuid;
 
@@ -7,23 +8,15 @@ use crate::entity::client::gender::StoredClientGender;
 
 pub mod gender;
 
-#[derive(FromRow, Debug)]
+#[derive(Mapper, FromRow, Debug)]
+#[mapper(ty = Client, into)]
 pub struct StoredClient {
     pub id: Uuid,
+    #[mapper(into_with = DomainTypeFromDb::into_domain)]
     pub login: String,
+    #[mapper(into_with = DomainTypeFromDb::into_domain)]
     pub age: i32,
     pub gender: StoredClientGender,
+    #[mapper(into_with = DomainTypeFromDb::into_domain)]
     pub location: String,
-}
-
-impl From<StoredClient> for Client {
-    fn from(c: StoredClient) -> Self {
-        Self {
-            id: c.id.into(),
-            login: c.login.into_domain(),
-            age: c.age.into_domain(),
-            gender: c.gender.into(),
-            location: c.location.into_domain(),
-        }
-    }
 }

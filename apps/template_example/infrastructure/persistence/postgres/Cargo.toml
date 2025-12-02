@@ -12,12 +12,13 @@ application = { path = "../../../application", package = "template_example-appli
 async-trait.workspace = true
 derive-where.workspace = true
 mobc-sqlx = { workspace = true, features = ["postgres", "uuid"] }
-sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid"] }
+model-mapper.workspace = true
 tap.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 uuid.workspace = true
 
+sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid"] }
 
 [lints]
 workspace = true
