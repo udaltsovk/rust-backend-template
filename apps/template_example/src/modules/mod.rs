@@ -1,8 +1,10 @@
 use application::usecase::{UseCase, client::ClientUseCase};
 use domain::client::Client;
 use infrastructure::persistence::postgres::POSTGRES_MIGRATOR;
-use lib::infrastructure::persistence::mobc_sqlx::MigratorExt as _;
-use mobc_sqlx::{SqlxConnectionManager, mobc::Pool};
+use lib::{
+    infrastructure::persistence::mobc_sqlx::MigratorExt as _,
+    mobc_sqlx::{SqlxConnectionManager, mobc::Pool},
+};
 use presentation::api::rest::module::{ModulesExt, UseCaseImpl};
 
 use crate::{

@@ -5,11 +5,24 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
-application = ["dep:application"]
-bootstrap = ["dep:bootstrap"]
-bootstrap-openapi = ["bootstrap", "bootstrap/openapi"]
+application = ["dep:application", "dep:async-trait", "dep:tap"]
 
-domain = ["dep:domain"]
+bootstrap = [
+  "dep:bootstrap",
+  "dep:async-trait",
+  "dep:env-vars-config",
+  "dep:mobc-sqlx",
+  "dep:tower",
+  "dep:tower-http",
+]
+bootstrap-openapi = ["bootstrap", "bootstrap/openapi"]
+bootstrap-instrumentation-opentelemetry = [
+  "bootstrap",
+  "dep:axum-otel-metrics",
+  "dep:axum-tracing-opentelemetry",
+]
+
+domain = ["dep:domain", "dep:uuid"]
 
 infrastructure = ["dep:infrastructure"]
 
@@ -33,22 +46,47 @@ infrastructure-instrumentation-opentelemetry-grpc-tonic = [
   "infrastructure/instrumentation-opentelemetry-grpc-tonic",
 ]
 
-infrastructure-persistence = ["infrastructure/persistence"]
-infrastructure-persistence-postgres = [
+infrastructure-persistence = [
   "infrastructure/persistence",
+  "dep:async-trait",
+  "dep:model-mapper",
+  "dep:tap",
+  "dep:uuid",
+]
+infrastructure-persistence-postgres = [
+  "infrastructure-persistence",
   "infrastructure/persistence-postgres",
+]
+
+infrastructure-services = [
+  "dep:async-trait",
+  "dep:chrono",
+  "dep:model-mapper",
+  "dep:tap",
+  "dep:uuid",
 ]
 
 macros = ["dep:macros"]
 macros-proc = ["macros", "macros/proc"]
 
-presentation = ["dep:presentation"]
+presentation = ["dep:presentation", "dep:tap"]
 
-presentation-api = ["presentation", "presentation/api"]
-presentation-api-rest = ["presentation/api", "presentation/api-rest"]
+presentation-api = [
+  "presentation",
+  "presentation/api",
+  "dep:model-mapper",
+  "dep:uuid",
+  "uuid/serde",
+]
+presentation-api-rest = [
+  "presentation-api",
+  "presentation/api-rest",
+  "dep:axum",
+  "dep:utoipa-axum",
+]
 
 presentation-bot = ["presentation/bot"]
-presentation-bot-telegram = ["presentation/bot", "presentation/bot-telegram"]
+presentation-bot-telegram = ["presentation-bot", "presentation/bot-telegram"]
 
 [dependencies]
 application = { path = "./application", package = "lib-application", optional = true }
@@ -57,6 +95,23 @@ infrastructure = { path = "./infrastructure", package = "lib-infrastructure", op
 domain = { path = "./domain", package = "lib-domain", optional = true }
 macros = { path = "./macros", package = "lib-macros", optional = true }
 presentation = { path = "./presentation", package = "lib-presentation", optional = true }
+
+async-trait = { version = "0.1", optional = true }
+axum = { workspace = true, optional = true }
+axum-otel-metrics = { version = "0.12", optional = true }
+axum-tracing-opentelemetry = { version = "0.30", optional = true, features = [
+  "tracing_level_info",
+] }
+chrono = { version = "0.4", optional = true }
+env-vars-config = { version = "1.0", optional = true }
+mobc-sqlx = { workspace = true, optional = true }
+model-mapper = { version = "0.6", optional = true }
+tap = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+tower = { workspace = true, optional = true }
+tower-http = { version = "0.6", optional = true, features = ["cors"] }
+utoipa-axum = { version = "0.2", optional = true }
+uuid = { workspace = true, optional = true, features = ["v7"] }
 
 [lints]
 workspace = true

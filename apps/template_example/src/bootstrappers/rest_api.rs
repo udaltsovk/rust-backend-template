@@ -1,16 +1,18 @@
 use std::net::SocketAddr;
 
-use async_trait::async_trait;
-use axum::{
-    Router,
-    http::{HeaderValue, Method, header},
+use lib::{
+    async_trait,
+    axum::{
+        Router,
+        http::{HeaderValue, Method, header},
+    },
+    axum_otel_metrics::{HttpMetricsLayerBuilder, PathSkipper},
+    axum_tracing_opentelemetry::middleware::OtelAxumLayer,
+    presentation::api::rest::startup::RestApi,
+    tower::ServiceBuilder,
+    tower_http::cors::CorsLayer,
 };
-use axum_otel_metrics::{HttpMetricsLayerBuilder, PathSkipper};
-use axum_tracing_opentelemetry::middleware::OtelAxumLayer;
-use lib::presentation::api::rest::startup::RestApi;
 use presentation::api::rest::routes;
-use tower::ServiceBuilder;
-use tower_http::cors::CorsLayer;
 
 use crate::{Modules, bootstrappers::BootstrapperExt, config};
 

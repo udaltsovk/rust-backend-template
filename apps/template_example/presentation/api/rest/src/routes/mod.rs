@@ -1,5 +1,5 @@
+use lib::utoipa_axum::router::OpenApiRouter;
 use utoipa::OpenApi as _;
-use utoipa_axum::router::OpenApiRouter;
 
 use crate::{context::openapi::ApiDoc, module::ModulesExt};
 

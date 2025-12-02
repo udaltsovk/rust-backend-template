@@ -1161,12 +1161,26 @@ dependencies = [
 name = "lib"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
+ "axum",
+ "axum-otel-metrics",
+ "axum-tracing-opentelemetry",
+ "chrono",
+ "env-vars-config",
  "lib-application",
  "lib-bootstrap",
  "lib-domain",
  "lib-infrastructure",
  "lib-macros",
  "lib-presentation",
+ "mobc-sqlx",
+ "model-mapper",
+ "tap",
+ "thiserror 2.0.17",
+ "tower",
+ "tower-http",
+ "utoipa-axum",
+ "uuid",
 ]
 
 [[package]]
@@ -2820,14 +2834,7 @@ checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
 name = "template_example"
 version = "0.1.0"
 dependencies = [
- "async-trait",
- "axum",
- "axum-otel-metrics",
- "axum-tracing-opentelemetry",
- "derive-where",
- "env-vars-config",
  "lib",
- "mobc-sqlx",
  "template_example-application",
  "template_example-domain",
  "template_example-infrastructure",
@@ -2835,22 +2842,14 @@ dependencies = [
  "thiserror 2.0.17",
  "tikv-jemallocator",
  "tokio",
- "tower",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "utoipa",
- "utoipa-axum",
 ]
 
 [[package]]
 name = "template_example-application"
 version = "0.1.0"
 dependencies = [
- "async-trait",
  "derive-where",
  "lib",
- "tap",
  "template_example-domain",
  "thiserror 2.0.17",
  "tracing",
@@ -2860,11 +2859,8 @@ dependencies = [
 name = "template_example-domain"
 version = "0.1.0"
 dependencies = [
- "derive-where",
  "lib",
- "tap",
  "thiserror 2.0.17",
- "uuid",
 ]
 
 [[package]]
@@ -2886,18 +2882,14 @@ dependencies = [
 name = "template_example-infrastructure-persistence-postgres"
 version = "0.1.0"
 dependencies = [
- "async-trait",
  "derive-where",
  "lib",
  "mobc-sqlx",
- "model-mapper",
  "sqlx",
- "tap",
  "template_example-application",
  "template_example-domain",
  "thiserror 2.0.17",
  "tracing",
- "uuid",
 ]
 
 [[package]]
@@ -2937,16 +2929,13 @@ dependencies = [
 name = "template_example-infrastructure-services-token-jwt"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "jsonwebtoken",
  "lib",
  "serde",
- "tap",
  "template_example-application",
  "template_example-domain",
  "thiserror 2.0.17",
  "tracing",
- "uuid",
 ]
 
 [[package]]
@@ -2970,16 +2959,12 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "lib",
- "model-mapper",
  "serde",
- "tap",
  "template_example-application",
  "template_example-domain",
  "thiserror 2.0.17",
  "tracing",
  "utoipa",
- "utoipa-axum",
- "uuid",
 ]
 
 [[package]]
@@ -3496,7 +3481,8 @@ dependencies = [
 [[package]]
 name = "utoipa-scalar"
 version = "0.3.0"
-source = "git+https://github.com/NikSneMC/utoipa#f0f74fc02c494bbc05b1f33ee7d1ad79ab89539a"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59559e1509172f6b26c1cdbc7247c4ddd1ac6560fe94b584f81ee489b141f719"
 dependencies = [
  "axum",
  "serde",

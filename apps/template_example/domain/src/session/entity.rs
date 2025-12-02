@@ -1,5 +1,4 @@
-use lib::domain::Id;
-use uuid::Uuid;
+use lib::{domain::Id, uuid::Uuid};
 
 use crate::client::Client;
 

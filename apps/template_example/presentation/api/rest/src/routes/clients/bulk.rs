@@ -1,10 +1,12 @@
 use application::usecase::client::ClientUseCase as _;
 use axum::{extract::State, http::StatusCode, response::IntoResponse};
-use lib::presentation::api::rest::{
-    context::JsonErrorStruct, extract::Json, model::ParseableJson as _,
-    response::ResponseExt as _,
+use lib::{
+    presentation::api::rest::{
+        context::JsonErrorStruct, extract::Json, model::ParseableJson as _,
+        response::ResponseExt as _,
+    },
+    tap::Pipe as _,
 };
-use tap::Pipe as _;
 
 use crate::{
     context::errors::AppError,

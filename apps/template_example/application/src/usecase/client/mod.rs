@@ -1,6 +1,5 @@
-use async_trait::async_trait;
 use domain::client::{Client, UpsertClient};
-use lib::domain::Id;
+use lib::{async_trait, domain::Id};
 
 use crate::{
     repository::RepositoriesModuleExt, service::ServicesModuleExt,

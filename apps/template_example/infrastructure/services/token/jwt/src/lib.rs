@@ -4,9 +4,11 @@ pub use jsonwebtoken::errors::Error as JwtAdapterError;
 use jsonwebtoken::{
     Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
 };
-use lib::instrument_all;
-use tap::{Conv as _, Pipe as _, Tap as _};
-use uuid::Uuid;
+use lib::{
+    instrument_all,
+    tap::{Conv as _, Pipe as _, Tap as _},
+    uuid::Uuid,
+};
 
 use crate::claims::Claims;
 

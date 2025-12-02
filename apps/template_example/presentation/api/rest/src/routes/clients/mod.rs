@@ -1,4 +1,4 @@
-use utoipa_axum::{router::OpenApiRouter, routes};
+use lib::utoipa_axum::{router::OpenApiRouter, routes};
 
 use crate::module::ModulesExt;
 

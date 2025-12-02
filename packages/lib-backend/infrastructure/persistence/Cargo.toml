@@ -14,7 +14,8 @@ postgres = { path = "./postgres", package = "lib-infrastructure-persistence-post
 
 derive-where.workspace = true
 mobc-sqlx = { workspace = true, optional = true }
-pastey.workspace = true
+
+pastey = "0.2"
 
 
 [lints]

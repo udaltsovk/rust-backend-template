@@ -9,17 +9,12 @@ edition = "2024"
 [workspace.dependencies]
 lib = { path = "./packages/lib-backend" }
 
-async-trait = "0.1"
 axum = "0.8"
 bon = "3.7"
 derive-where = "1.6"
-chrono = "0.4"
-env-vars-config = "1.0"
 metrics = "0.24"
 mobc = "0.9"
 mobc-sqlx = "1.3"
-model-mapper = "0.6"
-pastey = "0.2"
 rstest = "0.26"
 serde = "1.0"
 tap = "1.0"
@@ -28,15 +23,15 @@ thiserror = "2.0"
 tokio = "1.47"
 tower = "0.5"
 tracing = "0.1"
+utoipa = "5.4"
 uuid = "1.18"
 
-# TODO: use utoipa from crates.io when https://github.com/juhaku/utoipa/pull/1329 and https://github.com/juhaku/utoipa/pull/1423 merged
-utoipa = { git = "https://github.com/NikSneMC/utoipa" }
-utoipa-axum = { git = "https://github.com/NikSneMC/utoipa" }
-utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa" }
 
 [patch.crates-io]
 mobc = { git = "https://github.com/NikSneMC/mobc", branch = "feat/manager-type-in-metrics" }
+# TODO: use utoipa from crates.io when https://github.com/juhaku/utoipa/pull/1329 and https://github.com/juhaku/utoipa/pull/1423 merged
+utoipa = { git = "https://github.com/NikSneMC/utoipa" }
+utoipa-axum = { git = "https://github.com/NikSneMC/utoipa" }
 
 
 [profile.release]

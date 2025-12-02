@@ -1,5 +1,5 @@
 use domain::client::gender::ClientGender;
-use model_mapper::Mapper;
+use lib::model_mapper::Mapper;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 

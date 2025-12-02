@@ -5,16 +5,13 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-lib = { workspace = true }
+lib = { workspace = true, features = ["infrastructure-services"] }
 domain = { path = "../../../../domain", package = "template_example-domain" }
 application = { path = "../../../../application", package = "template_example-application" }
 
-chrono.workspace = true
 serde = { workspace = true, features = ["derive"] }
-tap.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
-uuid.workspace = true
 
 jsonwebtoken = "9.3"
 

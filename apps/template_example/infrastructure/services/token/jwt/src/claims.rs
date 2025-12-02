@@ -1,7 +1,6 @@
-use chrono::Utc;
 use domain::session::{Session, entity::SessionEntity};
+use lib::{chrono::Utc, uuid::Uuid};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 const TOKEN_LIFETIME: usize = 60 * 60 * 24 * 3_usize; // 3 days
 

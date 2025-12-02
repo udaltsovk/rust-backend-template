@@ -1,13 +1,13 @@
 use application::repository::client::ClientRepository;
-use async_trait::async_trait;
 use domain::client::{Client, UpsertClient};
 use lib::{
+    async_trait,
     domain::{DomainType as _, Id},
     infrastructure::persistence::postgres::error::PostgresAdapterError,
     instrument_all,
+    tap::{Conv as _, Pipe as _},
 };
 use sqlx::{Acquire as _, query_file_as};
-use tap::{Conv as _, Pipe as _};
 
 use crate::{
     entity::client::{StoredClient, gender::StoredClientGender},

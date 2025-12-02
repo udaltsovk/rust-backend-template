@@ -1,6 +1,6 @@
 use std::net::{IpAddr, Ipv6Addr};
 
-use env_vars_config::env_vars_config;
+use lib::env_vars_config::env_vars_config;
 
 pub mod bootstrappers;
 mod modules;

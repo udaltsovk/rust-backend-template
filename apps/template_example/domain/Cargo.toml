@@ -7,10 +7,7 @@ edition.workspace = true
 [dependencies]
 lib = { workspace = true, features = ["domain", "macros-proc"] }
 
-derive-where.workspace = true
-tap.workspace = true
 thiserror.workspace = true
-uuid = { workspace = true, features = ["v7"] }
 
 [lints]
 workspace = true

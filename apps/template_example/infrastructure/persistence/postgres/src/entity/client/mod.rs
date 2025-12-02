@@ -1,8 +1,9 @@
 use domain::client::Client;
-use lib::infrastructure::persistence::entity::DomainTypeFromDb;
-use model_mapper::Mapper;
+use lib::{
+    infrastructure::persistence::entity::DomainTypeFromDb,
+    model_mapper::Mapper, uuid::Uuid,
+};
 use sqlx::FromRow;
-use uuid::Uuid;
 
 use crate::entity::client::gender::StoredClientGender;
 

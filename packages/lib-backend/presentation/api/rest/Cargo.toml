@@ -13,9 +13,9 @@ tokio = { workspace = true, features = ["signal"] }
 tower.workspace = true
 tracing.workspace = true
 utoipa.workspace = true
-utoipa-scalar = { workspace = true, features = ["axum"] }
 
 tower-http = { version = "0.6", features = ["catch-panic"] }
+utoipa-scalar = { version = "0.3", features = ["axum"] }
 
 [lints]
 workspace = true

@@ -1,12 +1,12 @@
 use domain::client::{Client, UpsertClient};
 use lib::{
     domain::{into_validators, validation::error::ValidationErrors},
+    model_mapper::Mapper,
     presentation::api::rest::model::ParseableJson,
+    uuid::Uuid,
 };
-use model_mapper::Mapper;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-use uuid::Uuid;
 
 use crate::model::client::gender::JsonClientGender;
 

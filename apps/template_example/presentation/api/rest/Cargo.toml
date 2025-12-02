@@ -10,9 +10,7 @@ domain = { path = "../../../domain", package = "template_example-domain" }
 application = { path = "../../../application", package = "template_example-application" }
 
 axum = { workspace = true, features = ["macros"] }
-model-mapper.workspace = true
 serde = { workspace = true, features = ["derive"] }
-tap.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 utoipa = { workspace = true, features = [
@@ -23,8 +21,6 @@ utoipa = { workspace = true, features = [
   "uuid",
   "chrono",
 ] }
-utoipa-axum.workspace = true
-uuid = { workspace = true, features = ["serde"] }
 
 [lints]
 workspace = true

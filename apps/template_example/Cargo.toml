@@ -15,6 +15,7 @@ path = "./src/bin/openapi.rs"
 [dependencies]
 lib = { workspace = true, features = [
   "bootstrap-openapi",
+  "bootstrap-instrumentation-opentelemetry",
   "infrastructure-instrumentation-opentelemetry-grpc-tonic",
   "infrastructure-persistence-postgres",
 ] }
@@ -29,24 +30,8 @@ presentation = { path = "./presentation", package = "template_example-presentati
   "api-rest",
 ] }
 
-async-trait.workspace = true
-axum.workspace = true
-derive-where.workspace = true
-env-vars-config.workspace = true
-mobc-sqlx = { workspace = true }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-tower.workspace = true
-tower-http = { version = "0.6", features = ["cors"] }
-tracing.workspace = true
-utoipa.workspace = true
-utoipa-axum.workspace = true
-
-axum-otel-metrics = "0.12"
-axum-tracing-opentelemetry = { version = "0.30", features = [
-  "tracing_level_info",
-] }
-tracing-subscriber = "0.3"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { workspace = true, features = [

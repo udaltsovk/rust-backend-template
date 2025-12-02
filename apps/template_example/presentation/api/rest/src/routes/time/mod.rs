@@ -1,7 +1,9 @@
 use axum::{Json, http::StatusCode, response::IntoResponse};
-use lib::presentation::api::rest::context::JsonErrorStruct;
-use tap::Pipe as _;
-use utoipa_axum::{router::OpenApiRouter, routes};
+use lib::{
+    presentation::api::rest::context::JsonErrorStruct,
+    tap::Pipe as _,
+    utoipa_axum::{router::OpenApiRouter, routes},
+};
 
 use crate::{
     context::errors::AppError, model::time::JsonTime, module::ModulesExt,

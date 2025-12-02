@@ -1,8 +1,10 @@
 use application::repository::RepositoriesModuleExt;
 use domain::client::Client;
 use infrastructure::persistence::postgres::repository::PostgresRepositoryImpl;
-use lib::infrastructure::persistence::postgres::error::PostgresAdapterError;
-use mobc_sqlx::{SqlxConnectionManager, mobc::Pool, sqlx::Postgres};
+use lib::{
+    infrastructure::persistence::postgres::error::PostgresAdapterError,
+    mobc_sqlx::{SqlxConnectionManager, mobc::Pool, sqlx::Postgres},
+};
 
 #[derive(Clone)]
 pub struct RepositoriesModule {

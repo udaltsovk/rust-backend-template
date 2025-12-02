@@ -1,7 +1,5 @@
-use async_trait::async_trait;
 use domain::client::{Client, UpsertClient};
-use lib::{domain::Id, instrument_all};
-use tap::Pipe as _;
+use lib::{async_trait, domain::Id, instrument_all, tap::Pipe as _};
 
 use crate::{
     repository::{RepositoriesModuleExt, client::ClientRepository as _},
