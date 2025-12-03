@@ -12,23 +12,26 @@ dev-compose-restart:
     just dev-compose-down
     just dev-compose-up
 
-udeps:
-    cargo udeps --all
+udeps *args="--all":
+    cargo udeps {{ args }}
 
-audit:
-    cargo audit -n
+audit *args="-n":
+    cargo audit {{ args }}
 
-fmt:
-    cargo fmt --all
+fmt *args="--all":
+    cargo fmt {{ args }}
 
-lint:
-    cargo clippy --workspace --all-targets -- -D warnings
+lint *args="--workspace --all-targets -- -D warnings":
+    cargo clippy {{ args }}
 
-test:
-    cargo test --all
+fix *args="--workspace --all-targets":
+    just lint --fix {{ args }}
 
-build crate="{{ default_app_name }}-monolyth":
-    cargo build --bin {{ crate }}
+test *args="--all":
+    cargo test {{ args }}
+
+build crate="{{ default_app_name }}-monolyth" *args:
+    cargo build --bin {{ crate }} {{ args }}
 
 check:
     just udeps && \
@@ -37,21 +40,21 @@ check:
     just lint && \
     just test
 
-run crate="{{ default_app_name }}-monolyth":
-    cargo run --bin {{ crate }}
+run crate="{{ default_app_name }}-monolyth" *args:
+    cargo run --bin {{ crate }} {{ args }}
 
 watch-rs crate="{{ default_app_name }}-monolyth":
     watchexec \
         -rqc reset \
         -e rs,toml,lock \
-        "just check && just run {{ crate }}"
+        "just check run {{ crate }}"
 
-sqlx-reset crate="{{ default_app_name }}-monolyth" db="postgres":
-    cargo sqlx database reset --source ./apps/{{ crate }}/infrastructure/persistence/{{ db }}/migrations
+sqlx-reset crate="{{ default_app_name }}-monolyth" db="postgres" *args:
+    cargo sqlx database reset --source ./apps/{{ crate }}/infrastructure/persistence/{{ db }}/migrations {{ args }}
 
-sqlx-prepare crate="{{ default_app_name }}-monolyth" db="postgres":
+sqlx-prepare crate="{{ default_app_name }}-monolyth" db="postgres" *args:
     cd ./apps/{{ crate }}/infrastructure/persistence/{{ db }} && \
-    cargo sqlx prepare
+    cargo sqlx prepare {{ args }}
 
 watch-sql crate="{{ default_app_name }}-monolyth":
     watchexec \
