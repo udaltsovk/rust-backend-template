@@ -42,3 +42,15 @@ impl IntoResponse for JsonErrorStruct {
         (self.status_code, Json(self)).into_response()
     }
 }
+
+pub trait InternalErrorStringExt: ToString + Sized {
+    fn to_internal_error_string(self) -> String {
+        if cfg!(debug_assertions) {
+            self.to_string()
+        } else {
+            "Something went wrong on our side...".to_string()
+        }
+    }
+}
+
+impl<T> InternalErrorStringExt for T where T: ToString + Sized {}

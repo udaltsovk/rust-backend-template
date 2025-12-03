@@ -1,15 +1,13 @@
 use std::fmt::Debug;
 
-use application::{
-    repository::RepositoriesModuleExt, service::ServicesModuleExt,
-    usecase::client::error::ClientUseCaseError,
-};
 use axum::{
     extract::rejection::{JsonRejection, PathRejection},
     http::StatusCode,
 };
 use domain::error::DomainError;
 use lib::domain::validation::error::ValidationErrors;
+
+mod client;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
@@ -31,30 +29,6 @@ pub enum AppError {
         error_code: &'static str,
         error: String,
     },
-}
-
-impl<R, S> From<ClientUseCaseError<R, S>> for AppError
-where
-    R: RepositoriesModuleExt,
-    S: ServicesModuleExt,
-{
-    fn from(error: ClientUseCaseError<R, S>) -> Self {
-        let (status_code, error_code) = {
-            use ClientUseCaseError as E;
-            use StatusCode as C;
-            match error {
-                E::Repository(_) | E::Service(_) => {
-                    (C::INTERNAL_SERVER_ERROR, "internal_server_error")
-                },
-            }
-        };
-
-        Self::UseCase {
-            status_code,
-            error_code,
-            error: error.to_string(),
-        }
-    }
 }
 
 impl From<DomainError> for AppError {
