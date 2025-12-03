@@ -17,6 +17,7 @@
     sqlx-cli
     cargo-udeps
     cargo-audit
+    cargo-tarpaulin
     cargo-expand
   ];
 

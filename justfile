@@ -27,18 +27,24 @@ lint *args="--workspace --all-targets -- -D warnings":
 fix *args="--workspace --all-targets":
     just lint --fix {{ args }}
 
-test *args="--all":
+test *args="--workspace":
     cargo test {{ args }}
+
+coverage *args="--skip-clean --workspace --all-targets":
+    cargo tarpaulin {{ args }}
 
 build crate="{{ default_app_name }}-monolyth" *args:
     cargo build --bin {{ crate }} {{ args }}
 
+style:
+    just fmt && \
+    just lint
+
 check:
     just udeps && \
     just audit && \
-    just fmt && \
-    just lint && \
-    just test
+    just style && \
+    just coverage
 
 run crate="{{ default_app_name }}-monolyth" *args:
     cargo run --bin {{ crate }} {{ args }}
@@ -47,7 +53,7 @@ watch-rs crate="{{ default_app_name }}-monolyth":
     watchexec \
         -rqc reset \
         -e rs,toml,lock \
-        "just check run {{ crate }}"
+        "just style run {{ crate }}"
 
 sqlx-reset crate="{{ default_app_name }}-monolyth" db="postgres" *args:
     cargo sqlx database reset --source ./apps/{{ crate }}/infrastructure/persistence/{{ db }}/migrations {{ args }}
