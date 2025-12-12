@@ -16,35 +16,39 @@ bootstrap = [
   "dep:tower-http",
 ]
 bootstrap-openapi = ["bootstrap", "bootstrap/openapi"]
+
+bootstrap-instrumentation = ["bootstrap", "bootstrap/instrumentation"]
+
 bootstrap-instrumentation-opentelemetry = [
-  "bootstrap",
+  "bootstrap-instrumentation",
+  "bootstrap/instrumentation-opentelemetry",
   "dep:axum-otel-metrics",
   "dep:axum-tracing-opentelemetry",
+]
+
+bootstrap-instrumentation-opentelemetry-http-proto = [
+  "bootstrap-instrumentation-opentelemetry",
+  "bootstrap/instrumentation-opentelemetry-http-proto",
+]
+
+bootstrap-instrumentation-opentelemetry-http-json = [
+  "bootstrap-instrumentation-opentelemetry",
+  "bootstrap/instrumentation-opentelemetry-http-json",
+]
+
+bootstrap-instrumentation-opentelemetry-grpc-tonic = [
+  "bootstrap-instrumentation-opentelemetry",
+  "bootstrap/instrumentation-opentelemetry-grpc-tonic",
+]
+
+bootstrap-instrumentation-stdout = [
+  "bootstrap-instrumentation",
+  "bootstrap/instrumentation-stdout",
 ]
 
 domain = ["dep:domain", "dep:uuid"]
 
 infrastructure = ["dep:infrastructure"]
-
-infrastructure-instrumentation = [
-  "infrastructure",
-  "infrastructure/instrumentation",
-]
-
-infrastructure-instrumentation-opentelemetry-http-proto = [
-  "infrastructure-instrumentation",
-  "infrastructure/instrumentation-opentelemetry-http-proto",
-]
-
-infrastructure-instrumentation-opentelemetry-http-json = [
-  "infrastructure-instrumentation",
-  "infrastructure/instrumentation-opentelemetry-http-json",
-]
-
-infrastructure-instrumentation-opentelemetry-grpc-tonic = [
-  "infrastructure-instrumentation",
-  "infrastructure/instrumentation-opentelemetry-grpc-tonic",
-]
 
 infrastructure-persistence = [
   "infrastructure/persistence",
@@ -96,22 +100,23 @@ domain = { path = "./domain", package = "lib-domain", optional = true }
 macros = { path = "./macros", package = "lib-macros", optional = true }
 presentation = { path = "./presentation", package = "lib-presentation", optional = true }
 
-async-trait = { version = "0.1", optional = true }
 axum = { workspace = true, optional = true }
-axum-otel-metrics = { version = "0.12", optional = true }
-axum-tracing-opentelemetry = { version = "0.30", optional = true, features = [
-  "tracing_level_info",
-] }
-chrono = { version = "0.4", optional = true }
-env-vars-config = { version = "1.0", optional = true }
 mobc-sqlx = { workspace = true, optional = true }
-model-mapper = { version = "0.6", optional = true }
 tap = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 tower = { workspace = true, optional = true }
-tower-http = { version = "0.6", optional = true, features = ["cors"] }
-utoipa-axum = { version = "0.2", optional = true }
 uuid = { workspace = true, optional = true, features = ["v7"] }
+
+async-trait = { version = "0.1.89", optional = true }
+axum-otel-metrics = { version = "0.12.0", optional = true }
+axum-tracing-opentelemetry = { version = "0.30.1", optional = true, features = [
+  "tracing_level_info",
+] }
+chrono = { version = "0.4.42", optional = true }
+env-vars-config = { version = "1.0.1", optional = true }
+model-mapper = { version = "0.6.1", optional = true }
+tower-http = { version = "0.6.6", optional = true, features = ["cors"] }
+utoipa-axum = { version = "0.2.0", optional = true }
 
 [lints]
 workspace = true

@@ -8,6 +8,8 @@ edition.workspace = true
 mobc-sqlx = { workspace = true, features = ["postgres"] }
 thiserror.workspace = true
 
+[dev-dependencies]
+rstest.workspace = true
 
 [lints]
 workspace = true

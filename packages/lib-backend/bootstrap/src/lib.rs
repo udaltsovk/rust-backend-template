@@ -1,3 +1,5 @@
+#[cfg(feature = "instrumentation")]
+pub use instrumentation;
 #[cfg(feature = "openapi")]
 pub mod openapi;
 

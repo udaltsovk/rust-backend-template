@@ -6,7 +6,7 @@ authors.workspace = true
 
 [[bin]]
 name = "template_example-monolyth"
-path = "./src/bin/main.rs"
+path = "./src/bin/monolyth.rs"
 
 [[bin]]
 name = "template_example-openapi"
@@ -15,8 +15,8 @@ path = "./src/bin/openapi.rs"
 [dependencies]
 lib = { workspace = true, features = [
   "bootstrap-openapi",
-  "bootstrap-instrumentation-opentelemetry",
-  "infrastructure-instrumentation-opentelemetry-grpc-tonic",
+  # "bootstrap-instrumentation-stdout",
+  "bootstrap-instrumentation-opentelemetry-grpc-tonic",
   "infrastructure-persistence-postgres",
 ] }
 domain = { path = "./domain", package = "template_example-domain" }

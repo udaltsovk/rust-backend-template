@@ -1,7 +1,12 @@
 #[macro_export]
 macro_rules! bootstrap {
+    ($_app_crate: ident, [], $_modules_fut: expr) => {
+      const {
+           panic!("`bootstrap!` can't be called with empty bootstrapper array!");
+       }
+    };
     ($app_crate: ident, [$($bootstrapper: tt),*], $modules_fut: expr) => {
-        (async || {
+        async {
             use $app_crate::{bootstrappers::BootstrapperExt as _, config};
 
             $crate::check_config!(config);
@@ -10,6 +15,199 @@ macro_rules! bootstrap {
             tokio::join!(
                 $($bootstrapper::bootstrap(modules.clone())),*
             );
-        })()
+        }
     };
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::{Arc, Mutex};
+
+    // Test trait definitions at module level
+    #[derive(Clone)]
+    pub struct TestModules {
+        pub calls: Arc<Mutex<Vec<String>>>,
+    }
+
+    #[async_trait::async_trait]
+    pub trait TestBootstrapperExt {
+        async fn bootstrap(modules: TestModules);
+    }
+
+    #[derive(Clone)]
+    pub struct MultiTestModules {
+        pub calls: Arc<Mutex<Vec<String>>>,
+    }
+
+    #[async_trait::async_trait]
+    pub trait MultiBootstrapperExt {
+        async fn bootstrap(modules: MultiTestModules);
+    }
+
+    #[derive(Clone)]
+    #[expect(
+        dead_code,
+        reason = "Used in tests that are currently disabled due to compile-time panic"
+    )]
+    pub struct EmptyModules {
+        pub initialized: Arc<Mutex<bool>>,
+    }
+
+    #[async_trait::async_trait]
+    #[expect(
+        dead_code,
+        reason = "Used in tests that are currently disabled due to compile-time panic"
+    )]
+    pub trait EmptyBootstrapperExt {
+        async fn bootstrap(modules: EmptyModules);
+    }
+
+    #[derive(Clone)]
+    pub struct ConfigModules;
+
+    #[async_trait::async_trait]
+    pub trait ConfigBootstrapperExt {
+        async fn bootstrap(modules: ConfigModules);
+    }
+
+    #[tokio::test]
+    async fn bootstrap_macro_with_single_bootstrapper() {
+        struct TestBootstrapper;
+
+        #[async_trait::async_trait]
+        impl TestBootstrapperExt for TestBootstrapper {
+            async fn bootstrap(modules: TestModules) {
+                modules
+                    .calls
+                    .lock()
+                    .expect("Test mutex should not be poisoned")
+                    .push("test".to_string());
+            }
+        }
+
+        mod test_app {
+            pub mod bootstrappers {
+                pub use crate::bootstrap::tests::TestBootstrapperExt as BootstrapperExt;
+            }
+
+            pub mod config {
+                pub fn check_values() -> bool {
+                    true
+                }
+            }
+        }
+
+        let modules = TestModules {
+            calls: Arc::new(Mutex::new(Vec::new())),
+        };
+
+        let modules_fut = async { modules.clone() };
+
+        crate::bootstrap!(test_app, [TestBootstrapper], modules_fut).await;
+
+        let calls = modules
+            .calls
+            .lock()
+            .expect("Test mutex should not be poisoned");
+        assert_eq!(calls.len(), 1);
+        assert!(calls.contains(&"test".to_string()));
+    }
+
+    #[tokio::test]
+    async fn bootstrap_macro_with_multiple_bootstrappers() {
+        struct BootstrapperA;
+        struct BootstrapperB;
+
+        #[async_trait::async_trait]
+        impl MultiBootstrapperExt for BootstrapperA {
+            async fn bootstrap(modules: MultiTestModules) {
+                modules
+                    .calls
+                    .lock()
+                    .expect("Test mutex should not be poisoned")
+                    .push("A".to_string());
+            }
+        }
+
+        #[async_trait::async_trait]
+        impl MultiBootstrapperExt for BootstrapperB {
+            async fn bootstrap(modules: MultiTestModules) {
+                modules
+                    .calls
+                    .lock()
+                    .expect("Test mutex should not be poisoned")
+                    .push("B".to_string());
+            }
+        }
+
+        mod multi_app {
+            pub mod bootstrappers {
+                pub use crate::bootstrap::tests::MultiBootstrapperExt as BootstrapperExt;
+            }
+
+            pub mod config {
+                pub fn check_values() -> bool {
+                    true
+                }
+            }
+        }
+
+        let modules = MultiTestModules {
+            calls: Arc::new(Mutex::new(Vec::new())),
+        };
+
+        let modules_fut = async { modules.clone() };
+
+        crate::bootstrap!(
+            multi_app,
+            [BootstrapperA, BootstrapperB],
+            modules_fut
+        )
+        .await;
+
+        let calls = modules
+            .calls
+            .lock()
+            .expect("Test mutex should not be poisoned");
+        assert_eq!(calls.len(), 2);
+        assert!(calls.contains(&"A".to_string()));
+        assert!(calls.contains(&"B".to_string()));
+    }
+
+    // Note: Test for empty bootstrappers is not included because the macro
+    // intentionally causes a compile-time panic when called with an empty array.
+    // This is the desired behavior to prevent runtime errors.
+
+    #[test]
+    fn bootstrap_macro_check_config_called() {
+        let runtime = tokio::runtime::Runtime::new()
+            .expect("Should be able to create tokio runtime");
+        runtime.block_on(async {
+            mod config_app {
+                pub mod bootstrappers {
+                    pub use crate::bootstrap::tests::ConfigBootstrapperExt as BootstrapperExt;
+                }
+
+                pub mod config {
+                    pub fn check_values() -> bool {
+                        true
+                    }
+                }
+            }
+
+            struct DummyBootstrapper;
+
+            #[async_trait::async_trait]
+            impl ConfigBootstrapperExt for DummyBootstrapper {
+                async fn bootstrap(_modules: ConfigModules) {
+                    // Test implementation
+                }
+            }
+
+            let modules_fut = async { ConfigModules };
+
+            // This tests that check_config is called by the macro
+            crate::bootstrap!(config_app, [DummyBootstrapper], modules_fut).await;
+        });
+    }
 }

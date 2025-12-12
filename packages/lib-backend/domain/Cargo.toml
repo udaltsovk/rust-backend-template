@@ -5,11 +5,11 @@ edition = "2024"
 
 [dependencies]
 derive-where.workspace = true
-num-traits = "0.2"
 tap.workspace = true
 uuid = { workspace = true, features = ["v7"] }
 
-regex = "1.12"
+num-traits = "0.2.19"
+regex = "1.12.2"
 
 [dev-dependencies]
 rstest = { workspace = true }

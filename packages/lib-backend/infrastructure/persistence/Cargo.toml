@@ -15,7 +15,12 @@ postgres = { path = "./postgres", package = "lib-infrastructure-persistence-post
 derive-where.workspace = true
 mobc-sqlx = { workspace = true, optional = true }
 
-pastey = "0.2"
+pastey = "0.2.0"
+
+[dev-dependencies]
+mobc-sqlx.workspace = true
+sqlx = { version = "0.8", default-features = false, features = ["postgres", "runtime-tokio"] }
+tokio = { workspace = true, features = ["macros"] }
 
 
 [lints]

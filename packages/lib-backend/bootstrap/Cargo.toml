@@ -5,12 +5,43 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
+instrumentation = ["dep:instrumentation"]
+
+instrumentation-opentelemetry = [
+  "instrumentation",
+  "instrumentation/opentelemetry",
+]
+instrumentation-opentelemetry-http-proto = [
+  "instrumentation-opentelemetry",
+  "instrumentation/opentelemetry-http-proto",
+]
+instrumentation-opentelemetry-http-json = [
+  "instrumentation-opentelemetry",
+  "instrumentation/opentelemetry-http-json",
+]
+instrumentation-opentelemetry-grpc-tonic = [
+  "instrumentation-opentelemetry",
+  "instrumentation/opentelemetry-grpc-tonic",
+]
+
+instrumentation-stdout = ["instrumentation", "instrumentation/stdout"]
+
 openapi = ["dep:serde_json", "dep:thiserror", "dep:utoipa"]
 
 [dependencies]
-serde_json = { version = "1.0", optional = true }
+instrumentation = { path = "./instrumentation", package = "lib-infrastructure-instrumentation", optional = true }
+
 thiserror = { workspace = true, optional = true }
 utoipa = { workspace = true, optional = true }
+
+serde_json = { version = "1.0.145", optional = true }
+
+[dev-dependencies]
+rstest.workspace = true
+tokio = { workspace = true, features = ["full"] }
+
+async-trait = "0.1.89"
+quote = "1.0.41"
 
 [lints]
 workspace = true

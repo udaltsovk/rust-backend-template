@@ -11,7 +11,7 @@ application = { path = "../../../../application", package = "template_example-ap
 thiserror.workspace = true
 tracing.workspace = true
 
-argon2 = "0.5"
+argon2 = "0.5.3"
 
 [lints]
 workspace = true

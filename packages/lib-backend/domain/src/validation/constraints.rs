@@ -1,5 +1,3 @@
-use tap::Tap as _;
-
 use crate::validation::error::ValidationErrors;
 
 mod alphanumeric;
@@ -64,16 +62,16 @@ impl<T> Constraints<T> {
     }
 
     pub fn check(&self, value: &T) -> ValidationErrors {
-        ValidationErrors::new().tap_mut(|errors| {
-            self.constraints.iter().for_each(|constraint| {
-                if constraint.check(value) {
-                    return;
-                }
+        let mut errors = ValidationErrors::new();
 
+        for constraint in &self.constraints {
+            if !constraint.check(value) {
                 let message = constraint.error_msg();
                 errors.push(self.name, message);
-            });
-        })
+            }
+        }
+
+        errors
     }
 }
 
@@ -273,5 +271,36 @@ mod tests {
 
         let errors = constraints.check(&test_value);
         assert!(errors.into_inner().is_empty());
+    }
+
+    #[test]
+    fn constraints_send_sync() {
+        fn assert_send_sync<T: Send + Sync>() {}
+        assert_send_sync::<Constraints<String>>();
+        assert_send_sync::<ConstraintsBuilder<String>>();
+    }
+
+    #[rstest]
+    fn constraints_works_with_integers() {
+        struct IntConstraint;
+        impl Constraint<i32> for IntConstraint {
+            fn check(&self, value: &i32) -> bool {
+                *value > 0
+            }
+
+            fn error_msg(&self) -> String {
+                "must be positive".to_string()
+            }
+        }
+
+        let constraints = ConstraintsBuilder::new("age")
+            .add_constraint(IntConstraint)
+            .build();
+
+        let errors = constraints.check(&10);
+        assert!(errors.into_inner().is_empty());
+
+        let errors = constraints.check(&-5);
+        assert!(!errors.into_inner().is_empty());
     }
 }

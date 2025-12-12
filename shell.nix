@@ -18,6 +18,7 @@
     cargo-udeps
     cargo-audit
     cargo-tarpaulin
+    pycobertura
     cargo-expand
   ];
 

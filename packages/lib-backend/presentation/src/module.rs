@@ -8,3 +8,35 @@ macro_rules! usecase_impl_type {
         >;
     };
 }
+
+#[cfg(test)]
+mod tests {
+    mod application {
+        pub mod usecase {
+            pub struct UseCase<R, S, T>(std::marker::PhantomData<(R, S, T)>);
+        }
+    }
+
+    pub trait ModulesExt {
+        type RepositoriesModule;
+        type ServicesModule;
+    }
+
+    pub struct TestModules;
+    pub struct TestRepoModule;
+    pub struct TestServiceModule;
+
+    impl ModulesExt for TestModules {
+        type RepositoriesModule = TestRepoModule;
+        type ServicesModule = TestServiceModule;
+    }
+
+    pub struct TestInput;
+
+    usecase_impl_type!();
+
+    #[test]
+    fn macro_expansion_works() {
+        let _: UseCaseImpl<TestModules, TestInput>;
+    }
+}

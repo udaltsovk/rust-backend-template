@@ -5,25 +5,10 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
-instrumentation = ["dep:instrumentation"]
-instrumentation-opentelemetry-http-proto = [
-  "instrumentation",
-  "instrumentation/opentelemetry-http-proto",
-]
-instrumentation-opentelemetry-http-json = [
-  "instrumentation",
-  "instrumentation/opentelemetry-http-json",
-]
-instrumentation-opentelemetry-grpc-tonic = [
-  "instrumentation",
-  "instrumentation/opentelemetry-grpc-tonic",
-]
-
 persistence = ["dep:persistence"]
 persistence-postgres = ["persistence", "persistence/postgres"]
 
 [dependencies]
-instrumentation = { path = "./instrumentation", package = "lib-infrastructure-instrumentation", optional = true }
 persistence = { path = "./persistence", package = "lib-infrastructure-persistence", optional = true }
 
 [lints]

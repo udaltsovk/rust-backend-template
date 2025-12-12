@@ -3,3 +3,5 @@
 .idea
 target
 !bin
+cobertura.xml
+tarpaulin-report.*

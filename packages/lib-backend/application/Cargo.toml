@@ -10,5 +10,8 @@ edition.workspace = true
 [dependencies]
 derive-where.workspace = true
 
+[dev-dependencies]
+rstest.workspace = true
+
 [lints]
 workspace = true

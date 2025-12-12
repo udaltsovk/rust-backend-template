@@ -9,8 +9,7 @@ dev-compose-up:
     docker compose -f {{ dev_compose_file }} up -d
 
 dev-compose-restart:
-    just dev-compose-down
-    just dev-compose-up
+    just dev-compose-down dev-compose-up
 
 udeps *args="--all":
     cargo udeps {{ args }}
@@ -30,20 +29,21 @@ fix *args="--workspace --all-targets":
 test *args="--workspace":
     cargo test {{ args }}
 
-coverage *args="--skip-clean --workspace --all-targets":
+coverage *args="--skip-clean --workspace --all-targets -o Xml -o Html":
     cargo tarpaulin {{ args }}
+    pycobertura show cobertura.xml
 
 build crate="{{ default_app_name }}-monolyth" *args:
     cargo build --bin {{ crate }} {{ args }}
 
 style:
-    just fmt && \
+    just fmt
     just lint
 
 check:
-    just udeps && \
-    just audit && \
-    just style && \
+    just udeps
+    just audit
+    just style
     just coverage
 
 run crate="{{ default_app_name }}-monolyth" *args:

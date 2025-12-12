@@ -1,4 +1,4 @@
-use lib::bootstrap::openapi::{OpenAPISaver as _, OpenAPISaverResult};
+use lib::bootstrap::openapi::{OpenAPISaverResult, OpenAPISaverTrait as _};
 use presentation::api::rest::routes;
 use template_example::Modules;
 

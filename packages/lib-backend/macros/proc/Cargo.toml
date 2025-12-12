@@ -8,8 +8,13 @@ edition.workspace = true
 proc-macro = true
 
 [dependencies]
-quote = "1.0"
-syn = "2.0"
+quote = "1.0.41"
+syn = { version = "2.0.106", features = ["full"] }
+proc-macro2 = "1.0.101"
+
+[dev-dependencies]
+rstest = "0.23.0"
+tracing = "0.1.41"
 
 [lints]
 workspace = true

@@ -25,9 +25,12 @@ where
     where
         T: TryFrom<F, Error = ValidationErrors>,
     {
-        let res = value
-            .try_into()
-            .inspect_err(|err: &ValidationErrors| errors.extend(err.clone()));
+        let res: Result<T, ValidationErrors> = value.try_into();
+
+        if let Err(ref err) = res {
+            errors.extend(err.clone());
+        }
+
         Self {
             inner: res,
             _phantom: PhantomData,
@@ -35,12 +38,13 @@ where
     }
 
     pub fn validated(self, _confirmation: ValidationConfirmation) -> T {
-        self.inner.unwrap_or_else(|_| {
-            panic!(
+        match self.inner {
+            Ok(value) => value,
+            Err(_) => panic!(
                 "`{}` should be Ok because error vec is empty",
                 type_name::<Self>()
-            )
-        })
+            ),
+        }
     }
 }
 
@@ -55,9 +59,7 @@ where
     I: From<T> + Clone,
     T: DomainType<I> + TryFrom<Self, Error = ValidationErrors>,
 {
-    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T, I> {
-        Validator::new(self, errors)
-    }
+    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T, I>;
 }
 
 impl<F, T, I> IntoValidator<T, I> for F
@@ -65,14 +67,20 @@ where
     I: From<T> + Clone,
     T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
 {
+    #[inline]
+    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T, I> {
+        Validator::new(self, errors)
+    }
 }
 
 #[macro_export]
 macro_rules! into_validators {
     ($($field: expr),*) => {
         {
+            #[allow(unused_imports)]
             use $crate::validation::{IntoValidator as _, error::ValidationErrors};
 
+            #[allow(unused_mut)]
             let mut errors = ValidationErrors::new();
 
             let validators = ($(
@@ -134,6 +142,63 @@ mod tests {
                 Err(errors)
             } else {
                 Ok(TestValue {
+                    inner: value,
+                })
+            }
+        }
+    }
+
+    impl TryFrom<&str> for TestValue {
+        type Error = ValidationErrors;
+
+        fn try_from(value: &str) -> Result<Self, Self::Error> {
+            if value.is_empty() {
+                let mut errors = ValidationErrors::new();
+                errors.push("value", "cannot be empty");
+                Err(errors)
+            } else {
+                Ok(TestValue {
+                    inner: value.to_string(),
+                })
+            }
+        }
+    }
+
+    #[derive(Debug, Clone, PartialEq)]
+    struct TestInt {
+        inner: i32,
+    }
+
+    impl AsRef<i32> for TestInt {
+        fn as_ref(&self) -> &i32 {
+            &self.inner
+        }
+    }
+
+    impl AsMut<i32> for TestInt {
+        fn as_mut(&mut self) -> &mut i32 {
+            &mut self.inner
+        }
+    }
+
+    impl From<TestInt> for i32 {
+        fn from(value: TestInt) -> Self {
+            value.inner
+        }
+    }
+
+    impl crate::DomainType<i32> for TestInt {}
+
+    impl TryFrom<i32> for TestInt {
+        type Error = ValidationErrors;
+
+        fn try_from(value: i32) -> Result<Self, Self::Error> {
+            if value < 0 {
+                let mut errors = ValidationErrors::new();
+                errors.push("value", "must be positive");
+                Err(errors)
+            } else {
+                Ok(TestInt {
                     inner: value,
                 })
             }
@@ -332,5 +397,63 @@ mod tests {
             std::mem::size_of_val(&validation_confirmation),
             std::mem::size_of_val(&copied_confirmation)
         );
+    }
+
+    #[test]
+    fn test_value_traits() {
+        let mut val = TestValue {
+            inner: "test".to_string(),
+        };
+        assert_eq!(val.as_ref(), "test");
+
+        let mut_ref = val.as_mut();
+        *mut_ref = "modified".to_string();
+        assert_eq!(val.inner, "modified");
+
+        let string_val: String = val.into();
+        assert_eq!(string_val, "modified");
+    }
+
+    #[test]
+    fn into_validators_macro_empty() {
+        let (errors, validators) = crate::into_validators!();
+        assert!(errors.into_inner().is_empty());
+        assert_eq!(validators, ());
+    }
+
+    #[test]
+    fn validator_send_sync() {
+        fn assert_send_sync<T: Send + Sync>() {}
+        assert_send_sync::<Validator<TestValue, String>>();
+    }
+
+    #[test]
+    fn validator_with_different_input_type() {
+        let mut errors = ValidationErrors::new();
+        let validator =
+            Validator::<TestValue, String>::new("test", &mut errors);
+        assert!(validator.inner.is_ok());
+        assert!(errors.into_inner().is_empty());
+
+        let mut errors = ValidationErrors::new();
+        let validator = Validator::<TestValue, String>::new("", &mut errors);
+        assert!(validator.inner.is_err());
+        assert!(!errors.into_inner().is_empty());
+    }
+
+    #[test]
+    fn into_validator_with_integer() {
+        let mut errors = ValidationErrors::new();
+        let validator: Validator<TestInt, i32> = 42.into_validator(&mut errors);
+
+        assert!(validator.inner.is_ok());
+        assert!(errors.into_inner().is_empty());
+
+        let mut errors = ValidationErrors::new();
+        let validator: Validator<TestInt, i32> =
+            (-5).into_validator(&mut errors);
+
+        assert!(validator.inner.is_err());
+        assert!(!errors.into_inner().is_empty());
     }
 }
