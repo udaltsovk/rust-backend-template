@@ -38,6 +38,7 @@ services:
 
 
 
+
              mc mb myminio/loki &&
              mc mb myminio/tempo &&
              mc mb myminio/mimir &&
@@ -163,16 +164,6 @@ services:
       - "com.centurylinklabs.watchtower.enable=false"
     ports:
       - "3000:3000"
-      # tunnel:
-      #   image: cloudflare/cloudflared:latest
-      #   restart: always
-      #   command: tunnel --no-autoupdate run
-      #   environment:
-      #     TUNNEL_TOKEN: ${CLOUDFLARED_TOKEN}
-      #   depends_on:
-      #     - proxy
-      #   labels:
-      #     - "com.centurylinklabs.watchtower.enable=false"
       # watchtower:
       #   image: containrrr/watchtower:latest
       #   environment:
