@@ -15,5 +15,8 @@ bot-telegram = ["bot", "bot/telegram"]
 api = { path = "./api", package = "lib-presentation-api", optional = true }
 bot = { path = "./bot", package = "lib-presentation-bot", optional = true }
 
+[dev-dependencies]
+rstest.workspace = true
+
 [lints]
 workspace = true

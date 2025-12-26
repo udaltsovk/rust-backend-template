@@ -11,6 +11,8 @@ macro_rules! usecase_impl_type {
 
 #[cfg(test)]
 mod tests {
+    use rstest::rstest;
+
     mod application {
         pub mod usecase {
             pub struct UseCase<R, S, T>(std::marker::PhantomData<(R, S, T)>);
@@ -35,7 +37,7 @@ mod tests {
 
     usecase_impl_type!();
 
-    #[test]
+    #[rstest]
     fn macro_expansion_works() {
         let _: UseCaseImpl<TestModules, TestInput>;
     }

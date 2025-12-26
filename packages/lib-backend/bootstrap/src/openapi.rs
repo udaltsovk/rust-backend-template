@@ -69,6 +69,7 @@ mod tests {
         sync::{Arc, Mutex},
     };
 
+    use rstest::{fixture, rstest};
     use utoipa::OpenApi as _;
 
     use super::*;
@@ -177,27 +178,49 @@ mod tests {
     )]
     struct AnotherTestApi;
 
-    #[test]
-    fn openapi_saver_new_creates_saver() {
-        let mock_writer = MockFileWriter::new();
+    #[fixture]
+    fn mock_writer() -> MockFileWriter {
+        MockFileWriter::new()
+    }
+
+    #[fixture]
+    fn failing_mock_writer() -> MockFileWriter {
+        MockFileWriter::new_failing()
+    }
+
+    #[fixture]
+    fn test_api() -> utoipa::openapi::OpenApi {
+        TestApi::openapi()
+    }
+
+    #[fixture]
+    fn another_test_api() -> utoipa::openapi::OpenApi {
+        AnotherTestApi::openapi()
+    }
+
+    #[rstest]
+    fn openapi_saver_new_creates_saver(
+        mock_writer: MockFileWriter,
+        test_api: utoipa::openapi::OpenApi,
+    ) {
         let saver = OpenAPISaver::new(mock_writer.clone());
 
         // Verify the saver can be used
-        let api = TestApi::openapi();
-        let result = saver.save_as(&api, "test_new");
+        let result = saver.save_as(&test_api, "test_new");
 
         assert!(result.is_ok(), "Newly created saver should work");
         assert!(mock_writer.has_file("./assets/openapi/test_new.json"));
         assert_eq!(mock_writer.file_count(), 1);
     }
 
-    #[test]
-    fn openapi_saver_save_as_success() {
-        let mock_writer = MockFileWriter::new();
+    #[rstest]
+    fn openapi_saver_save_as_success(
+        mock_writer: MockFileWriter,
+        test_api: utoipa::openapi::OpenApi,
+    ) {
         let saver = OpenAPISaver::new(mock_writer.clone());
-        let api = TestApi::openapi();
 
-        let result = saver.save_as(&api, "test_api");
+        let result = saver.save_as(&test_api, "test_api");
 
         assert!(result.is_ok(), "Save operation should succeed");
         assert!(mock_writer.has_file("./assets/openapi/test_api.json"));
@@ -210,13 +233,14 @@ mod tests {
         assert!(content.contains("Test API for unit testing"));
     }
 
-    #[test]
-    fn openapi_saver_save_as_io_error() {
-        let mock_writer = MockFileWriter::new_failing();
-        let saver = OpenAPISaver::new(mock_writer);
-        let api = TestApi::openapi();
+    #[rstest]
+    fn openapi_saver_save_as_io_error(
+        failing_mock_writer: MockFileWriter,
+        test_api: utoipa::openapi::OpenApi,
+    ) {
+        let saver = OpenAPISaver::new(failing_mock_writer);
 
-        let result = saver.save_as(&api, "test_api");
+        let result = saver.save_as(&test_api, "test_api");
 
         assert!(result.is_err(), "Save should fail with failing writer");
         match result.expect_err("Should have failed") {
@@ -227,50 +251,48 @@ mod tests {
         }
     }
 
-    #[test]
-    fn openapi_saver_different_names() {
-        let mock_writer = MockFileWriter::new();
+    #[rstest]
+    #[case("api1")]
+    #[case("api-2")]
+    #[case("api_3")]
+    #[case("api123")]
+    #[case("complex-name_with.dots")]
+    fn openapi_saver_different_names(
+        mock_writer: MockFileWriter,
+        test_api: utoipa::openapi::OpenApi,
+        #[case] name: &str,
+    ) {
         let saver = OpenAPISaver::new(mock_writer.clone());
-        let api = TestApi::openapi();
 
-        let names =
-            vec!["api1", "api-2", "api_3", "api123", "complex-name_with.dots"];
+        let result = saver.save_as(&test_api, name);
+        assert!(result.is_ok(), "Failed to save OpenAPI with name: {name}");
 
-        for name in &names {
-            let result = saver.save_as(&api, name);
-            assert!(result.is_ok(), "Failed to save OpenAPI with name: {name}");
+        let expected_path = format!("./assets/openapi/{name}.json");
+        assert!(
+            mock_writer.has_file(&expected_path),
+            "File should exist for name: {name}"
+        );
 
-            let expected_path = format!("./assets/openapi/{name}.json");
-            assert!(
-                mock_writer.has_file(&expected_path),
-                "File should exist for name: {name}"
-            );
-        }
-
-        assert_eq!(mock_writer.file_count(), names.len());
-
-        // Verify all files have correct content
-        for name in &names {
-            let expected_path = format!("./assets/openapi/{name}.json");
-            let content = mock_writer
-                .get_file_content(&expected_path)
-                .expect("File should exist");
-            assert!(
-                content.contains("Test API"),
-                "Content should be correct for {name}"
-            );
-        }
+        // Verify file has correct content
+        let content = mock_writer
+            .get_file_content(&expected_path)
+            .expect("File should exist");
+        assert!(
+            content.contains("Test API"),
+            "Content should be correct for {name}"
+        );
     }
 
-    #[test]
-    fn openapi_saver_overwrites_file() {
-        let mock_writer = MockFileWriter::new();
+    #[rstest]
+    fn openapi_saver_overwrites_file(
+        mock_writer: MockFileWriter,
+        test_api: utoipa::openapi::OpenApi,
+        another_test_api: utoipa::openapi::OpenApi,
+    ) {
         let saver = OpenAPISaver::new(mock_writer.clone());
-        let api1 = TestApi::openapi();
-        let api2 = AnotherTestApi::openapi();
 
         // Save first API
-        let result1 = saver.save_as(&api1, "overwrite_test");
+        let result1 = saver.save_as(&test_api, "overwrite_test");
         assert!(result1.is_ok(), "First save should succeed");
 
         let content1 = mock_writer
@@ -280,7 +302,7 @@ mod tests {
         assert!(content1.contains("1.0.0"));
 
         // Save second API with same name (should overwrite)
-        let result2 = saver.save_as(&api2, "overwrite_test");
+        let result2 = saver.save_as(&another_test_api, "overwrite_test");
         assert!(result2.is_ok(), "Second save should succeed");
 
         let content2 = mock_writer
@@ -294,13 +316,14 @@ mod tests {
         assert_eq!(mock_writer.file_count(), 1);
     }
 
-    #[test]
-    fn openapi_json_formatting() {
-        let mock_writer = MockFileWriter::new();
+    #[rstest]
+    fn openapi_json_formatting(
+        mock_writer: MockFileWriter,
+        test_api: utoipa::openapi::OpenApi,
+    ) {
         let saver = OpenAPISaver::new(mock_writer.clone());
-        let api = TestApi::openapi();
 
-        let result = saver.save_as(&api, "format_test");
+        let result = saver.save_as(&test_api, "format_test");
         assert!(result.is_ok(), "Save should succeed");
 
         let content = mock_writer
@@ -322,7 +345,7 @@ mod tests {
         assert!(obj.contains_key("info"), "Should have info section");
     }
 
-    #[test]
+    #[rstest]
     fn error_types_serialization() {
         // Test serialization error (hard to trigger with valid OpenApi, so we test the error type)
         let json_error = serde_json::Error::io(io::Error::new(
@@ -334,7 +357,7 @@ mod tests {
         assert!(error_msg.contains("Failed to serialize OpenAPI"));
     }
 
-    #[test]
+    #[rstest]
     fn error_types_save() {
         let io_error =
             io::Error::new(io::ErrorKind::NotFound, "File not found");
@@ -357,7 +380,7 @@ mod tests {
         }
     }
 
-    #[test]
+    #[rstest]
     fn result_type_alias_usage() {
         fn returns_ok() {
             // Test function that doesn't need to return Result
@@ -371,7 +394,7 @@ mod tests {
         assert!(returns_error().is_err());
     }
 
-    #[test]
+    #[rstest]
     fn default_file_writer_functionality() {
         let writer = DefaultFileWriter;
         let test_path = "./test_default_writer_output.txt";
@@ -409,7 +432,7 @@ mod tests {
         drop(fs::remove_file(test_path));
     }
 
-    #[test]
+    #[rstest]
     fn default_file_writer_io_error() {
         let writer = DefaultFileWriter;
         let invalid_path = "/invalid/path/that/should/not/exist/test.txt";
@@ -433,7 +456,7 @@ mod tests {
         }
     }
 
-    #[test]
+    #[rstest]
     fn default_file_writer_overwrite() {
         let writer = DefaultFileWriter;
         let test_path = "./test_overwrite.txt";
@@ -466,7 +489,7 @@ mod tests {
         drop(fs::remove_file(test_path));
     }
 
-    #[test]
+    #[rstest]
     fn default_file_writer_with_nested_directories() {
         let writer = DefaultFileWriter;
         let nested_path = "./test_dir/nested/deep/test_file.txt";
@@ -499,38 +522,38 @@ mod tests {
         drop(fs::remove_dir_all("./test_dir"));
     }
 
-    #[test]
-    fn mock_writer_specific_path_failure() {
+    #[rstest]
+    fn mock_writer_specific_path_failure(test_api: utoipa::openapi::OpenApi) {
         let failing_path = "./assets/openapi/should_fail.json";
         let mock_writer = MockFileWriter::new_failing_on_path(failing_path);
         let saver = OpenAPISaver::new(mock_writer.clone());
-        let api = TestApi::openapi();
 
         // Should fail for specific path
-        let result1 = saver.save_as(&api, "should_fail");
+        let result1 = saver.save_as(&test_api, "should_fail");
         assert!(result1.is_err());
 
         // Should succeed for different path
-        let result2 = saver.save_as(&api, "should_succeed");
+        let result2 = saver.save_as(&test_api, "should_succeed");
         result2.expect("Should succeed for different path");
         assert!(mock_writer.has_file("./assets/openapi/should_succeed.json"));
         assert!(!mock_writer.has_file(failing_path));
         assert_eq!(mock_writer.file_count(), 1);
     }
 
-    #[test]
-    fn mock_writer_concurrent_access() {
+    #[rstest]
+    fn mock_writer_concurrent_access(
+        mock_writer: MockFileWriter,
+        test_api: utoipa::openapi::OpenApi,
+    ) {
         use std::thread;
 
-        let mock_writer = MockFileWriter::new();
         let _saver = OpenAPISaver::new(mock_writer.clone());
-        let api = TestApi::openapi();
 
         // Simulate concurrent writes
         let handles: Vec<_> = (0_i32..5_i32)
             .map(|i| {
                 let saver_clone = OpenAPISaver::new(mock_writer.clone());
-                let api_clone = api.clone();
+                let api_clone = test_api.clone();
                 thread::spawn(move || {
                     let result = saver_clone
                         .save_as(&api_clone, &format!("concurrent_{i}"));
@@ -555,13 +578,12 @@ mod tests {
         }
     }
 
-    #[test]
-    fn openapi_saver_trait_integration() {
-        let api = TestApi::openapi();
+    #[rstest]
+    fn openapi_saver_trait_integration(test_api: utoipa::openapi::OpenApi) {
         let name = "integration_test_api";
 
         // This calls the trait implementation which uses DefaultFileWriter
-        api.save_as(name).expect("Failed to save API spec");
+        test_api.save_as(name).expect("Failed to save API spec");
 
         // Verify file exists
         let path =

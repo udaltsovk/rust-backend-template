@@ -26,6 +26,7 @@ where
 #[cfg(test)]
 mod tests {
     use domain::{DomainType, validation::error::ValidationErrors};
+    use rstest::rstest;
 
     use super::*;
 
@@ -66,14 +67,15 @@ mod tests {
         }
     }
 
-    #[test]
-    fn into_domain_success() {
-        let db_entity = TestDbEntity("valid".to_string());
+    #[rstest]
+    #[case("valid", "valid")]
+    fn into_domain_success(#[case] input: &str, #[case] expected: &str) {
+        let db_entity = TestDbEntity(input.to_string());
         let domain_entity: TestDomain = db_entity.into_domain();
-        assert_eq!(domain_entity.0, "valid");
+        assert_eq!(domain_entity.0, expected);
     }
 
-    #[test]
+    #[rstest]
     #[should_panic(expected = "from the db to be valid")]
     fn into_domain_panic_on_failure() {
         let db_entity = TestDbEntity("invalid".to_string());

@@ -12,11 +12,17 @@ pub use application;
     feature = "infrastructure-services",
 ))]
 pub use async_trait::async_trait;
-#[cfg(feature = "bootstrap")]
+#[cfg(all(feature = "bootstrap", feature = "presentation-api-rest"))]
 pub use axum;
-#[cfg(feature = "bootstrap-instrumentation-opentelemetry")]
+#[cfg(all(
+    feature = "bootstrap-instrumentation-opentelemetry",
+    feature = "presentation-api-rest"
+))]
 pub use axum_otel_metrics;
-#[cfg(feature = "bootstrap-instrumentation-opentelemetry")]
+#[cfg(all(
+    feature = "bootstrap-instrumentation-opentelemetry",
+    feature = "presentation-api-rest"
+))]
 pub use axum_tracing_opentelemetry;
 #[cfg(feature = "bootstrap")]
 pub use bootstrap;

@@ -30,27 +30,34 @@ macro_rules! repository_impl_struct {
 #[cfg(test)]
 mod tests {
     use mobc_sqlx::{SqlxConnectionManager, sqlx::Postgres};
+    use rstest::{fixture, rstest};
 
     struct TestEntity;
 
     repository_impl_struct!(Test, SqlxConnectionManager<Postgres>);
 
-    #[tokio::test]
-    async fn repository_impl() {
+    #[fixture]
+    fn pool() -> mobc_sqlx::mobc::Pool<SqlxConnectionManager<Postgres>> {
         let manager = SqlxConnectionManager::<Postgres>::new(
             "postgres://user:pass@localhost:5432/db",
         );
-        let pool = mobc_sqlx::mobc::Pool::builder().build(manager);
+        mobc_sqlx::mobc::Pool::builder().build(manager)
+    }
+
+    #[rstest]
+    #[tokio::test]
+    async fn repository_impl(
+        pool: mobc_sqlx::mobc::Pool<SqlxConnectionManager<Postgres>>,
+    ) {
         let _repo = TestRepositoryImpl::<TestEntity>::new(&pool);
     }
 
+    #[rstest]
     #[tokio::test]
     #[expect(clippy::redundant_clone, reason = "Testing Clone implementation")]
-    async fn repository_impl_clone() {
-        let manager = SqlxConnectionManager::<Postgres>::new(
-            "postgres://user:pass@localhost:5432/db",
-        );
-        let pool = mobc_sqlx::mobc::Pool::builder().build(manager);
+    async fn repository_impl_clone(
+        pool: mobc_sqlx::mobc::Pool<SqlxConnectionManager<Postgres>>,
+    ) {
         let repo = TestRepositoryImpl::<TestEntity>::new(&pool);
         let _cloned = repo.clone();
     }

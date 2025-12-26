@@ -31,9 +31,11 @@ mod tests {
     use std::path::PathBuf;
 
     use mobc_sqlx::{SqlxConnectionManager, sqlx::Postgres};
+    use rstest::rstest;
 
     use super::*;
 
+    #[rstest]
     #[tokio::test]
     #[should_panic(expected = "failed to run migrations")]
     async fn migrate_panics_without_db() {
