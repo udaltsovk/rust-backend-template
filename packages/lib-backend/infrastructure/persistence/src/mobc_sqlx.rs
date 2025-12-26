@@ -32,6 +32,7 @@ mod tests {
 
     use mobc_sqlx::{SqlxConnectionManager, sqlx::Postgres};
     use rstest::rstest;
+    use sqlx::postgres::PgConnectOptions;
 
     use super::*;
 
@@ -67,9 +68,12 @@ mod tests {
         std::fs::write(&migration_file, "SELECT 1;")
             .expect("failed to write migration file");
 
-        let manager = SqlxConnectionManager::<Postgres>::new(
-            "postgres://user:pass@localhost:5432/db",
-        );
+        let options = PgConnectOptions::new()
+            .username("user")
+            .password("pass")
+            .database("db");
+
+        let manager = SqlxConnectionManager::<Postgres>::new(options);
         let pool = Pool::builder().max_open(1).build(manager);
 
         let migrator =

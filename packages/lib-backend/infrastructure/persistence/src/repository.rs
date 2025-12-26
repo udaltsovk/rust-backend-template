@@ -31,6 +31,7 @@ macro_rules! repository_impl_struct {
 mod tests {
     use mobc_sqlx::{SqlxConnectionManager, sqlx::Postgres};
     use rstest::{fixture, rstest};
+    use sqlx::postgres::PgConnectOptions;
 
     struct TestEntity;
 
@@ -38,9 +39,11 @@ mod tests {
 
     #[fixture]
     fn pool() -> mobc_sqlx::mobc::Pool<SqlxConnectionManager<Postgres>> {
-        let manager = SqlxConnectionManager::<Postgres>::new(
-            "postgres://user:pass@localhost:5432/db",
-        );
+        let options = PgConnectOptions::new()
+            .username("user")
+            .password("pass")
+            .database("db");
+        let manager = SqlxConnectionManager::new(options);
         mobc_sqlx::mobc::Pool::builder().build(manager)
     }
 

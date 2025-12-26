@@ -3,7 +3,10 @@ use domain::client::Client;
 use infrastructure::persistence::postgres::POSTGRES_MIGRATOR;
 use lib::{
     infrastructure::persistence::mobc_sqlx::MigratorExt as _,
-    mobc_sqlx::{SqlxConnectionManager, mobc::Pool},
+    mobc_sqlx::{
+        SqlxConnectionManager, mobc::Pool, sqlx::postgres::PgConnectOptions,
+    },
+    tap::Pipe as _,
 };
 use presentation::api::rest::module::{ModulesExt, UseCaseImpl};
 
@@ -34,15 +37,14 @@ impl ModulesExt for Modules {
 
 impl Modules {
     pub async fn init() -> Self {
-        let postgres_url = format!(
-            "postgres://{}:{}@{}:{}/{}",
-            *config::POSTGRES_USER,
-            *config::POSTGRES_PASSWORD,
-            *config::POSTGRES_HOST,
-            *config::POSTGRES_PORT,
-            *config::POSTGRES_DATABASE,
-        );
-        let postgres = Pool::new(SqlxConnectionManager::new(&postgres_url));
+        let postgres = PgConnectOptions::new()
+            .username(&config::POSTGRES_USER)
+            .password(&config::POSTGRES_PASSWORD)
+            .host(&config::POSTGRES_HOST)
+            .port(*config::POSTGRES_PORT)
+            .database(&config::POSTGRES_DATABASE)
+            .pipe(SqlxConnectionManager::new)
+            .pipe(Pool::new);
 
         POSTGRES_MIGRATOR.migrate(&postgres).await;
 
