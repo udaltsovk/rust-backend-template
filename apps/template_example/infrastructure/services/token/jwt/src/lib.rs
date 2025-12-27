@@ -1,8 +1,8 @@
 use application::service::token::TokenService;
 use domain::session::Session;
-pub use jsonwebtoken::errors::Error as JwtAdapterError;
-use jsonwebtoken::{
-    Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
+use jsonwebtoken::{Algorithm, Header, Validation, decode, encode};
+pub use jsonwebtoken::{
+    DecodingKey, EncodingKey, errors::Error as JwtAdapterError,
 };
 use lib::{
     instrument_all,
@@ -41,11 +41,13 @@ impl TokenService for JwtService {
 
 impl JwtService {
     #[must_use]
-    pub fn new(secret: &str) -> Self {
-        let secret = secret.as_bytes();
+    pub const fn new(
+        encoding_key: EncodingKey,
+        decoding_key: DecodingKey,
+    ) -> Self {
         Self {
-            encoding_key: EncodingKey::from_secret(secret),
-            decoding_key: DecodingKey::from_secret(secret),
+            encoding_key,
+            decoding_key,
         }
     }
 }

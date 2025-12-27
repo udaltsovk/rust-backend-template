@@ -19,10 +19,10 @@ macro_rules! usecase_struct {
             R: $repos_ext + Send + Sync + Clone,
             S: $services_ext + Send + Sync + Clone,
         {
-            pub fn new(repositories: R, services: S) -> Self {
+            pub fn new(repositories: &R, services: &S) -> Self {
                 Self {
-                    repositories,
-                    services,
+                    repositories: repositories.clone(),
+                    services: services.clone(),
                     _entity: std::marker::PhantomData,
                 }
             }
@@ -399,7 +399,7 @@ mod tests {
         };
 
         let usecase: UseCase<PublicRepository, PublicService, TestEntity> =
-            UseCase::new(repository, service);
+            UseCase::new(&repository, &service);
 
         // Verify the main macro works correctly
         assert_eq!(usecase.repositories.get_public_data(), "main_macro_test");
