@@ -15,7 +15,7 @@ use crate::{
 };
 
 #[async_trait]
-#[instrument_all("PostgresClientRepository")]
+#[instrument_all]
 impl ClientRepository for PostgresRepositoryImpl<Client> {
     type AdapterError = PostgresAdapterError;
 

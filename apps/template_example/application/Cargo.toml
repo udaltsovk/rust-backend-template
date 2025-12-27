@@ -12,5 +12,7 @@ derive-where.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
 
+pastey = "0.2.1"
+
 [lints]
 workspace = true

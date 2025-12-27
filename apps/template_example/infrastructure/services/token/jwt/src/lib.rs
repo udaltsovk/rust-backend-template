@@ -19,7 +19,7 @@ pub struct JwtService {
     decoding_key: DecodingKey,
 }
 
-#[instrument_all("JwtService")]
+#[instrument_all]
 impl TokenService for JwtService {
     type AdapterError = JwtAdapterError;
 
@@ -39,8 +39,8 @@ impl TokenService for JwtService {
     }
 }
 
-#[instrument_all("JwtService")]
 impl JwtService {
+    #[must_use]
     pub fn new(secret: &str) -> Self {
         let secret = secret.as_bytes();
         Self {

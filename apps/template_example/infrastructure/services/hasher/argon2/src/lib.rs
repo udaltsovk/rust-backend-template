@@ -10,7 +10,7 @@ pub struct Argon2Service {
     hasher: Argon2<'static>,
 }
 
-#[instrument_all("Argon2Service")]
+#[instrument_all]
 impl HasherService for Argon2Service {
     type AdapterError = argon2::password_hash::Error;
 
@@ -30,9 +30,16 @@ impl HasherService for Argon2Service {
     }
 }
 
-#[instrument_all("Argon2Service")]
+#[instrument_all(level = "debug")]
 impl Argon2Service {
-    #[tracing::instrument(level = "trace")]
+    fn gen_salt() -> SaltString {
+        SaltString::generate(&mut OsRng)
+    }
+}
+
+#[instrument_all(level = "trace")]
+impl Argon2Service {
+    #[inline]
     fn params() -> Params {
         ParamsBuilder::new()
             .m_cost(19_456)
@@ -43,7 +50,6 @@ impl Argon2Service {
             .expect("hasher params to be valid")
     }
 
-    #[tracing::instrument(level = "trace")]
     pub fn new() -> Self {
         Self {
             hasher: Argon2::new(
@@ -54,7 +60,6 @@ impl Argon2Service {
         }
     }
 
-    #[tracing::instrument(level = "trace")]
     pub fn new_with_secret(secret: &'static [u8]) -> argon2::Result<Self> {
         Ok(Self {
             hasher: Argon2::new_with_secret(
@@ -64,11 +69,6 @@ impl Argon2Service {
                 Self::params(),
             )?,
         })
-    }
-
-    #[tracing::instrument(level = "debug")]
-    fn gen_salt() -> SaltString {
-        SaltString::generate(&mut OsRng)
     }
 }
 

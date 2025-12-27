@@ -1,3 +1,5 @@
+use lib::application::usecase_result;
+
 use crate::{repository::RepositoriesModuleExt, service::ServicesModuleExt};
 
 #[derive(thiserror::Error, Debug)]
@@ -12,3 +14,5 @@ where
     #[error(transparent)]
     Service(S::Error),
 }
+
+usecase_result!(Client);

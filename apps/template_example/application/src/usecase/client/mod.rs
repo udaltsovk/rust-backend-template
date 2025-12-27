@@ -3,7 +3,7 @@ use lib::{async_trait, domain::Id};
 
 use crate::{
     repository::RepositoriesModuleExt, service::ServicesModuleExt,
-    usecase::client::error::ClientUseCaseError,
+    usecase::client::error::ClientUseCaseResult,
 };
 
 pub mod error;
@@ -18,10 +18,10 @@ where
     async fn bulk_upsert(
         &self,
         source: &[UpsertClient],
-    ) -> Result<Vec<Client>, ClientUseCaseError<R, S>>;
+    ) -> ClientUseCaseResult<R, S, Vec<Client>>;
 
     async fn find_by_id(
         &self,
         id: Id<Client>,
-    ) -> Result<Option<Client>, ClientUseCaseError<R, S>>;
+    ) -> ClientUseCaseResult<R, S, Option<Client>>;
 }

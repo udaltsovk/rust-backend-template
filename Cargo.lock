@@ -1942,9 +1942,9 @@ dependencies = [
 
 [[package]]
 name = "pastey"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57d6c094ee800037dff99e02cab0eaf3142826586742a270ab3d7a62656bd27a"
+checksum = "b867cad97c0791bbd3aaa6472142568c6c9e8f71937e98379f584cfb0cf35bec"
 
 [[package]]
 name = "pem"
@@ -2980,6 +2980,7 @@ version = "0.1.0"
 dependencies = [
  "derive-where",
  "lib",
+ "pastey",
  "template_example-domain",
  "thiserror 2.0.17",
  "tracing",

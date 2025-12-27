@@ -6,12 +6,15 @@ use crate::{
     service::ServicesModuleExt,
     usecase::{
         UseCase,
-        client::{ClientUseCase, error::ClientUseCaseError},
+        client::{
+            ClientUseCase,
+            error::{ClientUseCaseError, ClientUseCaseResult},
+        },
     },
 };
 
 #[async_trait]
-#[instrument_all("ClientUseCase")]
+#[instrument_all]
 impl<R, S> ClientUseCase<R, S> for UseCase<R, S, Client>
 where
     R: RepositoriesModuleExt,
@@ -20,7 +23,7 @@ where
     async fn bulk_upsert(
         &self,
         source: &[UpsertClient],
-    ) -> Result<Vec<Client>, ClientUseCaseError<R, S>> {
+    ) -> ClientUseCaseResult<R, S, Vec<Client>> {
         self.repositories
             .client_repository()
             .bulk_upsert(source)
@@ -33,7 +36,7 @@ where
     async fn find_by_id(
         &self,
         id: Id<Client>,
-    ) -> Result<Option<Client>, ClientUseCaseError<R, S>> {
+    ) -> ClientUseCaseResult<R, S, Option<Client>> {
         self.repositories
             .client_repository()
             .find_by_id(id)
