@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{fmt, marker::PhantomData};
 
 use derive_where::derive_where;
 use uuid::Uuid;
@@ -33,6 +33,12 @@ impl<T> From<Uuid> for Id<T> {
 impl<T> From<Id<T>> for Uuid {
     fn from(id: Id<T>) -> Self {
         id.value
+    }
+}
+
+impl<T> fmt::Display for Id<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.value.fmt(f)
     }
 }
 
