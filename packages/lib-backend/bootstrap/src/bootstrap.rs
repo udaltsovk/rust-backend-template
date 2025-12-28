@@ -5,15 +5,14 @@ macro_rules! bootstrap {
            panic!("`bootstrap!` can't be called with empty bootstrapper array!");
        }
     };
-    ($app_crate: ident, [$($bootstrapper: tt),*], $modules_fut: expr) => {
+    ($app_crate: ident, [$($bootstrapper: tt($config_field: expr)),*], $modules_fut: expr) => {
         async {
-            use $app_crate::{bootstrappers::BootstrapperExt as _, config};
+            use $app_crate::bootstrappers::BootstrapperExt as _;
 
-            $crate::check_config!(config);
 
             let modules = $modules_fut.await;
             tokio::join!(
-                $($bootstrapper::bootstrap(modules.clone())),*
+                $($bootstrapper::bootstrap(&$config_field, modules.clone())),*
             );
         }
     };
@@ -33,7 +32,7 @@ mod tests {
 
     #[async_trait::async_trait]
     pub trait TestBootstrapperExt {
-        async fn bootstrap(modules: TestModules);
+        async fn bootstrap(config: &(), modules: TestModules);
     }
 
     #[derive(Clone)]
@@ -43,7 +42,7 @@ mod tests {
 
     #[async_trait::async_trait]
     pub trait MultiBootstrapperExt {
-        async fn bootstrap(modules: MultiTestModules);
+        async fn bootstrap(config: &(), modules: MultiTestModules);
     }
 
     #[derive(Clone)]
@@ -61,7 +60,7 @@ mod tests {
         reason = "Used in tests that are currently disabled due to compile-time panic"
     )]
     pub trait EmptyBootstrapperExt {
-        async fn bootstrap(modules: EmptyModules);
+        async fn bootstrap(config: &(), modules: EmptyModules);
     }
 
     #[derive(Clone)]
@@ -69,7 +68,7 @@ mod tests {
 
     #[async_trait::async_trait]
     pub trait ConfigBootstrapperExt {
-        async fn bootstrap(modules: ConfigModules);
+        async fn bootstrap(config: &(), modules: ConfigModules);
     }
 
     #[fixture]
@@ -88,7 +87,7 @@ mod tests {
 
         #[async_trait::async_trait]
         impl TestBootstrapperExt for TestBootstrapper {
-            async fn bootstrap(modules: TestModules) {
+            async fn bootstrap(_config: &(), modules: TestModules) {
                 modules
                     .calls
                     .lock()
@@ -101,17 +100,11 @@ mod tests {
             pub mod bootstrappers {
                 pub use crate::bootstrap::tests::TestBootstrapperExt as BootstrapperExt;
             }
-
-            pub mod config {
-                pub fn check_values() -> bool {
-                    true
-                }
-            }
         }
 
         let modules_fut = async { test_modules.clone() };
 
-        crate::bootstrap!(test_app, [TestBootstrapper], modules_fut).await;
+        crate::bootstrap!(test_app, [TestBootstrapper(())], modules_fut).await;
 
         let calls = test_modules
             .calls
@@ -138,7 +131,7 @@ mod tests {
 
         #[async_trait::async_trait]
         impl MultiBootstrapperExt for BootstrapperA {
-            async fn bootstrap(modules: MultiTestModules) {
+            async fn bootstrap(_config: &(), modules: MultiTestModules) {
                 modules
                     .calls
                     .lock()
@@ -149,7 +142,7 @@ mod tests {
 
         #[async_trait::async_trait]
         impl MultiBootstrapperExt for BootstrapperB {
-            async fn bootstrap(modules: MultiTestModules) {
+            async fn bootstrap(_config: &(), modules: MultiTestModules) {
                 modules
                     .calls
                     .lock()
@@ -162,19 +155,13 @@ mod tests {
             pub mod bootstrappers {
                 pub use crate::bootstrap::tests::MultiBootstrapperExt as BootstrapperExt;
             }
-
-            pub mod config {
-                pub fn check_values() -> bool {
-                    true
-                }
-            }
         }
 
         let modules_fut = async { multi_test_modules.clone() };
 
         crate::bootstrap!(
             multi_app,
-            [BootstrapperA, BootstrapperB],
+            [BootstrapperA(()), BootstrapperB(())],
             modules_fut
         )
         .await;
@@ -199,26 +186,20 @@ mod tests {
             pub mod bootstrappers {
                 pub use crate::bootstrap::tests::ConfigBootstrapperExt as BootstrapperExt;
             }
-
-            pub mod config {
-                pub fn check_values() -> bool {
-                    true
-                }
-            }
         }
 
         struct DummyBootstrapper;
 
         #[async_trait::async_trait]
         impl ConfigBootstrapperExt for DummyBootstrapper {
-            async fn bootstrap(_modules: ConfigModules) {
+            async fn bootstrap(_config: &(), _modules: ConfigModules) {
                 // Test implementation
             }
         }
 
         let modules_fut = async { ConfigModules };
 
-        // This tests that check_config is called by the macro
-        crate::bootstrap!(config_app, [DummyBootstrapper], modules_fut).await;
+        crate::bootstrap!(config_app, [DummyBootstrapper(())], modules_fut)
+            .await;
     }
 }

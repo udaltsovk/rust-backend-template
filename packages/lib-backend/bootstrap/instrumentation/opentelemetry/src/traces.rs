@@ -86,7 +86,8 @@ impl LGTM {
         &self,
     ) -> OpenTelemetryLayer<S, Tracer> {
         OpenTelemetryLayer::new(
-            self.get_tracer_provider().tracer(self.otel_service_name),
+            self.get_tracer_provider()
+                .tracer(self.otel_service_name.clone()),
         )
     }
 }

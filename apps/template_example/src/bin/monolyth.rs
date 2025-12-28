@@ -7,21 +7,27 @@ use lib::{
     presentation::api::rest::startup::RestApi,
 };
 // use lib::bootstrap::instrumentation::stdout;
-use template_example::{Modules, config};
+use template_example::{Config, Modules};
 
 configure_jemalloc!();
 
 #[tokio::main]
 async fn main() {
-    config::init();
+    let config = Config::builder()
+        .build()
+        .expect("config to be built successfully");
 
     // Without opentelemetry
     // stdout::init_tracing_subscriber();
     // bootstrap!(template_example, [RestApi], Modules::init()).await;
 
     // With opentelemetry
-    LGTM::new(&config::OTEL_SERVICE_NAMESPACE, &config::OTEL_SERVICE_NAME)
+    LGTM::from(&config.lgtm)
         .with_otel_timeout(Duration::from_secs(30))
-        .wrap(bootstrap!(template_example, [RestApi], Modules::init()))
+        .wrap(bootstrap!(
+            template_example,
+            [RestApi(config.server)],
+            Modules::init(&config.modules)
+        ))
         .await;
 }

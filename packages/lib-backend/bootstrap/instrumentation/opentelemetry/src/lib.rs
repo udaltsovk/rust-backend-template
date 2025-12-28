@@ -12,14 +12,17 @@ use tracing_subscriber::{
     layer::SubscriberExt as _, util::SubscriberInitExt as _,
 };
 
+mod config;
 mod logs;
 mod metrics;
 mod traces;
 
+pub use crate::config::LgtmConfig;
+
 #[derive(Clone, Debug)]
 pub struct LGTM {
     otel_endpoint: Option<String>,
-    otel_service_name: &'static str,
+    otel_service_name: String,
     otel_timeout: Option<Duration>,
     resource: Resource,
     logger_provider: Option<Arc<SdkLoggerProvider>>,
@@ -43,25 +46,22 @@ impl LGTM {
     }
 
     fn resource(
-        otel_service_namespace: &'static str,
-        otel_service_name: &'static str,
+        otel_service_namespace: &str,
+        otel_service_name: &str,
     ) -> Resource {
         Resource::builder()
             .with_attribute(KeyValue::new(
                 attribute::SERVICE_NAMESPACE,
-                otel_service_namespace,
+                otel_service_namespace.to_string(),
             ))
-            .with_service_name(otel_service_name)
+            .with_service_name(otel_service_name.to_string())
             .build()
     }
 
     #[must_use]
-    pub fn new(
-        otel_service_namespace: &'static str,
-        otel_service_name: &'static str,
-    ) -> Self {
+    pub fn new(otel_service_namespace: &str, otel_service_name: &str) -> Self {
         Self {
-            otel_service_name,
+            otel_service_name: otel_service_name.to_string(),
             resource: Self::resource(otel_service_namespace, otel_service_name),
             otel_endpoint: None,
             otel_timeout: None,
@@ -72,7 +72,7 @@ impl LGTM {
     }
 
     #[must_use]
-    pub fn with_otel_endpoint(mut self, otel_endpoint: &'static str) -> Self {
+    pub fn with_otel_endpoint(mut self, otel_endpoint: &str) -> Self {
         self.otel_endpoint = Some(otel_endpoint.into());
         self
     }

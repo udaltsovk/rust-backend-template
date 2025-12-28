@@ -15,7 +15,11 @@ use lib::{
     tap::Pipe as _,
 };
 
-use crate::config;
+pub use crate::modules::repositories::config::{
+    PostgresConfig, RepositoriesConfig,
+};
+
+mod config;
 
 #[derive(Clone)]
 pub struct RepositoriesModule {
@@ -23,8 +27,8 @@ pub struct RepositoriesModule {
 }
 
 impl RepositoriesModule {
-    pub(crate) async fn new() -> Self {
-        let postgres = Self::setup_postgres().await;
+    pub(crate) async fn new(config: &RepositoriesConfig) -> Self {
+        let postgres = Self::setup_postgres(&config.postgres).await;
 
         let client_repository = PostgresRepositoryImpl::new(&postgres);
 
@@ -33,13 +37,10 @@ impl RepositoriesModule {
         }
     }
 
-    async fn setup_postgres() -> Pool<SqlxConnectionManager<Postgres>> {
-        let postgres = PgConnectOptions::new()
-            .username(&config::POSTGRES_USER)
-            .password(&config::POSTGRES_PASSWORD)
-            .host(&config::POSTGRES_HOST)
-            .port(*config::POSTGRES_PORT)
-            .database(&config::POSTGRES_DATABASE)
+    async fn setup_postgres(
+        config: &PostgresConfig,
+    ) -> Pool<SqlxConnectionManager<Postgres>> {
+        let postgres = PgConnectOptions::from(config)
             .pipe(SqlxConnectionManager::new)
             .pipe(Pool::new);
 

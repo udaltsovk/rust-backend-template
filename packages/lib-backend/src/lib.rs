@@ -30,8 +30,6 @@ pub use bootstrap;
 pub use chrono;
 #[cfg(feature = "domain")]
 pub use domain;
-#[cfg(feature = "bootstrap")]
-pub use env_vars_config;
 #[cfg(feature = "infrastructure")]
 pub use infrastructure;
 #[cfg(feature = "macros")]

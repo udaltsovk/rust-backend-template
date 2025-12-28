@@ -88,7 +88,9 @@ impl LGTM {
     }
 
     pub(super) fn setup_metrics(&self) {
-        let meter = self.get_meter_provider().meter(self.otel_service_name);
+        let meter = self
+            .get_meter_provider()
+            .meter(self.otel_service_name.clone().leak());
 
         if let Err(err) =
             ::metrics::set_global_recorder(OpenTelemetryRecorder::new(meter))

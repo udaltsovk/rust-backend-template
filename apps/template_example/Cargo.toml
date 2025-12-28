@@ -30,8 +30,10 @@ presentation = { path = "./presentation", package = "template_example-presentati
   "api-rest",
 ] }
 
+better-config.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { workspace = true, features = [

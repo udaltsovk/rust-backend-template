@@ -2,10 +2,12 @@ use application::usecase::{UseCase, client::ClientUseCase};
 use domain::client::Client;
 use presentation::api::rest::module::{ModulesExt, UseCaseImpl};
 
+pub use crate::modules::config::ModulesConfig;
 use crate::modules::{
     repositories::RepositoriesModule, services::ServicesModule,
 };
 
+mod config;
 mod repositories;
 mod services;
 
@@ -31,9 +33,10 @@ impl ModulesExt for Modules {
 }
 
 impl Modules {
-    pub async fn init() -> Self {
-        let repositories_module = RepositoriesModule::new().await;
-        let services_module = ServicesModule::new();
+    pub async fn init(config: &ModulesConfig) -> Self {
+        let repositories_module =
+            RepositoriesModule::new(&config.repositories).await;
+        let services_module = ServicesModule::new(&config.services);
 
         let client_usecase =
             UseCase::new(&repositories_module, &services_module);

@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
 use application::service::ServicesModuleExt;
-use infrastructure::services::token::jwt::{
-    DecodingKey, EncodingKey, JwtAdapterError, JwtService,
-};
+use infrastructure::services::token::jwt::{JwtAdapterError, JwtService};
 
-use crate::config;
+pub use crate::modules::services::config::ServicesConfig;
+
+mod config;
 
 #[derive(Clone)]
 pub struct ServicesModule {
@@ -13,18 +13,10 @@ pub struct ServicesModule {
 }
 
 impl ServicesModule {
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new(config: &ServicesConfig) -> Self {
         Self {
-            token_service: Self::jwt_service(),
+            token_service: Arc::from(&config.jwt),
         }
-    }
-
-    fn jwt_service() -> Arc<JwtService> {
-        let secret = config::JWT_SECRET.as_bytes();
-        Arc::new(JwtService::new(
-            EncodingKey::from_secret(secret),
-            DecodingKey::from_secret(secret),
-        ))
     }
 }
 

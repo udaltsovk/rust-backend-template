@@ -13,6 +13,7 @@ grpc-tonic = ["opentelemetry-otlp/grpc-tonic"]
 [dependencies]
 stdout = { path = "../stdout", package = "lib-infrastructure-instrumentation-stdout" }
 
+better-config.workspace = true
 metrics.workspace = true
 tap.workspace = true
 tokio.workspace = true
