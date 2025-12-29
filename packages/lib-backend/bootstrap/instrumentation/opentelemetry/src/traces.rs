@@ -16,13 +16,13 @@ use tracing::Subscriber;
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::registry::LookupSpan;
 
-use crate::LGTM;
+use crate::Otel;
 
-impl LGTM {
+impl Otel {
     pub(super) fn get_tracer_provider(&self) -> SdkTracerProvider {
         self.tracer_provider
             .clone()
-            .expect("Called `LGTM::get_tracer_provider` too early")
+            .expect("Called `Otel::get_tracer_provider` too early")
             .deref()
             .clone()
     }
@@ -86,8 +86,7 @@ impl LGTM {
         &self,
     ) -> OpenTelemetryLayer<S, Tracer> {
         OpenTelemetryLayer::new(
-            self.get_tracer_provider()
-                .tracer(self.otel_service_name.clone()),
+            self.get_tracer_provider().tracer(self.service_name.clone()),
         )
     }
 }
@@ -99,25 +98,25 @@ mod tests {
     use super::*;
 
     #[test]
-    #[should_panic(expected = "Called `LGTM::get_tracer_provider` too early")]
+    #[should_panic(expected = "Called `Otel::get_tracer_provider` too early")]
     fn get_tracer_provider_panic() {
-        let lgtm = LGTM::new("test", "test");
-        let _provider = lgtm.get_tracer_provider();
+        let otel = Otel::new("test", "test");
+        let _provider = otel.get_tracer_provider();
     }
 
     #[tokio::test]
     async fn configure_tracer_provider() {
-        let lgtm = LGTM::new("test", "test");
-        let lgtm = lgtm.configure_tracer_provider();
+        let otel = Otel::new("test", "test");
+        let otel = otel.configure_tracer_provider();
 
         // Should not panic now
-        let _provider = lgtm.get_tracer_provider();
+        let _provider = otel.get_tracer_provider();
     }
 
     #[tokio::test]
     async fn trace_layer() {
-        let lgtm = LGTM::new("test", "test");
-        let lgtm = lgtm.configure_tracer_provider();
-        let _layer = lgtm.trace_layer::<Registry>();
+        let otel = Otel::new("test", "test");
+        let otel = otel.configure_tracer_provider();
+        let _layer = otel.trace_layer::<Registry>();
     }
 }

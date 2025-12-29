@@ -19,15 +19,15 @@ use opentelemetry_sdk::{
 };
 use tap::{Pipe as _, Tap as _};
 
-use crate::LGTM;
+use crate::Otel;
 
-impl LGTM {
+impl Otel {
     const METRIC_SCRAPE_INTERVAL: Duration = Duration::from_secs(1);
 
     pub(super) fn get_meter_provider(&self) -> SdkMeterProvider {
         self.meter_provider
             .clone()
-            .expect("Called `LGTM::get_meter_provider` too early")
+            .expect("Called `Otel::get_meter_provider` too early")
             .deref()
             .clone()
     }
@@ -90,7 +90,7 @@ impl LGTM {
     pub(super) fn setup_metrics(&self) {
         let meter = self
             .get_meter_provider()
-            .meter(self.otel_service_name.clone().leak());
+            .meter(self.service_name.clone().leak());
 
         if let Err(err) =
             ::metrics::set_global_recorder(OpenTelemetryRecorder::new(meter))
@@ -127,21 +127,21 @@ mod tests {
     use super::*;
 
     #[test]
-    #[should_panic(expected = "Called `LGTM::get_meter_provider` too early")]
+    #[should_panic(expected = "Called `Otel::get_meter_provider` too early")]
     fn get_meter_provider_panic() {
-        let lgtm = LGTM::new("test", "test");
-        let _provider = lgtm.get_meter_provider();
+        let otel = Otel::new("test", "test");
+        let _provider = otel.get_meter_provider();
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn configure_meter_provider() {
-        let lgtm = LGTM::new("test", "test");
+        let otel = Otel::new("test", "test");
 
         let result = tokio::time::timeout(Duration::from_secs(1), async {
-            let lgtm = lgtm.configure_meter_provider();
+            let otel = otel.configure_meter_provider();
 
             // Should not panic now
-            let provider = lgtm.get_meter_provider();
+            let provider = otel.get_meter_provider();
 
             // Shutdown to clean up
             provider.shutdown().expect("shutdown failed");
@@ -153,8 +153,8 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn setup_metrics() {
-        let lgtm = LGTM::new("test", "test");
-        let lgtm = lgtm.configure_meter_provider();
-        lgtm.setup_metrics();
+        let otel = Otel::new("test", "test");
+        let otel = otel.configure_meter_provider();
+        otel.setup_metrics();
     }
 }

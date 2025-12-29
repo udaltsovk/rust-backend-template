@@ -17,21 +17,21 @@ mod logs;
 mod metrics;
 mod traces;
 
-pub use crate::config::LgtmConfig;
+pub use crate::config::OtelConfig;
 
 #[derive(Clone, Debug)]
-pub struct LGTM {
-    otel_endpoint: Option<String>,
-    otel_service_name: String,
-    otel_timeout: Option<Duration>,
+pub struct Otel {
+    endpoint: Option<String>,
+    service_name: String,
+    timeout: Option<Duration>,
     resource: Resource,
     logger_provider: Option<Arc<SdkLoggerProvider>>,
     meter_provider: Option<Arc<SdkMeterProvider>>,
     tracer_provider: Option<Arc<SdkTracerProvider>>,
 }
 
-impl LGTM {
-    fn otel_protocol() -> Protocol {
+impl Otel {
+    fn protocol() -> Protocol {
         if cfg!(feature = "grpc-tonic") {
             Protocol::Grpc
         } else if cfg!(feature = "http-proto") {
@@ -45,26 +45,23 @@ impl LGTM {
         }
     }
 
-    fn resource(
-        otel_service_namespace: &str,
-        otel_service_name: &str,
-    ) -> Resource {
+    fn resource(service_namespace: &str, service_name: &str) -> Resource {
         Resource::builder()
             .with_attribute(KeyValue::new(
                 attribute::SERVICE_NAMESPACE,
-                otel_service_namespace.to_string(),
+                service_namespace.to_string(),
             ))
-            .with_service_name(otel_service_name.to_string())
+            .with_service_name(service_name.to_string())
             .build()
     }
 
     #[must_use]
-    pub fn new(otel_service_namespace: &str, otel_service_name: &str) -> Self {
+    pub fn new(service_namespace: &str, service_name: &str) -> Self {
         Self {
-            otel_service_name: otel_service_name.to_string(),
-            resource: Self::resource(otel_service_namespace, otel_service_name),
-            otel_endpoint: None,
-            otel_timeout: None,
+            service_name: service_name.to_string(),
+            resource: Self::resource(service_namespace, service_name),
+            endpoint: None,
+            timeout: None,
             logger_provider: None,
             meter_provider: None,
             tracer_provider: None,
@@ -72,23 +69,23 @@ impl LGTM {
     }
 
     #[must_use]
-    pub fn with_otel_endpoint(mut self, otel_endpoint: &str) -> Self {
-        self.otel_endpoint = Some(otel_endpoint.into());
+    pub fn with_endpoint(mut self, endpoint: &str) -> Self {
+        self.endpoint = Some(endpoint.into());
         self
     }
 
     #[must_use]
-    pub const fn with_otel_timeout(mut self, otel_timeout: Duration) -> Self {
-        self.otel_timeout = Some(otel_timeout);
+    pub const fn with_timeout(mut self, timeout: Duration) -> Self {
+        self.timeout = Some(timeout);
         self
     }
 
     #[inline]
     fn export_config(&self) -> ExportConfig {
         ExportConfig {
-            protocol: Self::otel_protocol(),
-            endpoint: self.otel_endpoint.clone(),
-            timeout: self.otel_timeout,
+            protocol: Self::protocol(),
+            endpoint: self.endpoint.clone(),
+            timeout: self.timeout,
         }
     }
 
@@ -96,7 +93,7 @@ impl LGTM {
     where
         F: Future<Output = ()>,
     {
-        let lgtm = self
+        let otel = self
             .configure_logger_provider()
             .configure_meter_provider()
             .configure_tracer_provider();
@@ -104,29 +101,29 @@ impl LGTM {
         if let Err(err) = tracing_subscriber::registry()
             .with(stdout::filter_layer())
             .with(stdout::fmt_layer())
-            .with(lgtm.log_layer())
-            .with(lgtm.trace_layer())
+            .with(otel.log_layer())
+            .with(otel.trace_layer())
             .with(MetricsLayer::new())
             .try_init()
         {
             tracing::error!("Failed to initialize tracing subscriber: {err:?}");
         }
 
-        lgtm.setup_metrics();
+        otel.setup_metrics();
 
         future.await;
 
-        tracing::info!("Shutting down LGTM stuff");
+        tracing::info!("Shutting down OpenTelemetry stuff");
 
         let result: OTelSdkResult = (|| {
-            lgtm.get_tracer_provider().shutdown()?;
-            lgtm.get_meter_provider().shutdown()?;
-            lgtm.get_logger_provider().shutdown()?;
+            otel.get_tracer_provider().shutdown()?;
+            otel.get_meter_provider().shutdown()?;
+            otel.get_logger_provider().shutdown()?;
 
             Ok(())
         })();
 
-        result.expect("Failed to shut down LGTM");
+        result.expect("Failed to shut down OpenTelemetry stuff");
     }
 }
 
@@ -138,13 +135,13 @@ mod tests {
 
     #[test]
     fn new_and_defaults() {
-        let lgtm = LGTM::new("my_ns", "my_svc");
-        assert_eq!(lgtm.otel_service_name, "my_svc");
-        assert!(lgtm.otel_endpoint.is_none());
-        assert!(lgtm.otel_timeout.is_none());
-        assert!(lgtm.logger_provider.is_none());
-        assert!(lgtm.meter_provider.is_none());
-        assert!(lgtm.tracer_provider.is_none());
+        let otel = Otel::new("my_ns", "my_svc");
+        assert_eq!(otel.service_name, "my_svc");
+        assert!(otel.endpoint.is_none());
+        assert!(otel.timeout.is_none());
+        assert!(otel.logger_provider.is_none());
+        assert!(otel.meter_provider.is_none());
+        assert!(otel.tracer_provider.is_none());
     }
 
     #[test]
@@ -152,12 +149,12 @@ mod tests {
         let timeout = Duration::from_secs(10);
         let endpoint = "http://localhost:4317";
 
-        let lgtm = LGTM::new("my_ns", "my_svc")
-            .with_otel_endpoint(endpoint)
-            .with_otel_timeout(timeout);
+        let otel = Otel::new("my_ns", "my_svc")
+            .with_endpoint(endpoint)
+            .with_timeout(timeout);
 
-        assert_eq!(lgtm.otel_endpoint, Some(endpoint.to_string()));
-        assert_eq!(lgtm.otel_timeout, Some(timeout));
+        assert_eq!(otel.endpoint, Some(endpoint.to_string()));
+        assert_eq!(otel.timeout, Some(timeout));
     }
 
     #[test]
@@ -165,46 +162,46 @@ mod tests {
         let timeout = Duration::from_secs(10);
         let endpoint = "http://localhost:4317";
 
-        let lgtm = LGTM::new("my_ns", "my_svc")
-            .with_otel_endpoint(endpoint)
-            .with_otel_timeout(timeout);
+        let otel = Otel::new("my_ns", "my_svc")
+            .with_endpoint(endpoint)
+            .with_timeout(timeout);
 
-        let config = lgtm.export_config();
+        let config = otel.export_config();
         assert_eq!(config.endpoint, Some(endpoint.to_string()));
         assert_eq!(config.timeout, Some(timeout));
     }
 
     #[test]
     fn resource_creation() {
-        let resource = LGTM::resource("my_ns", "my_svc");
+        let resource = Otel::resource("my_ns", "my_svc");
         assert!(format!("{resource:?}").contains("service.name"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn configure_providers() {
-        let lgtm = LGTM::new("test_ns", "test_svc");
+        let otel = Otel::new("test_ns", "test_svc");
 
         let result = tokio::time::timeout(Duration::from_secs(1), async {
-            let lgtm = lgtm.configure_logger_provider();
-            assert!(lgtm.logger_provider.is_some());
-            let _logger_provider = lgtm.get_logger_provider();
-            let _layer = lgtm.log_layer();
+            let otel = otel.configure_logger_provider();
+            assert!(otel.logger_provider.is_some());
+            let _logger_provider = otel.get_logger_provider();
+            let _layer = otel.log_layer();
 
-            let lgtm = lgtm.configure_meter_provider();
-            assert!(lgtm.meter_provider.is_some());
-            let _meter_provider = lgtm.get_meter_provider();
+            let otel = otel.configure_meter_provider();
+            assert!(otel.meter_provider.is_some());
+            let _meter_provider = otel.get_meter_provider();
 
-            let lgtm = lgtm.configure_tracer_provider();
-            assert!(lgtm.tracer_provider.is_some());
-            let _tracer_provider = lgtm.get_tracer_provider();
+            let otel = otel.configure_tracer_provider();
+            assert!(otel.tracer_provider.is_some());
+            let _tracer_provider = otel.get_tracer_provider();
 
-            lgtm.get_tracer_provider()
+            otel.get_tracer_provider()
                 .shutdown()
                 .expect("shutdown failed");
-            lgtm.get_meter_provider()
+            otel.get_meter_provider()
                 .shutdown()
                 .expect("shutdown failed");
-            lgtm.get_logger_provider()
+            otel.get_logger_provider()
                 .shutdown()
                 .expect("shutdown failed");
         })
@@ -215,15 +212,15 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn wrap() {
-        let lgtm = LGTM::new("test", "test");
-        lgtm.clone()
+        let otel = Otel::new("test", "test");
+        otel.clone()
             .wrap(async {
                 tracing::info!("Inside wrap 1");
             })
             .await;
 
         // Call wrap again to trigger subscriber initialization error
-        lgtm.wrap(async {
+        otel.wrap(async {
             tracing::info!("Inside wrap 2");
         })
         .await;

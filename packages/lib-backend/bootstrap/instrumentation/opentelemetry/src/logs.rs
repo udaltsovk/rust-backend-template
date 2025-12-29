@@ -13,13 +13,13 @@ use opentelemetry_sdk::logs::{
 };
 use tap::Pipe as _;
 
-use crate::LGTM;
+use crate::Otel;
 
-impl LGTM {
+impl Otel {
     pub(super) fn get_logger_provider(&self) -> SdkLoggerProvider {
         self.logger_provider
             .clone()
-            .expect("Called `LGTM::get_logger_provider` too early")
+            .expect("Called `Otel::get_logger_provider` too early")
             .deref()
             .clone()
     }
@@ -88,25 +88,25 @@ mod tests {
     use super::*;
 
     #[test]
-    #[should_panic(expected = "Called `LGTM::get_logger_provider` too early")]
+    #[should_panic(expected = "Called `Otel::get_logger_provider` too early")]
     fn get_logger_provider_panic() {
-        let lgtm = LGTM::new("test", "test");
-        let _provider = lgtm.get_logger_provider();
+        let otel = Otel::new("test", "test");
+        let _provider = otel.get_logger_provider();
     }
 
     #[tokio::test]
     async fn configure_logger_provider() {
-        let lgtm = LGTM::new("test", "test");
-        let lgtm = lgtm.configure_logger_provider();
+        let otel = Otel::new("test", "test");
+        let otel = otel.configure_logger_provider();
 
         // Should not panic now
-        let _provider = lgtm.get_logger_provider();
+        let _provider = otel.get_logger_provider();
     }
 
     #[tokio::test]
     async fn log_layer() {
-        let lgtm = LGTM::new("test", "test");
-        let lgtm = lgtm.configure_logger_provider();
-        let _layer = lgtm.log_layer();
+        let otel = Otel::new("test", "test");
+        let otel = otel.configure_logger_provider();
+        let _layer = otel.log_layer();
     }
 }

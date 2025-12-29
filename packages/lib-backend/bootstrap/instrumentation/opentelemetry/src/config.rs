@@ -1,9 +1,9 @@
 use better_config::{EnvConfig, env};
 
-use crate::LGTM;
+use crate::Otel;
 
 #[env(EnvConfig(prefix = "OTEL_"))]
-pub struct LgtmConfig {
+pub struct OtelConfig {
     #[conf(default = "http://localhost:4317")]
     pub endpoint: String,
     #[conf(default = "template_example")]
@@ -12,9 +12,9 @@ pub struct LgtmConfig {
     pub service_name: String,
 }
 
-impl From<&LgtmConfig> for LGTM {
-    fn from(config: &LgtmConfig) -> Self {
+impl From<&OtelConfig> for Otel {
+    fn from(config: &OtelConfig) -> Self {
         Self::new(&config.service_namespace, &config.service_name)
-            .with_otel_endpoint(&config.endpoint)
+            .with_endpoint(&config.endpoint)
     }
 }

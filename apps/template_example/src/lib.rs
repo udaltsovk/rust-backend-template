@@ -2,7 +2,7 @@ pub mod bootstrappers;
 mod modules;
 
 use better_config::{EnvConfig, env};
-use lib::bootstrap::instrumentation::opentelemetry::LgtmConfig;
+use lib::bootstrap::instrumentation::opentelemetry::OtelConfig;
 pub use modules::Modules;
 
 use crate::{bootstrappers::rest_api::RestApiConfig, modules::ModulesConfig};
@@ -14,5 +14,5 @@ pub struct Config {
     #[env]
     pub modules: ModulesConfig,
     #[env]
-    pub lgtm: LgtmConfig,
+    pub otel: OtelConfig,
 }

@@ -3,7 +3,7 @@ use std::time::Duration;
 // use lib::bootstrap::instrumentation::stdout;
 use lib::{
     bootstrap::{
-        bootstrap, configure_jemalloc, instrumentation::opentelemetry::LGTM,
+        bootstrap, configure_jemalloc, instrumentation::opentelemetry::Otel,
     },
     presentation::api::rest::startup::RestApi,
 };
@@ -26,8 +26,8 @@ async fn main() {
     // .await;
 
     // With opentelemetry
-    LGTM::from(&config.lgtm)
-        .with_otel_timeout(Duration::from_secs(30))
+    Otel::from(&config.otel)
+        .with_timeout(Duration::from_secs(30))
         .wrap(bootstrap!(
             template_example,
             [RestApi(config.server)],
