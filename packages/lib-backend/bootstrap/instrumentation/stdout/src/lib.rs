@@ -46,11 +46,16 @@ pub fn fmt_layer<S>() -> Layer<S, DefaultFields, Format<Compact>> {
     fmt::layer().compact()
 }
 
-pub fn init_tracing_subscriber() {
+pub async fn wrap<F>(future: F)
+where
+    F: Future<Output = ()>,
+{
     tracing_subscriber::registry()
         .with(filter_layer())
         .with(fmt_layer())
         .init();
+
+    future.await;
 }
 
 #[cfg(test)]
@@ -82,10 +87,5 @@ mod tests {
     #[test]
     fn fmt_layer_creation() {
         let _layer = fmt_layer::<Registry>();
-    }
-
-    #[test]
-    fn init_tracing_subscriber_works() {
-        let _result = std::panic::catch_unwind(init_tracing_subscriber);
     }
 }

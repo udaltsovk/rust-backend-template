@@ -1,12 +1,12 @@
 use std::time::Duration;
 
+// use lib::bootstrap::instrumentation::stdout;
 use lib::{
     bootstrap::{
         bootstrap, configure_jemalloc, instrumentation::opentelemetry::LGTM,
     },
     presentation::api::rest::startup::RestApi,
 };
-// use lib::bootstrap::instrumentation::stdout;
 use template_example::{Config, Modules};
 
 configure_jemalloc!();
@@ -18,8 +18,12 @@ async fn main() {
         .expect("config to be built successfully");
 
     // Without opentelemetry
-    // stdout::init_tracing_subscriber();
-    // bootstrap!(template_example, [RestApi], Modules::init()).await;
+    // stdout::wrap(bootstrap!(
+    //     template_example,
+    //     [RestApi(config.server)],
+    //     Modules::init(&config.modules)
+    // ))
+    // .await;
 
     // With opentelemetry
     LGTM::from(&config.lgtm)
