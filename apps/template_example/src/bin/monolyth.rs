@@ -20,7 +20,7 @@ async fn main() {
     // Without opentelemetry
     // stdout::wrap(bootstrap!(
     //     template_example,
-    //     [RestApi(config.server)],
+    //     [RestApi(&config.server)],
     //     Modules::init(&config.modules)
     // ))
     // .await;
@@ -30,7 +30,7 @@ async fn main() {
         .with_timeout(Duration::from_secs(30))
         .wrap(bootstrap!(
             template_example,
-            [RestApi(config.server)],
+            [RestApi(&config.server)],
             Modules::init(&config.modules)
         ))
         .await;

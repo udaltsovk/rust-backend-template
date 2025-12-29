@@ -12,7 +12,7 @@ macro_rules! bootstrap {
 
             let modules = $modules_fut.await;
             tokio::join!(
-                $($bootstrapper::bootstrap(&$config_field, modules.clone())),*
+                $($bootstrapper::bootstrap($config_field, modules.clone())),*
             );
         }
     };
@@ -104,7 +104,7 @@ mod tests {
 
         let modules_fut = async { test_modules.clone() };
 
-        crate::bootstrap!(test_app, [TestBootstrapper(())], modules_fut).await;
+        crate::bootstrap!(test_app, [TestBootstrapper(&())], modules_fut).await;
 
         let calls = test_modules
             .calls
@@ -161,7 +161,7 @@ mod tests {
 
         crate::bootstrap!(
             multi_app,
-            [BootstrapperA(()), BootstrapperB(())],
+            [BootstrapperA(&()), BootstrapperB(&())],
             modules_fut
         )
         .await;
@@ -199,7 +199,7 @@ mod tests {
 
         let modules_fut = async { ConfigModules };
 
-        crate::bootstrap!(config_app, [DummyBootstrapper(())], modules_fut)
+        crate::bootstrap!(config_app, [DummyBootstrapper(&())], modules_fut)
             .await;
     }
 }
