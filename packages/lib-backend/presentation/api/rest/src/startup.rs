@@ -41,12 +41,10 @@ where
             Router::new().merge(self.router.with_state(self.modules));
 
         if let Some(openapi) = self.openapi {
+            let openapi_json = Json(openapi.clone());
             router = router
-                .merge(Scalar::with_url("/openapi", openapi.clone()))
-                .route(
-                    "/openapi.json",
-                    get(async move || Json(openapi.clone())),
-                );
+                .merge(Scalar::with_url("/openapi", openapi))
+                .route("/openapi.json", get(async move || openapi_json));
         }
 
         let middlewares = ServiceBuilder::new().layer(CatchPanicLayer::new());
