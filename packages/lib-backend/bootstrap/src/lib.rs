@@ -1,9 +1,10 @@
 #[cfg(feature = "instrumentation")]
 pub use instrumentation;
-#[cfg(feature = "openapi")]
-pub mod openapi;
+pub mod metadata;
 
 pub mod bootstrap;
 mod bootstrapper_ext;
-mod check_config;
+mod config;
 mod jemalloc;
+
+pub use config::ConfigExt;

@@ -10,11 +10,9 @@ edition = "2024"
 lib = { path = "./packages/lib-backend" }
 
 axum = "0.8.6"
-better-config = { version = "0.2.4", default-features = false, features = [
-  "env",
-] }
 bon = "3.7"
 derive-where = "1.6.0"
+fromenv = "0.1.0"
 metrics = "0.24.2"
 mobc = "0.9.0"
 mobc-sqlx = "2.0.0"
@@ -32,6 +30,7 @@ uuid = "1.18.1"
 
 
 [patch.crates-io]
+fromenv = { git = "https://github.com/NikSneMC/fromenv", branch = "main" }
 mobc = { git = "https://github.com/NikSneMC/mobc", branch = "feat/manager-type-in-metrics" }
 # TODO: use utoipa from crates.io when https://github.com/juhaku/utoipa/pull/1329 and https://github.com/juhaku/utoipa/pull/1423 merged
 utoipa = { git = "https://github.com/NikSneMC/utoipa" }

@@ -1,13 +1,13 @@
-use better_config::{EnvConfig, env};
+use fromenv::FromEnv;
 
 use crate::modules::{
     repositories::RepositoriesConfig, services::ServicesConfig,
 };
 
-#[env(EnvConfig)]
+#[derive(FromEnv)]
 pub struct ModulesConfig {
-    #[env]
+    #[env(nested)]
     pub repositories: RepositoriesConfig,
-    #[env]
+    #[env(nested)]
     pub services: ServicesConfig,
 }

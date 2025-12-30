@@ -9,8 +9,8 @@ name = "template_example-monolyth"
 path = "./src/bin/monolyth.rs"
 
 [[bin]]
-name = "template_example-openapi"
-path = "./src/bin/openapi.rs"
+name = "template_example-metadata"
+path = "./src/bin/metadata.rs"
 
 [dependencies]
 lib = { workspace = true, features = [
@@ -30,10 +30,9 @@ presentation = { path = "./presentation", package = "template_example-presentati
   "api-rest",
 ] }
 
-better-config.workspace = true
+fromenv.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { workspace = true, features = [

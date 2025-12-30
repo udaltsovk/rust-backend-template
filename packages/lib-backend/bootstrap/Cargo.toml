@@ -31,9 +31,12 @@ openapi = ["dep:serde_json", "dep:thiserror", "dep:utoipa"]
 [dependencies]
 instrumentation = { path = "./instrumentation", package = "lib-infrastructure-instrumentation", optional = true }
 
+fromenv.workspace = true
 thiserror = { workspace = true, optional = true }
+tracing.workspace = true
 utoipa = { workspace = true, optional = true }
 
+dotenvy = "0.15.7"
 serde_json = { version = "1.0.145", optional = true }
 
 [dev-dependencies]

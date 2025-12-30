@@ -1,23 +1,20 @@
-use better_config::{EnvConfig, env};
+use fromenv::FromEnv;
 use lib::mobc_sqlx::sqlx::postgres::PgConnectOptions;
 
-#[env(EnvConfig)]
+#[derive(FromEnv)]
 pub struct RepositoriesConfig {
-    #[env]
+    #[env(nested)]
     pub postgres: PostgresConfig,
 }
 
-#[env(EnvConfig(prefix = "POSTGRES_"))]
+#[derive(FromEnv)]
+#[env(prefix = "POSTGRES_")]
 pub struct PostgresConfig {
-    #[conf(default = "postgres")]
     pub user: String,
-    #[conf(default = "postgres")]
     pub password: String,
-    #[conf(default = "localhost")]
     pub host: String,
-    #[conf(default = "5432")]
+    #[env(default = "5432")]
     pub port: u16,
-    #[conf(default = "template_example")]
     pub database: String,
 }
 

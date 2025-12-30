@@ -1,4 +1,5 @@
 export RUSTFLAGS := "-Z macro-backtrace --cfg tokio_unstable"
+database_url := "DATABASE_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DATABASE"
 dev_compose_file := "./dev.compose.yml"
 default_app_name := "template_example"
 
@@ -56,11 +57,11 @@ watch-rs crate="{{ default_app_name }}-monolyth":
         "just style run {{ crate }}"
 
 sqlx-reset crate="{{ default_app_name }}-monolyth" db="postgres" *args:
-    cargo sqlx database reset --source ./apps/{{ crate }}/infrastructure/persistence/{{ db }}/migrations {{ args }}
+    {{ database_url }} cargo sqlx database reset --source ./apps/{{ crate }}/infrastructure/persistence/{{ db }}/migrations {{ args }}
 
 sqlx-prepare crate="{{ default_app_name }}-monolyth" db="postgres" *args:
     cd ./apps/{{ crate }}/infrastructure/persistence/{{ db }} && \
-    cargo sqlx prepare {{ args }}
+    {{ database_url }} cargo sqlx prepare {{ args }}
 
 watch-sql crate="{{ default_app_name }}-monolyth":
     watchexec \

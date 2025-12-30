@@ -3,19 +3,18 @@ use std::time::Duration;
 // use lib::bootstrap::instrumentation::stdout;
 use lib::{
     bootstrap::{
-        bootstrap, configure_jemalloc, instrumentation::opentelemetry::Otel,
+        ConfigExt as _, bootstrap, configure_jemalloc,
+        instrumentation::opentelemetry::Otel,
     },
     presentation::api::rest::startup::RestApi,
 };
-use template_example::{Config, Modules};
+use template_example::{AppConfig, Modules};
 
 configure_jemalloc!();
 
 #[tokio::main]
 async fn main() {
-    let config = Config::builder()
-        .build()
-        .expect("config to be built successfully");
+    let config = AppConfig::load();
 
     // Without opentelemetry
     // stdout::wrap(bootstrap!(

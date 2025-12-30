@@ -1,14 +1,18 @@
-use better_config::{EnvConfig, env};
+#![allow(
+    clippy::allow_attributes,
+    clippy::allow_attributes_without_reason,
+    clippy::same_name_method
+)]
+
+use fromenv::FromEnv;
 
 use crate::Otel;
 
-#[env(EnvConfig(prefix = "OTEL_"))]
+#[derive(FromEnv)]
+#[env(prefix = "OTEL_")]
 pub struct OtelConfig {
-    #[conf(default = "http://localhost:4317")]
     pub endpoint: String,
-    #[conf(default = "template_example")]
     pub service_namespace: String,
-    #[conf(default = "monolyth")]
     pub service_name: String,
 }
 

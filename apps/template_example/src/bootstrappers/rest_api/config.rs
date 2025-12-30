@@ -1,14 +1,14 @@
 use std::net::{IpAddr, SocketAddr};
 
-use better_config::{EnvConfig, env};
+use fromenv::FromEnv;
 
-#[env(EnvConfig(prefix = "SERVER_"))]
+#[derive(FromEnv)]
+#[env(prefix = "SERVER_")]
 pub struct RestApiConfig {
-    #[conf(default = "::")]
+    #[env(default = "::")]
     pub host: IpAddr,
-    #[conf(default = "8080")]
+    #[env(default = "8080")]
     pub port: u16,
-    #[conf(default = "localhost")]
     pub domain: String,
 }
 

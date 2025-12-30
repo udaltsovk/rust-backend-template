@@ -1,19 +1,19 @@
 use std::sync::Arc;
 
-use better_config::{EnvConfig, env};
+use fromenv::FromEnv;
 use infrastructure::services::token::jwt::{
     DecodingKey, EncodingKey, JwtService,
 };
 
-#[env(EnvConfig)]
+#[derive(FromEnv)]
 pub struct ServicesConfig {
-    #[env]
+    #[env(nested)]
     pub jwt: JwtConfig,
 }
 
-#[env(EnvConfig(prefix = "JWT_"))]
+#[derive(FromEnv)]
+#[env(prefix = "JWT_")]
 pub struct JwtConfig {
-    #[conf(default = "changeme")]
     pub secret: String,
 }
 
