@@ -3,11 +3,13 @@ use std::net::SocketAddr;
 use axum::{Json, Router, routing::get};
 use tokio::{net::TcpListener, signal};
 use tower::ServiceBuilder;
-use tower_http::catch_panic::CatchPanicLayer;
 use utoipa::openapi::OpenApi;
 use utoipa_scalar::{Scalar, Servable as _};
 
-use crate::routes::{fallback_404, fallback_405};
+use crate::{
+    panic_handler::PanicHandler,
+    routes::{fallback_404, fallback_405},
+};
 
 pub struct RestApiBuilder<M>
 where
@@ -47,7 +49,7 @@ where
                 .route("/openapi.json", get(async move || openapi_json));
         }
 
-        let middlewares = ServiceBuilder::new().layer(CatchPanicLayer::new());
+        let middlewares = ServiceBuilder::new().layer(PanicHandler::layer());
 
         let router = router
             .layer(middlewares)
