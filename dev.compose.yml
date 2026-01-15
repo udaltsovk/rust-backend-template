@@ -37,10 +37,6 @@ services:
       - s3
     entrypoint: >
       sh -c "until mc alias set myminio http://s3:9000 minioadmin minioadmin; do sleep 1; done &&
-
-
-
-
         mc mb myminio/tempo &&
         mc mb myminio/mimir &&
         mc mb myminio/images &&
