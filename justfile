@@ -56,14 +56,14 @@ watch-rs crate=(default_app_name + "-monolyth"):
         -e rs,toml,lock \
         "just style run {{ crate }}"
 
-sqlx-reset crate=(default_app_name + "-monolyth") db="postgres" *args:
+sqlx-reset crate=default_app_name db="postgres" *args:
     {{ database_url }} cargo sqlx database reset --source ./apps/{{ crate }}/infrastructure/persistence/{{ db }}/migrations {{ args }}
 
-sqlx-prepare crate=(default_app_name + "-monolyth") db="postgres" *args:
+sqlx-prepare crate=default_app_name db="postgres" *args:
     cd ./apps/{{ crate }}/infrastructure/persistence/{{ db }} && \
     {{ database_url }} cargo sqlx prepare {{ args }}
 
-watch-sql crate=(default_app_name + "-monolyth"):
+watch-sql crate=default_app_name:
     watchexec \
         -rqc reset \
         -e sql \
