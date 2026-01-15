@@ -1,4 +1,4 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1.91-trixie AS chef
+FROM lukemathwalker/cargo-chef:latest-rust-1.92-trixie AS chef
 COPY rust-toolchain.toml rust-toolchain.toml
 WORKDIR /usr/src
 
