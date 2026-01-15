@@ -34,7 +34,7 @@ coverage *args="--skip-clean --workspace --all-targets -o Xml -o Html":
     cargo tarpaulin {{ args }}
     pycobertura show cobertura.xml
 
-build crate="{{ default_app_name }}-monolyth" *args:
+build crate=(default_app_name + "-monolyth") *args:
     cargo build --bin {{ crate }} {{ args }}
 
 style:
@@ -47,23 +47,23 @@ check:
     just style
     just coverage
 
-run crate="{{ default_app_name }}-monolyth" *args:
+run crate=(default_app_name + "-monolyth") *args:
     cargo run --bin {{ crate }} {{ args }}
 
-watch-rs crate="{{ default_app_name }}-monolyth":
+watch-rs crate=(default_app_name + "-monolyth"):
     watchexec \
         -rqc reset \
         -e rs,toml,lock \
         "just style run {{ crate }}"
 
-sqlx-reset crate="{{ default_app_name }}-monolyth" db="postgres" *args:
+sqlx-reset crate=(default_app_name + "-monolyth") db="postgres" *args:
     {{ database_url }} cargo sqlx database reset --source ./apps/{{ crate }}/infrastructure/persistence/{{ db }}/migrations {{ args }}
 
-sqlx-prepare crate="{{ default_app_name }}-monolyth" db="postgres" *args:
+sqlx-prepare crate=(default_app_name + "-monolyth") db="postgres" *args:
     cd ./apps/{{ crate }}/infrastructure/persistence/{{ db }} && \
     {{ database_url }} cargo sqlx prepare {{ args }}
 
-watch-sql crate="{{ default_app_name }}-monolyth":
+watch-sql crate=(default_app_name + "-monolyth"):
     watchexec \
         -rqc reset \
         -e sql \
