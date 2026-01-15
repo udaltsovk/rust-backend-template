@@ -1,4 +1,4 @@
-use std::{error::Error, fmt, marker::PhantomData};
+use std::{error::Error, fmt};
 
 use crate::validation::ValidationConfirmation;
 
@@ -26,9 +26,7 @@ impl ValidationErrors {
     where
         F: FnOnce(ValidationConfirmation) -> T,
     {
-        let confirmation = ValidationConfirmation {
-            _phantom: PhantomData,
-        };
+        let confirmation = ValidationConfirmation(());
         self.0.is_empty().then(|| ok_fn(confirmation)).ok_or(self)
     }
 }
