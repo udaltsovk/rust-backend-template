@@ -8,7 +8,7 @@ macro_rules! repository_impl_struct {
             where
                 T: Send + Sync,
             {
-                pool: mobc_sqlx::mobc::Pool<$manager>,
+                pool: mobc::Pool<$manager>,
                 _entity: std::marker::PhantomData<T>,
             }
 
@@ -16,7 +16,7 @@ macro_rules! repository_impl_struct {
             where
                 T: Send + Sync,
             {
-                pub fn new(pool: &mobc_sqlx::mobc::Pool<$manager>) -> Self {
+                pub fn new(pool: &mobc::Pool<$manager>) -> Self {
                     Self {
                         pool: pool.clone(),
                         _entity: std::marker::PhantomData,
@@ -29,7 +29,7 @@ macro_rules! repository_impl_struct {
 
 #[cfg(test)]
 mod tests {
-    use mobc_sqlx::{SqlxConnectionManager, sqlx::Postgres};
+    use mobc_sqlx::{SqlxConnectionManager, mobc, sqlx::Postgres};
     use rstest::{fixture, rstest};
     use sqlx::postgres::PgConnectOptions;
 

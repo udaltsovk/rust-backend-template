@@ -1,24 +1,23 @@
-use mobc_sqlx::{mobc, sqlx};
+use mobc_sqlx::{mobc::Error as MobcError, sqlx::Error as SqlxError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum PostgresAdapterError {
     #[error(transparent)]
-    Pool(#[from] mobc::Error<sqlx::Error>),
+    Pool(#[from] MobcError<SqlxError>),
 
     #[error(transparent)]
-    Database(#[from] sqlx::Error),
+    Database(#[from] SqlxError),
 }
 
 #[cfg(test)]
 mod tests {
-    use mobc_sqlx::{mobc, sqlx};
     use rstest::rstest;
 
-    use super::PostgresAdapterError;
+    use super::{MobcError, PostgresAdapterError, SqlxError};
 
     #[rstest]
     fn postgres_adapter_error_from_mobc_error() {
-        let mobc_error = mobc::Error::Inner(sqlx::Error::RowNotFound);
+        let mobc_error = MobcError::Inner(SqlxError::RowNotFound);
         let error_display = mobc_error.to_string();
 
         let error: PostgresAdapterError = mobc_error.into();
@@ -29,7 +28,7 @@ mod tests {
 
     #[rstest]
     fn postgres_adapter_error_from_sqlx_error() {
-        let sqlx_error = sqlx::Error::RowNotFound;
+        let sqlx_error = SqlxError::RowNotFound;
         let error_display = sqlx_error.to_string();
 
         let error: PostgresAdapterError = sqlx_error.into();
@@ -40,7 +39,7 @@ mod tests {
 
     #[rstest]
     fn postgres_adapter_error_debug() {
-        let error = PostgresAdapterError::Database(sqlx::Error::RowNotFound);
+        let error = PostgresAdapterError::Database(SqlxError::RowNotFound);
         let debug_output = format!("{error:?}");
 
         assert!(debug_output.contains("Database"));

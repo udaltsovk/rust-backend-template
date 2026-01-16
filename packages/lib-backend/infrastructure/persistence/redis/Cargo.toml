@@ -1,0 +1,15 @@
+[package]
+name = "lib-infrastructure-persistence-redis"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+mobc-redis.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+rstest.workspace = true
+
+[lints]
+workspace = true

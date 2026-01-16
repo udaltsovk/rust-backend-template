@@ -34,7 +34,9 @@ pub use domain;
 pub use infrastructure;
 #[cfg(feature = "macros")]
 pub use macros::*;
-#[cfg(feature = "bootstrap")]
+#[cfg(feature = "bootstrap-redis")]
+pub use mobc_redis;
+#[cfg(feature = "bootstrap-sqlx")]
 pub use mobc_sqlx;
 #[cfg(any(
     feature = "infrastructure-persistence",
@@ -42,6 +44,8 @@ pub use mobc_sqlx;
     feature = "presentation-api",
 ))]
 pub use model_mapper;
+#[cfg(any(feature = "domain", feature = "application"))]
+pub use pastey::paste;
 #[cfg(feature = "presentation")]
 pub use presentation;
 #[cfg(any(

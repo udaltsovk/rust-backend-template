@@ -7,6 +7,7 @@ edition.workspace = true
 [features]
 persistence = ["dep:persistence"]
 persistence-postgres = ["persistence", "persistence/postgres"]
+persistence-redis = ["persistence", "persistence/redis"]
 
 [dependencies]
 persistence = { path = "./persistence", package = "lib-infrastructure-persistence", optional = true }

@@ -5,16 +5,15 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
-application = ["dep:application", "dep:async-trait", "dep:tap"]
+application = ["dep:application", "dep:async-trait", "dep:pastey", "dep:tap"]
 
-bootstrap = [
-  "dep:bootstrap",
-  "dep:async-trait",
-  "dep:mobc-sqlx",
-  "dep:tower",
-  "dep:tower-http",
-]
+bootstrap = ["dep:bootstrap", "dep:async-trait", "dep:tower", "dep:tower-http"]
+
 bootstrap-openapi = ["bootstrap", "bootstrap/openapi"]
+
+bootstrap-redis = ["bootstrap", "dep:mobc-redis"]
+
+bootstrap-sqlx = ["bootstrap", "dep:mobc-sqlx"]
 
 bootstrap-instrumentation = ["bootstrap", "bootstrap/instrumentation"]
 
@@ -45,7 +44,8 @@ bootstrap-instrumentation-stdout = [
   "bootstrap/instrumentation-stdout",
 ]
 
-domain = ["dep:domain", "dep:uuid"]
+domain = ["dep:domain", "dep:pastey", "dep:uuid"]
+domain-telegram = ["domain", "domain/telegram"]
 
 infrastructure = ["dep:infrastructure"]
 
@@ -59,6 +59,10 @@ infrastructure-persistence = [
 infrastructure-persistence-postgres = [
   "infrastructure-persistence",
   "infrastructure/persistence-postgres",
+]
+infrastructure-persistence-redis = [
+  "infrastructure-persistence",
+  "infrastructure/persistence-redis",
 ]
 
 infrastructure-services = [
@@ -100,21 +104,23 @@ macros = { path = "./macros", package = "lib-macros", optional = true }
 presentation = { path = "./presentation", package = "lib-presentation", optional = true }
 
 axum = { workspace = true, optional = true }
+mobc-redis = { workspace = true, optional = true }
 mobc-sqlx = { workspace = true, optional = true }
+pastey = { workspace = true, optional = true }
 tap = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 tower = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true, features = ["v7"] }
 
-async-trait = { version = "0.1.89", optional = true }
-axum-otel-metrics = { version = "0.12.0", optional = true }
-axum-tracing-opentelemetry = { version = "0.30.1", optional = true, features = [
+async-trait = { version = "0.1", optional = true }
+axum-otel-metrics = { version = "0.12", optional = true }
+axum-tracing-opentelemetry = { version = "0.30", optional = true, features = [
   "tracing_level_info",
 ] }
-chrono = { version = "0.4.42", optional = true }
-model-mapper = { version = "0.6.1", optional = true }
-tower-http = { version = "0.6.6", optional = true, features = ["cors"] }
-utoipa-axum = { version = "0.2.0", optional = true }
+chrono = { version = "0.4", optional = true }
+model-mapper = { version = "0.6", optional = true }
+tower-http = { version = "0.6", optional = true, features = ["cors"] }
+utoipa-axum = { version = "0.2", optional = true }
 
 [lints]
 workspace = true
