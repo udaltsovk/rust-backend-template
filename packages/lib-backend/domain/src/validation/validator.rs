@@ -36,13 +36,12 @@ where
     }
 
     pub fn validated(self, _confirmation: ValidationConfirmation) -> T {
-        match self.inner {
-            Ok(value) => value,
-            Err(_) => panic!(
+        self.inner.unwrap_or_else(|_| {
+            panic!(
                 "`{}` should be Ok because error vec is empty",
                 type_name::<Self>()
-            ),
-        }
+            )
+        })
     }
 }
 
@@ -71,7 +70,7 @@ macro_rules! into_validators {
     ($($field: expr),*) => {
         {
             #[allow(unused_imports)]
-            use $crate::validation::{IntoValidator as _, IntoOptionValidator as _, error::ValidationErrors};
+            use $crate::validation::{IntoValidator as _, error::ValidationErrors};
 
             #[allow(unused_mut)]
             let mut errors = ValidationErrors::new();

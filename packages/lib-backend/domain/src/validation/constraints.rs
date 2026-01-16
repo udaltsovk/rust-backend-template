@@ -1,8 +1,14 @@
+use std::sync::Arc;
+
+use derive_where::derive_where;
+
 use crate::validation::error::ValidationErrors;
 
 mod alphanumeric;
 mod ascii;
 mod ascii_alphanumeric;
+mod email;
+pub mod has;
 pub mod length;
 pub mod range;
 mod regex;
@@ -10,6 +16,7 @@ mod regex;
 pub use alphanumeric::IsAlphanumeric;
 pub use ascii::IsAscii;
 pub use ascii_alphanumeric::IsAsciiAlphanumeric;
+pub use email::IsValidEmail;
 pub use regex::Matches;
 
 pub trait Constraint<T> {
@@ -18,16 +25,46 @@ pub trait Constraint<T> {
     fn error_msg(&self) -> String;
 }
 
+#[derive_where(Clone)]
+pub struct ConstraintVec<T>(Vec<Arc<dyn Constraint<T> + Send + Sync>>);
+
+impl<T> ConstraintVec<T> {
+    pub const fn new() -> Self {
+        Self(Vec::new())
+    }
+
+    pub fn add_constraint(
+        mut self,
+        constraint: impl Constraint<T> + Send + Sync + 'static,
+    ) -> Self {
+        self.0.push(Arc::new(constraint));
+        self
+    }
+}
+
+impl<T> Default for ConstraintVec<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 pub struct ConstraintsBuilder<T> {
     name: &'static str,
-    constraints: Vec<Box<dyn Constraint<T> + Send + Sync>>,
+    constraints: ConstraintVec<T>,
 }
 
 impl<T> ConstraintsBuilder<T> {
-    pub fn new(name: &'static str) -> Self {
+    pub const fn new(name: &'static str) -> Self {
+        Self::new_with_constraints(name, ConstraintVec::new())
+    }
+
+    pub const fn new_with_constraints(
+        name: &'static str,
+        constraints: ConstraintVec<T>,
+    ) -> Self {
         Self {
             name,
-            constraints: Vec::new(),
+            constraints,
         }
     }
 
@@ -35,7 +72,7 @@ impl<T> ConstraintsBuilder<T> {
         mut self,
         constraint: impl Constraint<T> + Send + Sync + 'static,
     ) -> Self {
-        self.constraints.push(Box::new(constraint));
+        self.constraints = self.constraints.add_constraint(constraint);
         self
     }
 
@@ -49,7 +86,7 @@ impl<T> ConstraintsBuilder<T> {
 
 pub struct Constraints<T> {
     name: &'static str,
-    constraints: Vec<Box<dyn Constraint<T> + Send + Sync>>,
+    constraints: ConstraintVec<T>,
 }
 
 impl<T> Constraints<T> {
@@ -57,14 +94,28 @@ impl<T> Constraints<T> {
         ConstraintsBuilder::new(name)
     }
 
+    pub fn builder_with(
+        name: &'static str,
+        constraints: &ConstraintVec<T>,
+    ) -> ConstraintsBuilder<T> {
+        ConstraintsBuilder::new_with_constraints(name, constraints.clone())
+    }
+
     pub fn name(&self) -> &'static str {
         self.name
+    }
+
+    pub fn derived(name: &'static str, source: &Constraints<T>) -> Self {
+        Self {
+            name,
+            constraints: source.constraints.clone(),
+        }
     }
 
     pub fn check(&self, value: &T) -> ValidationErrors {
         let mut errors = ValidationErrors::new();
 
-        for constraint in &self.constraints {
+        for constraint in &self.constraints.0 {
             if !constraint.check(value) {
                 let message = constraint.error_msg();
                 errors.push(self.name, message);
@@ -130,7 +181,7 @@ mod tests {
     fn constraints_builder_new(#[case] field_name: &'static str) {
         let builder = ConstraintsBuilder::<String>::new(field_name);
         assert_eq!(builder.name, field_name);
-        assert!(builder.constraints.is_empty());
+        assert!(builder.constraints.0.is_empty());
     }
 
     #[rstest]
@@ -142,7 +193,7 @@ mod tests {
             .add_constraint(passing_constraint);
 
         assert_eq!(builder.name, test_field_name);
-        assert_eq!(builder.constraints.len(), 1);
+        assert_eq!(builder.constraints.0.len(), 1);
     }
 
     #[rstest]
@@ -164,7 +215,7 @@ mod tests {
             builder = builder.add_constraint(constraint);
         }
 
-        assert_eq!(builder.constraints.len(), constraint_count);
+        assert_eq!(builder.constraints.0.len(), constraint_count);
     }
 
     #[rstest]
@@ -177,7 +228,7 @@ mod tests {
             .build();
 
         assert_eq!(constraints.name(), test_field_name);
-        assert_eq!(constraints.constraints.len(), 1);
+        assert_eq!(constraints.constraints.0.len(), 1);
     }
 
     #[rstest]
@@ -185,7 +236,7 @@ mod tests {
         let constraints =
             Constraints::<String>::builder(test_field_name).build();
         assert_eq!(constraints.name(), test_field_name);
-        assert!(constraints.constraints.is_empty());
+        assert!(constraints.constraints.0.is_empty());
     }
 
     #[rstest]

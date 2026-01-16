@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use num_traits::Num;
+pub use num_traits::Num;
 
 use crate::validation::constraints::Constraint;
 
