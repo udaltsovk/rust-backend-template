@@ -1,4 +1,5 @@
-use lib::application::usecase_result;
+use domain::session::Session;
+use lib::{application::usecase_result, domain::Id};
 
 use crate::{repository::RepositoriesModuleExt, service::ServicesModuleExt};
 
@@ -13,6 +14,9 @@ where
 
     #[error(transparent)]
     Service(S::Error),
+
+    #[error("session with id `{0}` does not exist")]
+    NotFound(Id<Session>),
 }
 
 usecase_result!(Session);

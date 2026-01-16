@@ -8,13 +8,13 @@ use lib::{
 use crate::constraints::EMAIL_CONSTRAINTS;
 
 #[derive(DomainType, Debug)]
-pub struct UserEmail(String);
+pub struct Email(String);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
     Constraints::builder_with("email", &EMAIL_CONSTRAINTS).build()
 });
 
-impl TryFrom<String> for UserEmail {
+impl TryFrom<String> for Email {
     type Error = ValidationErrors;
 
     fn try_from(value: String) -> Result<Self, ValidationErrors> {
@@ -24,7 +24,7 @@ impl TryFrom<String> for UserEmail {
     }
 }
 
-impl fmt::Display for UserEmail {
+impl fmt::Display for Email {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)
     }

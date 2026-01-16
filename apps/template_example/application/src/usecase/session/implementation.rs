@@ -45,4 +45,27 @@ where
             .map_err(S::Error::from)
             .map_err(SessionUseCaseError::Service)
     }
+
+    async fn get_from_token(
+        &self,
+        token: &str,
+    ) -> SessionUseCaseResult<R, S, Session> {
+        let session = self
+            .services
+            .token_service()
+            .parse(token)
+            .map_err(S::Error::from)
+            .map_err(SessionUseCaseError::Service)?;
+
+        self.repositories
+            .session_repository()
+            .find_by_entity(session.entity)
+            .await
+            .map_err(R::Error::from)
+            .map_err(SessionUseCaseError::Repository)?
+            .is_some_and(|ses| session == ses)
+            .ok_or(SessionUseCaseError::NotFound(session.id))?;
+
+        Ok(session)
+    }
 }

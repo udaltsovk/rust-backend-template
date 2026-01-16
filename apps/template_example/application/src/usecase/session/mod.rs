@@ -1,4 +1,4 @@
-use domain::session::entity::SessionEntity;
+use domain::session::{Session, entity::SessionEntity};
 use lib::async_trait;
 
 use crate::{
@@ -19,4 +19,9 @@ where
         &self,
         entity: SessionEntity,
     ) -> SessionUseCaseResult<R, S, String>;
+
+    async fn get_from_token(
+        &self,
+        token: &str,
+    ) -> SessionUseCaseResult<R, S, Session>;
 }

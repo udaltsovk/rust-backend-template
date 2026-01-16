@@ -1,4 +1,3 @@
-use derive_more::From;
 use domain::user::{CreateUser, User};
 use lib::{
     domain::{
@@ -11,7 +10,7 @@ use lib::{
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-use crate::model::user::target_settings::JsonUserTargetSettings;
+use crate::models::user::target_settings::JsonUserTargetSettings;
 
 mod target_settings;
 
@@ -33,24 +32,49 @@ pub struct JsonUser {
     other: JsonUserTargetSettings,
 }
 
-#[derive(From, Serialize, ToSchema, Debug)]
-pub struct JsonUserToken {
-    ///
-    token: String,
-}
-
 #[derive(Deserialize, ToSchema, Debug)]
 pub struct CreateJsonUser {
     ///
+    #[schema(min_length = 1, max_length = 100, examples("Мария"))]
     name: String,
+
     ///
+    #[schema(min_length = 1, max_length = 120, examples("Федотова"))]
     surname: String,
+
     ///
+    #[schema(
+        format = IdnEmail,
+        min_length = 8,
+        max_length = 120,
+        examples(
+            "cu_fan@edu.hse.ru"
+        )
+    )]
     email: String,
+
     ///
+    #[schema(
+        format = Password,
+        min_length = 8,
+        max_length = 60,
+        pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+        examples(
+            "HardPa$$w0rd!iamthewinner"
+        )
+    )]
     password: String,
-    ///
+
+    /// Ссылка на фото пользователя
+    #[schema(
+        format = Uri,
+        max_length = 350,
+        examples(
+            "https://cdn2.thecatapi.com/images/3lo.jpg"
+        )
+    )]
     avatar_url: Option<String>,
+
     ///
     other: JsonUserTargetSettings,
 }

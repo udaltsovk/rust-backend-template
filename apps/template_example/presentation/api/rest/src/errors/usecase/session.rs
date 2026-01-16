@@ -3,9 +3,8 @@ use application::{
     usecase::session::error::SessionUseCaseError,
 };
 use axum::http::StatusCode;
-use lib::presentation::api::rest::context::InternalErrorStringExt as _;
 
-use crate::context::errors::AppError;
+use crate::AppError;
 
 impl<R, S> From<SessionUseCaseError<R, S>> for AppError
 where
@@ -13,12 +12,15 @@ where
     S: ServicesModuleExt,
 {
     fn from(error: SessionUseCaseError<R, S>) -> Self {
-        let (status_code, error_code) = {
+        let (status_code, error_code, error) = {
             use SessionUseCaseError as E;
             use StatusCode as C;
             match error {
                 E::Repository(_) | E::Service(_) => {
-                    (C::INTERNAL_SERVER_ERROR, "internal_server_error")
+                    Self::internal_server_error(error)
+                },
+                E::NotFound(_) => {
+                    (C::UNAUTHORIZED, "invalid_session", error.to_string())
                 },
             }
         };
@@ -26,7 +28,7 @@ where
         Self::UseCase {
             status_code,
             error_code,
-            error: error.to_internal_error_string(),
+            error,
         }
     }
 }

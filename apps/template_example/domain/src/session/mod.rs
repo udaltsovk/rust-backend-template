@@ -1,9 +1,13 @@
 use lib::domain::Id;
 
-use crate::{session::entity::SessionEntity, user::User};
+use crate::{
+    email::Email, password::Password, session::entity::SessionEntity,
+    user::User,
+};
 
 pub mod entity;
 
+#[derive(PartialEq, Eq)]
 pub struct Session {
     pub id: Id<Self>,
     pub entity: SessionEntity,
@@ -20,4 +24,9 @@ impl Session {
             entity: SessionEntity::User(id),
         }
     }
+}
+
+pub struct CreateSession {
+    pub email: Email,
+    pub password: Password,
 }

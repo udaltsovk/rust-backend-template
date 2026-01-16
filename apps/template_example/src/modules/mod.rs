@@ -2,7 +2,7 @@ use application::usecase::{
     UseCase, session::SessionUseCase, user::UserUseCase,
 };
 use domain::{session::Session, user::User};
-use presentation::api::rest::module::{ModulesExt, UseCaseImpl};
+use presentation::api::rest::{ModulesExt, UseCaseImpl};
 
 pub use crate::modules::config::ModulesConfig;
 use crate::modules::{

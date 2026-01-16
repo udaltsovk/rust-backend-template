@@ -1,5 +1,9 @@
 use application::repository::user::UserRepository;
-use domain::user::{CreateUser, User, email::UserEmail};
+use domain::{
+    email::Email,
+    password::PasswordHash,
+    user::{CreateUser, User},
+};
 use lib::{
     async_trait,
     domain::{DomainType as _, Id},
@@ -52,26 +56,26 @@ impl UserRepository for PostgresRepositoryImpl<User> {
     async fn find_by_id(
         &self,
         id: Id<User>,
-    ) -> Result<Option<User>, Self::AdapterError> {
+    ) -> Result<Option<(User, PasswordHash)>, Self::AdapterError> {
         let mut connection = self.pool.get().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_id.sql", id.value)
             .fetch_optional(&mut *connection)
             .await?
-            .map(User::from)
+            .map(StoredUser::into_domain_tuple)
             .pipe(Ok)
     }
 
     async fn find_by_email(
         &self,
-        email: &UserEmail,
-    ) -> Result<Option<User>, Self::AdapterError> {
+        email: &Email,
+    ) -> Result<Option<(User, PasswordHash)>, Self::AdapterError> {
         let mut connection = self.pool.get().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_email.sql", email.as_ref())
             .fetch_optional(&mut *connection)
             .await?
-            .map(User::from)
+            .map(StoredUser::into_domain_tuple)
             .pipe(Ok)
     }
 }

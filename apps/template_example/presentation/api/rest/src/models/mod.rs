@@ -3,4 +3,5 @@
     reason = "API model documentation will be added in future iterations"
 )]
 
+pub mod session;
 pub mod user;

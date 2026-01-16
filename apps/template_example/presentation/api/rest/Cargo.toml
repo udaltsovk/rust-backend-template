@@ -20,8 +20,10 @@ utoipa = { workspace = true, features = [
   "non_strict_integers",
   "uuid",
   "chrono",
+  "url",
 ] }
 
+axum-extra = { version = "0.12", features = ["typed-header"] }
 derive_more = { version = "2.1", features = ["from"] }
 
 [lints]

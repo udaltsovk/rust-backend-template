@@ -1,5 +1,5 @@
-use domain::user::email::UserEmail;
-use lib::application::usecase_result;
+use domain::{email::Email, user::User};
+use lib::{application::usecase_result, domain::Id};
 
 use crate::{repository::RepositoriesModuleExt, service::ServicesModuleExt};
 
@@ -16,7 +16,16 @@ where
     Service(S::Error),
 
     #[error("user with email `{0}` already exists")]
-    EmailAlreadyUsed(UserEmail),
+    EmailAlreadyUsed(Email),
+
+    #[error("user with email `{email}` does not exist")]
+    NotFoundByEmail { email: Email, from_auth: bool },
+
+    #[error("user with id `{0}` does not exist")]
+    NotFoundById(Id<User>),
+
+    #[error("invalid password")]
+    InvalidPassword,
 }
 
 usecase_result!(User);

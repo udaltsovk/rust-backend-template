@@ -1,16 +1,17 @@
 use lib::domain::Id;
 
-use crate::user::{
-    avatar_url::UserAvatarUrl, email::UserEmail, name::UserName,
-    password::UserPassword, surname::UserSurname,
-    target_settings::UserTargetSettings,
+use crate::{
+    email::Email,
+    password::Password,
+    user::{
+        avatar_url::UserAvatarUrl, name::UserName, surname::UserSurname,
+        target_settings::UserTargetSettings,
+    },
 };
 
 pub mod avatar_url;
 mod constraints;
-pub mod email;
 pub mod name;
-pub mod password;
 pub mod surname;
 pub mod target_settings;
 
@@ -19,7 +20,7 @@ pub struct User {
     pub id: Id<Self>,
     pub name: UserName,
     pub surname: UserSurname,
-    pub email: UserEmail,
+    pub email: Email,
     pub avatar_url: Option<UserAvatarUrl>,
     pub target_settings: UserTargetSettings,
 }
@@ -28,8 +29,8 @@ pub struct User {
 pub struct CreateUser {
     pub name: UserName,
     pub surname: UserSurname,
-    pub email: UserEmail,
-    pub password: UserPassword,
+    pub email: Email,
+    pub password: Password,
     pub avatar_url: Option<UserAvatarUrl>,
     pub target_settings: UserTargetSettings,
 }

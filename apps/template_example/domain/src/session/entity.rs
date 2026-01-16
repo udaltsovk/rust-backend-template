@@ -2,7 +2,7 @@ use lib::{domain::Id, uuid::Uuid};
 
 use crate::user::User;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum SessionEntity {
     User(Id<User>),
 }

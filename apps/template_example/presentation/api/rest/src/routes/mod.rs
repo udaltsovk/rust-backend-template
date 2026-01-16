@@ -1,9 +1,9 @@
 use lib::utoipa_axum::router::OpenApiRouter;
 use utoipa::OpenApi as _;
 
-use crate::{context::openapi::ApiDoc, module::ModulesExt};
+use crate::{ApiDoc, ModulesExt};
 
-mod user;
+pub mod user;
 
 #[must_use]
 pub fn router<M: ModulesExt>() -> OpenApiRouter<M> {

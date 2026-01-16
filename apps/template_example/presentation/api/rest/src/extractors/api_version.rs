@@ -7,7 +7,7 @@ use axum::{
 };
 use serde::Deserialize;
 
-use crate::context::errors::AppError;
+use crate::AppError;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]

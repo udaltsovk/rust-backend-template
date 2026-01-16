@@ -7,13 +7,23 @@ use lib::{
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
+/// Таргет настройки пользователя
 #[derive(Mapper, Deserialize, Serialize, ToSchema, Debug)]
 #[mapper(ty = UserTargetSettings, from)]
 pub struct JsonUserTargetSettings {
-    ///
+    /// Возраст пользователя
+    #[schema(
+        format = UInt8,
+        minimum = 0,
+        maximum = 100,
+        examples(
+            13
+        )
+    )]
     pub age: i64,
 
-    ///
+    /// Страна пользователя в формате ISO 3166-1 alpha-2, регистр может быть разным. Страна с данным кодом должна обязательно существовать.
+    #[schema(format = "iso-3166-alpha-2", examples("ru"))]
     pub country: String,
 }
 
