@@ -13,25 +13,28 @@ use utoipa::ToSchema;
 pub struct JsonErrorStruct {
     /// Response status code
     #[serde(skip)]
-    pub(crate) status_code: StatusCode,
+    pub status_code: StatusCode,
 
     /// Response error code
-    pub(crate) error_code: String,
+    pub error_code: &'static str,
 
     /// Response error list
-    pub(crate) errors: Vec<String>,
+    pub errors: Vec<String>,
 }
 
 impl JsonErrorStruct {
-    pub fn new<S, E, D>(status_code: S, error_code: E, errors: Vec<D>) -> Self
+    pub fn new<S, D>(
+        status_code: S,
+        error_code: &'static str,
+        errors: Vec<D>,
+    ) -> Self
     where
         S: Into<StatusCode>,
-        E: Display,
         D: Display,
     {
         Self {
             status_code: status_code.into(),
-            error_code: error_code.to_string(),
+            error_code,
             errors: errors.into_iter().map(|e| e.to_string()).collect(),
         }
     }
@@ -63,6 +66,48 @@ pub trait InternalErrorStringExt: ToString + Sized {
 
 impl<T> InternalErrorStringExt for T where T: ToString + Sized {}
 
+#[macro_export]
+macro_rules! error_response {
+    (
+        $(#[$meta:meta])*
+        name = $name: ident,
+        error_code = $error_code: literal,
+        status_code = $status_code: ident $(,)+
+    ) => {
+        $(#[$meta])*
+        #[derive(lib::model_mapper::Mapper, utoipa::ToSchema, utoipa::IntoResponses)]
+        #[mapper(into, ty = $crate::context::JsonErrorStruct, add(field = status_code, default(value = $name::STATUS_CODE)))]
+        #[response(status = $status_code)]
+        pub struct $name {
+            #[schema(example = Self::error_code)]
+            error_code: &'static str,
+
+            errors: Vec<String>,
+        }
+
+        impl $name {
+            const ERROR_CODE: &str = $error_code;
+            const STATUS_CODE: axum::http::StatusCode = axum::http::StatusCode::$status_code;
+
+            #[must_use]
+            pub const fn error_code() -> &'static str {
+                Self::ERROR_CODE
+            }
+
+            #[must_use]
+            pub fn new<D>(errors: Vec<D>) -> Self
+            where
+                D: std::fmt::Display,
+            {
+                Self {
+                    error_code: Self::ERROR_CODE,
+                    errors: errors.into_iter().map(|e| e.to_string()).collect(),
+                }
+            }
+        }
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use axum::http::StatusCode;
@@ -73,18 +118,17 @@ mod tests {
     #[rstest]
     #[case(StatusCode::BAD_REQUEST, "validation_error", vec!["Field is required", "Invalid format"], StatusCode::BAD_REQUEST, "validation_error", vec!["Field is required".to_string(), "Invalid format".to_string()])]
     #[case(StatusCode::BAD_REQUEST, "client_error", vec!["Bad request"], StatusCode::BAD_REQUEST, "client_error", vec!["Bad request".to_string()])]
-    #[case(StatusCode::INTERNAL_SERVER_ERROR, 42_i32, vec![String::from("string error"), "404".to_string()], StatusCode::INTERNAL_SERVER_ERROR, "42", vec!["string error".to_string(), "404".to_string()])]
+    #[case(StatusCode::INTERNAL_SERVER_ERROR, "internal_server_error", vec![String::from("string error"), "404".to_string()], StatusCode::INTERNAL_SERVER_ERROR, "42", vec!["string error".to_string(), "404".to_string()])]
     #[case(StatusCode::NOT_FOUND, "not_found", Vec::<String>::new(), StatusCode::NOT_FOUND, "not_found", Vec::<String>::new())]
-    fn json_error_struct_new<S, E, D>(
+    fn json_error_struct_new<S, D>(
         #[case] status_code: S,
-        #[case] error_code: E,
+        #[case] error_code: &'static str,
         #[case] errors: Vec<D>,
         #[case] expected_status: StatusCode,
         #[case] expected_error_code: &str,
         #[case] expected_errors: Vec<String>,
     ) where
         S: Into<StatusCode>,
-        E: Display,
         D: Display,
     {
         let error = JsonErrorStruct::new(status_code, error_code, errors);

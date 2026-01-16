@@ -20,7 +20,7 @@ macro_rules! extractor {
             fn from(rejection: $rejection) -> Self {
                 Self {
                     status_code: axum::http::StatusCode::BAD_REQUEST,
-                    error_code: format!("invalid_{}", $err_code),
+                    error_code: concat!("invalid_", $err_code),
                     errors: vec![rejection.body_text()],
                 }
             }

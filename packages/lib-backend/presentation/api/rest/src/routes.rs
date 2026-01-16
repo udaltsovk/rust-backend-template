@@ -5,7 +5,7 @@ use crate::context::JsonErrorStruct;
 pub async fn fallback_404() -> impl IntoResponse {
     JsonErrorStruct::new(
         StatusCode::NOT_FOUND,
-        "not_found".to_string(),
+        "not_found",
         vec!["the specified route does not exist".to_string()],
     )
 }
@@ -13,7 +13,7 @@ pub async fn fallback_404() -> impl IntoResponse {
 pub async fn fallback_405() -> impl IntoResponse {
     JsonErrorStruct::new(
         StatusCode::METHOD_NOT_ALLOWED,
-        "method_not_allowed".to_string(),
+        "method_not_allowed",
         vec!["the specified route does not support this method".to_string()],
     )
 }
@@ -39,7 +39,7 @@ mod tests {
     async fn fallback_404_returns_correct_error_structure() {
         let error_struct = JsonErrorStruct::new(
             StatusCode::NOT_FOUND,
-            "not_found".to_string(),
+            "not_found",
             vec!["the specified route does not exist".to_string()],
         );
 
@@ -74,7 +74,7 @@ mod tests {
     async fn fallback_405_returns_correct_error_structure() {
         let error_struct = JsonErrorStruct::new(
             StatusCode::METHOD_NOT_ALLOWED,
-            "method_not_allowed".to_string(),
+            "method_not_allowed",
             vec![
                 "the specified route does not support this method".to_string(),
             ],
