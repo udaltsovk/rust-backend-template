@@ -1,6 +1,7 @@
 use application::{
-    repository::RepositoriesModuleExt, service::ServicesModuleExt,
-    usecase::client::ClientUseCase,
+    repository::RepositoriesModuleExt,
+    service::ServicesModuleExt,
+    usecase::{session::SessionUseCase, user::UserUseCase},
 };
 use lib::presentation::usecase_impl_type;
 
@@ -8,9 +9,13 @@ pub trait ModulesExt: Clone + Send + Sync + 'static {
     type RepositoriesModule: RepositoriesModuleExt;
     type ServicesModule: ServicesModuleExt;
 
-    fn client_usecase(
+    fn user_usecase(
         &self,
-    ) -> &impl ClientUseCase<Self::RepositoriesModule, Self::ServicesModule>;
+    ) -> &impl UserUseCase<Self::RepositoriesModule, Self::ServicesModule>;
+
+    fn session_usecase(
+        &self,
+    ) -> &impl SessionUseCase<Self::RepositoriesModule, Self::ServicesModule>;
 }
 
 usecase_impl_type!();

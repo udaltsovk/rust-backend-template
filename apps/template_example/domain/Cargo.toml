@@ -9,5 +9,8 @@ lib = { workspace = true, features = ["domain", "macros-proc"] }
 
 thiserror.workspace = true
 
+rust_iso3166 = "0.1"
+url = "2.5"
+
 [lints]
 workspace = true

@@ -1,7 +1,5 @@
 use utoipa::OpenApi as OpenApiDerive;
 
-use crate::routes::clients::CLIENTS_TAG;
-
 #[derive(OpenApiDerive)]
 #[openapi(
     info(
@@ -21,7 +19,6 @@ use crate::routes::clients::CLIENTS_TAG;
         ),
     ),
     tags(
-        (name = CLIENTS_TAG, description = ""),
     ),
 )]
 pub struct ApiDoc;

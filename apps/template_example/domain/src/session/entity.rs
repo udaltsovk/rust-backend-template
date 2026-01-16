@@ -1,17 +1,32 @@
 use lib::{domain::Id, uuid::Uuid};
 
-use crate::client::Client;
+use crate::user::User;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub enum SessionEntity {
-    Client(Id<Client>),
+    User(Id<User>),
 }
 
 impl From<SessionEntity> for Uuid {
-    fn from(se: SessionEntity) -> Self {
+    fn from(entity: SessionEntity) -> Self {
         use SessionEntity as SE;
-        match se {
-            SE::Client(id) => id.value,
+        match entity {
+            SE::User(id) => id.value,
+        }
+    }
+}
+
+impl From<&User> for SessionEntity {
+    fn from(user: &User) -> Self {
+        Self::User(user.id)
+    }
+}
+
+impl SessionEntity {
+    #[must_use]
+    pub const fn as_tuple(&self) -> (&'static str, Uuid) {
+        match self {
+            Self::User(id) => ("user", id.value),
         }
     }
 }

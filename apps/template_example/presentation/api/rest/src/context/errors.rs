@@ -7,7 +7,8 @@ use axum::{
 use domain::error::DomainError;
 use lib::domain::validation::error::ValidationErrors;
 
-mod client;
+mod session;
+mod user;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {

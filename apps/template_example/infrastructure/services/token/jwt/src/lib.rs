@@ -6,8 +6,7 @@ pub use jsonwebtoken::{
 };
 use lib::{
     instrument_all,
-    tap::{Conv as _, Pipe as _, Tap as _},
-    uuid::Uuid,
+    tap::{Conv as _, Pipe as _},
 };
 
 use crate::claims::Claims;
@@ -24,11 +23,11 @@ impl TokenService for JwtService {
     type AdapterError = JwtAdapterError;
 
     fn generate(&self, session: Session) -> Result<String, Self::AdapterError> {
-        let entity_id: Uuid = session.entity.clone().into();
-        let header = Header::new(Algorithm::RS256).tap_mut(|header| {
-            header.kid = entity_id.to_string().pipe(Some);
-        });
-        encode(&header, &Claims::from(session), &self.encoding_key)
+        encode(
+            &Header::new(Algorithm::HS256),
+            &Claims::from(session),
+            &self.encoding_key,
+        )
     }
 
     fn parse(&self, token: &str) -> Result<Session, Self::AdapterError> {

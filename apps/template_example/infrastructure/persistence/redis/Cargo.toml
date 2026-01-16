@@ -5,6 +5,17 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
+lib = { workspace = true, features = ["infrastructure-persistence-redis"] }
+domain = { path = "../../../domain", package = "template_example-domain" }
+application = { path = "../../../application", package = "template_example-application" }
+
+derive-where.workspace = true
+mobc-redis.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+redis = { version = "1.0", features = ["json", "uuid"] }
+
 
 [lints]
 workspace = true

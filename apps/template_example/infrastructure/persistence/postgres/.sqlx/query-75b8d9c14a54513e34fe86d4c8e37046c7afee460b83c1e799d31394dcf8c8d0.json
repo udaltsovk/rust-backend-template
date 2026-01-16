@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT\n\tid,\n\tname,\n\tsurname,\n\temail,\n\tpassword_hash,\n\tavatar_url,\n\ttarget_settings AS \"target_settings: StoredUserTargetSettings\"\nFROM users\nWHERE email = $1\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "surname",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "password_hash",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "avatar_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "target_settings: StoredUserTargetSettings",
+        "type_info": {
+          "Custom": {
+            "name": "user_target_settings",
+            "kind": {
+              "Composite": [
+                [
+                  "age",
+                  "Int2"
+                ],
+                [
+                  "country",
+                  "Text"
+                ]
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "75b8d9c14a54513e34fe86d4c8e37046c7afee460b83c1e799d31394dcf8c8d0"
+}

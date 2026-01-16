@@ -1,4 +1,5 @@
 use application::service::hasher::HasherService;
+pub use argon2::password_hash::Error as Argon2AdapterError;
 use argon2::{
     Algorithm, Argon2, Params, ParamsBuilder, PasswordHash,
     PasswordHasher as _, PasswordVerifier as _, Version,
@@ -12,7 +13,7 @@ pub struct Argon2Service {
 
 #[instrument_all]
 impl HasherService for Argon2Service {
-    type AdapterError = argon2::password_hash::Error;
+    type AdapterError = Argon2AdapterError;
 
     fn hash(&self, data: &[u8]) -> Result<String, Self::AdapterError> {
         self.hasher

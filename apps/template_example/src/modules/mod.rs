@@ -1,5 +1,7 @@
-use application::usecase::{UseCase, client::ClientUseCase};
-use domain::client::Client;
+use application::usecase::{
+    UseCase, session::SessionUseCase, user::UserUseCase,
+};
+use domain::{session::Session, user::User};
 use presentation::api::rest::module::{ModulesExt, UseCaseImpl};
 
 pub use crate::modules::config::ModulesConfig;
@@ -17,18 +19,25 @@ pub struct Modules {
     repositories_module: RepositoriesModule,
     #[expect(dead_code, reason = "We might need that in the future")]
     services_module: ServicesModule,
-    client_usecase: UseCaseImpl<Self, Client>,
+    user_usecase: UseCaseImpl<Self, User>,
+    session_usecase: UseCaseImpl<Self, Session>,
 }
 
 impl ModulesExt for Modules {
     type RepositoriesModule = RepositoriesModule;
     type ServicesModule = ServicesModule;
 
-    fn client_usecase(
+    fn user_usecase(
         &self,
-    ) -> &impl ClientUseCase<Self::RepositoriesModule, Self::ServicesModule>
+    ) -> &impl UserUseCase<Self::RepositoriesModule, Self::ServicesModule> {
+        &self.user_usecase
+    }
+
+    fn session_usecase(
+        &self,
+    ) -> &impl SessionUseCase<Self::RepositoriesModule, Self::ServicesModule>
     {
-        &self.client_usecase
+        &self.session_usecase
     }
 }
 
@@ -38,13 +47,15 @@ impl Modules {
             RepositoriesModule::new(&config.repositories).await;
         let services_module = ServicesModule::new(&config.services);
 
-        let client_usecase =
+        let user_usecase = UseCase::new(&repositories_module, &services_module);
+        let session_usecase =
             UseCase::new(&repositories_module, &services_module);
 
         Self {
             repositories_module,
             services_module,
-            client_usecase,
+            user_usecase,
+            session_usecase,
         }
     }
 }

@@ -15,6 +15,8 @@ path = "./src/bin/metadata.rs"
 [dependencies]
 lib = { workspace = true, features = [
   "bootstrap-openapi",
+  "bootstrap-redis",
+  "bootstrap-sqlx",
   # "bootstrap-instrumentation-stdout",
   "bootstrap-instrumentation-opentelemetry-grpc-tonic",
   "infrastructure-persistence-postgres",
@@ -23,6 +25,7 @@ domain = { path = "./domain", package = "template_example-domain" }
 application = { path = "./application", package = "template_example-application" }
 infrastructure = { path = "./infrastructure", package = "template_example-infrastructure", features = [
   "persistence-postgres",
+  "persistence-redis",
   "services-hasher-argon2",
   "services-token-jwt",
 ] }

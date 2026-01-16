@@ -22,5 +22,7 @@ utoipa = { workspace = true, features = [
   "chrono",
 ] }
 
+derive_more = { version = "2.1", features = ["from"] }
+
 [lints]
 workspace = true

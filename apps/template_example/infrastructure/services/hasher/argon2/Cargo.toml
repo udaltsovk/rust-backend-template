@@ -11,7 +11,7 @@ application = { path = "../../../../application", package = "template_example-ap
 thiserror.workspace = true
 tracing.workspace = true
 
-argon2 = "0.5.3"
+argon2 = { version = "0.5", features = ["std"] }
 
 [lints]
 workspace = true

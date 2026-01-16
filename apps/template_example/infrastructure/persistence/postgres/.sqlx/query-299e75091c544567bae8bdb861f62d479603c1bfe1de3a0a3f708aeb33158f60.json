@@ -1,0 +1,96 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO users (\n    id,\n    name,\n    surname,\n    email,\n    password_hash,\n    avatar_url,\n    target_settings\n)\nVALUES ($1, $2, $3, $4, $5, $6, $7)\nRETURNING\n    id,\n    name,\n    surname,\n    email,\n    password_hash,\n    avatar_url,\n    target_settings AS \"target_settings: StoredUserTargetSettings\"\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "surname",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "password_hash",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "avatar_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "target_settings: StoredUserTargetSettings",
+        "type_info": {
+          "Custom": {
+            "name": "user_target_settings",
+            "kind": {
+              "Composite": [
+                [
+                  "age",
+                  "Int2"
+                ],
+                [
+                  "country",
+                  "Text"
+                ]
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        {
+          "Custom": {
+            "name": "user_target_settings",
+            "kind": {
+              "Composite": [
+                [
+                  "age",
+                  "Int2"
+                ],
+                [
+                  "country",
+                  "Text"
+                ]
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "299e75091c544567bae8bdb861f62d479603c1bfe1de3a0a3f708aeb33158f60"
+}

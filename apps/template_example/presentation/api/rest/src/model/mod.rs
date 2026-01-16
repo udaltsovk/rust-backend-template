@@ -3,5 +3,4 @@
     reason = "API model documentation will be added in future iterations"
 )]
 
-pub mod client;
-pub mod time;
+pub mod user;

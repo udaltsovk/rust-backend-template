@@ -1,7 +1,7 @@
 use lib::infrastructure::persistence::repository_impl_struct;
-use mobc_sqlx::SqlxConnectionManager;
+use mobc_sqlx::{SqlxConnectionManager, mobc};
 use sqlx::Postgres;
 
-mod client;
+mod user;
 
 repository_impl_struct!(Postgres, SqlxConnectionManager<Postgres>);

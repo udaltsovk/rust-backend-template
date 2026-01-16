@@ -6,9 +6,11 @@ edition.workspace = true
 
 [features]
 postgres = ["dep:postgres"]
+redis = ["dep:redis"]
 
 [dependencies]
 postgres = { path = "./postgres", package = "template_example-infrastructure-persistence-postgres", optional = true }
+redis = { path = "./redis", package = "template_example-infrastructure-persistence-redis", optional = true }
 
 [lints]
 workspace = true
