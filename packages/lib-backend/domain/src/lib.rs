@@ -5,7 +5,10 @@ use uuid::Uuid;
 
 pub mod validation;
 
-#[derive_where(Copy, Clone, Debug)]
+#[cfg(feature = "telegram")]
+pub mod telegram;
+
+#[derive_where(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Id<T> {
     pub value: Uuid,
     _entity: PhantomData<T>,
