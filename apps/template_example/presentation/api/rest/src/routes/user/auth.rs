@@ -5,7 +5,7 @@ use axum::{extract::State, http::StatusCode, response::IntoResponse};
 use domain::session::entity::SessionEntity;
 use lib::{
     presentation::api::rest::{
-        context::JsonErrorStruct, extract::Json, model::ParseableJson as _,
+        context::JsonErrorStruct, model::ParseableJson as _,
         response::ResponseExt as _,
     },
     tap::{Conv as _, Pipe as _},
@@ -14,6 +14,7 @@ use lib::{
 use crate::{
     AppError, ModulesExt,
     errors::BadRequestResponse,
+    extractors::json::Json,
     models::{
         session::{CreateJsonSession, JsonUserSession},
         user::CreateJsonUser,
