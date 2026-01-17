@@ -4,9 +4,9 @@ use application::{
 };
 use axum::http::StatusCode;
 
-use crate::AppError;
+use crate::ApiError;
 
-impl<R, S> From<SessionUseCaseError<R, S>> for AppError
+impl<R, S> From<SessionUseCaseError<R, S>> for ApiError
 where
     R: RepositoriesModuleExt,
     S: ServicesModuleExt,

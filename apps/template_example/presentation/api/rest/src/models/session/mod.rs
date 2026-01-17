@@ -5,9 +5,9 @@ use lib::{
     presentation::api::rest::model::ParseableJson,
 };
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use utoipa::{ToResponse, ToSchema};
 
-#[derive(From, Serialize, ToSchema, Debug)]
+#[derive(From, Serialize, ToSchema, ToResponse, Debug)]
 pub struct JsonUserSession {
     /// Токен доступа для авторизованных запросов. После успешной аутентификации СТАРЫЕ ТОКЕНЫ ПЕРЕСТАЮТ РАБОТАТЬ.
     #[schema(examples(

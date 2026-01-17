@@ -12,7 +12,7 @@ use domain::{
 };
 use lib::{domain::Id, tap::Pipe as _};
 
-use crate::{AppError, ModulesExt, errors::AuthError};
+use crate::{ApiError, ModulesExt, errors::AuthError};
 
 pub struct UserSession {
     pub id: Id<Session>,
@@ -23,7 +23,7 @@ impl<M> FromRequestParts<M> for UserSession
 where
     M: ModulesExt,
 {
-    type Rejection = AppError;
+    type Rejection = ApiError;
 
     async fn from_request_parts(
         parts: &mut Parts,

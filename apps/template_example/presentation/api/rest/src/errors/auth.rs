@@ -1,7 +1,7 @@
 use axum::http::StatusCode;
 use lib::presentation::api::rest::context::InternalErrorStringExt as _;
 
-use crate::AppError;
+use crate::ApiError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AuthError {
@@ -9,7 +9,7 @@ pub enum AuthError {
     InvalidToken,
 }
 
-impl AppError {
+impl ApiError {
     pub fn invalid_credentials<T>(
         error: T,
     ) -> (StatusCode, &'static str, String)
@@ -24,7 +24,7 @@ impl AppError {
     }
 }
 
-impl From<AuthError> for AppError {
+impl From<AuthError> for ApiError {
     fn from(error: AuthError) -> Self {
         let (status_code, error_code, error) = {
             use AuthError as E;

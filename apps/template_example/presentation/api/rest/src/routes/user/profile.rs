@@ -8,7 +8,7 @@ use lib::{
 };
 
 use crate::{
-    AppError, ModulesExt, extractors::session::UserSession,
+    ApiError, ModulesExt, extractors::session::UserSession,
     models::user::JsonUser, routes::user::B2C_TAG,
 };
 
@@ -28,12 +28,12 @@ use crate::{
 pub async fn get_profile<M: ModulesExt>(
     modules: State<M>,
     user_session: UserSession,
-) -> Result<impl IntoResponse, AppError> {
+) -> Result<impl IntoResponse, ApiError> {
     modules
         .user_usecase()
         .get_by_id(user_session.user_id)
         .await
-        .map_err(AppError::from)?
+        .map_err(ApiError::from)?
         .conv::<JsonUser>()
         .pipe(Json)
         .into_response()

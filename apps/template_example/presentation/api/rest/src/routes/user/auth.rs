@@ -12,7 +12,7 @@ use lib::{
 };
 
 use crate::{
-    AppError, ModulesExt,
+    ApiError, ModulesExt,
     errors::BadRequestResponse,
     models::{
         session::{CreateJsonSession, JsonUserSession},
@@ -46,7 +46,7 @@ use crate::{
 pub async fn sign_up<M: ModulesExt>(
     modules: State<M>,
     Json(source): Json<CreateJsonUser>,
-) -> Result<impl IntoResponse, AppError> {
+) -> Result<impl IntoResponse, ApiError> {
     let user = source.parse()?;
 
     let user = modules.user_usecase().create(user).await?;
@@ -82,7 +82,7 @@ pub async fn sign_up<M: ModulesExt>(
 pub async fn log_in<M: ModulesExt>(
     modules: State<M>,
     Json(source): Json<CreateJsonSession>,
-) -> Result<impl IntoResponse, AppError> {
+) -> Result<impl IntoResponse, ApiError> {
     let credentials = source.parse()?;
 
     let user = modules.user_usecase().authorize(credentials).await?;

@@ -6,6 +6,6 @@ mod modules;
 mod openapi;
 pub mod routes;
 
-use errors::AppError;
+use errors::ApiError;
 pub use modules::{ModulesExt, UseCaseImpl};
 pub use openapi::ApiDoc;

@@ -21,7 +21,7 @@ mod bad_request;
 mod usecase;
 
 #[derive(thiserror::Error, Debug)]
-pub enum AppError {
+pub enum ApiError {
     #[error(transparent)]
     Validation(#[from] ValidationErrors),
 
@@ -42,7 +42,7 @@ pub enum AppError {
     },
 }
 
-impl AppError {
+impl ApiError {
     pub fn internal_server_error<T>(
         error: T,
     ) -> (StatusCode, &'static str, String)
@@ -59,7 +59,7 @@ impl AppError {
     }
 }
 
-impl From<DomainError> for AppError {
+impl From<DomainError> for ApiError {
     fn from(error: DomainError) -> Self {
         use DomainError as DE;
         match error {
@@ -68,7 +68,7 @@ impl From<DomainError> for AppError {
     }
 }
 
-impl AppError {
+impl ApiError {
     fn log(&self) {
         match self {
             Self::Validation(_)
@@ -91,7 +91,7 @@ impl AppError {
     }
 }
 
-impl IntoResponse for AppError {
+impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         self.log();
         match self {
