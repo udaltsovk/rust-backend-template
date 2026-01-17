@@ -2,14 +2,16 @@ use application::usecase::user::UserUseCase as _;
 use axum::{extract::State, http::StatusCode, response::IntoResponse};
 use lib::{
     presentation::api::rest::{
-        context::JsonErrorStruct, extract::Json, response::ResponseExt as _,
+        context::JsonErrorStruct, response::ResponseExt as _,
     },
     tap::{Conv as _, Pipe as _},
 };
 
 use crate::{
-    ApiError, ModulesExt, extractors::session::UserSession,
-    models::user::JsonUser, routes::user::B2C_TAG,
+    ApiError, ModulesExt,
+    extractors::{Json, session::UserSession},
+    models::user::JsonUser,
+    routes::user::B2C_TAG,
 };
 
 #[utoipa::path(
