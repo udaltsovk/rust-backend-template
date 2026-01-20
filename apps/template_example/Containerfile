@@ -9,13 +9,20 @@ RUN cargo chef prepare --recipe-path recipe.json
 FROM chef AS builder
 
 ENV OPENSSL_STATIC=1
+ENV SQLX_OFFLINE=true
 
 COPY --from=planner /usr/src/recipe.json recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json --bin template_example-monolyth
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    --mount=type=cache,id=target,target=/usr/src/target \
+	cargo chef cook --release --recipe-path recipe.json --bin template_example-monolyth
 
 COPY . .
-COPY .git .git
-RUN SQLX_OFFLINE=true cargo build --release --bin template_example-monolyth
+
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    --mount=type=cache,id=target,target=/usr/src/target \
+    cargo build --release --bin template_example-monolyth
 
 
 FROM debian:trixie-slim
@@ -35,4 +42,4 @@ USER app
 
 COPY --from=builder /usr/src/target/release/template_example-monolyth app
 
-CMD ["/app"]
+CMD ["/app/app"]
