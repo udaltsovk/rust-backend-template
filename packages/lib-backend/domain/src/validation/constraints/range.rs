@@ -41,12 +41,12 @@ mod tests {
     use crate::validation::constraints::Constraint;
 
     #[rstest]
-    #[case(10, 5, true)]
-    #[case(10, 10, true)]
-    #[case(10, 15, false)]
-    #[case(0, 0, true)]
-    #[case(-5, -10, true)]
-    #[case(-5, 0, false)]
+    #[case(10_i32, 5_i32, true)]
+    #[case(10_i32, 10_i32, true)]
+    #[case(10_i32, 15_i32, false)]
+    #[case(0_i32, 0_i32, true)]
+    #[case(-5_i32, -10_i32, true)]
+    #[case(-5_i32, 0_i32, false)]
     fn max_i32_constraint(
         #[case] max_val: i32,
         #[case] input: i32,
@@ -61,12 +61,12 @@ mod tests {
     }
 
     #[rstest]
-    #[case(10.5, 5.2, true)]
-    #[case(10.5, 10.5, true)]
-    #[case(10.5, 15.8, false)]
-    #[case(0.0, 0.0, true)]
-    #[case(-5.5, -10.2, true)]
-    #[case(-5.5, 0.1, false)]
+    #[case(10.5_f64, 5.2_f64, true)]
+    #[case(10.5_f64, 10.5_f64, true)]
+    #[case(10.5_f64, 15.8_f64, false)]
+    #[case(0.0_f64, 0.0_f64, true)]
+    #[case(-5.5_f64, -10.2_f64, true)]
+    #[case(-5.5_f64, 0.1_f64, false)]
     fn max_f64_constraint(
         #[case] max_val: f64,
         #[case] input: f64,
@@ -81,12 +81,12 @@ mod tests {
     }
 
     #[rstest]
-    #[case(10, 5, true)]
-    #[case(10, 10, false)]
-    #[case(10, 15, false)]
-    #[case(0, 1, false)]
-    #[case(-5, -10, true)]
-    #[case(-5, 0, false)]
+    #[case(10_i32, 5_i32, true)]
+    #[case(10_i32, 10_i32, false)]
+    #[case(10_i32, 15_i32, false)]
+    #[case(0_i32, 1_i32, false)]
+    #[case(-5_i32, -10_i32, true)]
+    #[case(-5_i32, 0_i32, false)]
     fn less_than_i32_constraint(
         #[case] limit: i32,
         #[case] input: i32,
@@ -101,12 +101,12 @@ mod tests {
     }
 
     #[rstest]
-    #[case(10.5, 5.2, true)]
-    #[case(10.5, 10.5, false)]
-    #[case(10.5, 15.8, false)]
-    #[case(0.0, -0.1, true)]
-    #[case(-5.5, -10.2, true)]
-    #[case(-5.5, 0.1, false)]
+    #[case(10.5_f64, 5.2_f64, true)]
+    #[case(10.5_f64, 10.5_f64, false)]
+    #[case(10.5_f64, 15.8_f64, false)]
+    #[case(0.0_f64, -0.1_f64, true)]
+    #[case(-5.5_f64, -10.2_f64, true)]
+    #[case(-5.5_f64, 0.1_f64, false)]
     fn less_than_f64_constraint(
         #[case] limit: f64,
         #[case] input: f64,
@@ -121,12 +121,12 @@ mod tests {
     }
 
     #[rstest]
-    #[case(10, 5, false)]
-    #[case(10, 10, true)]
-    #[case(10, 15, true)]
-    #[case(0, 0, true)]
-    #[case(-5, -10, false)]
-    #[case(-5, 0, true)]
+    #[case(10_i32, 5_i32, false)]
+    #[case(10_i32, 10_i32, true)]
+    #[case(10_i32, 15_i32, true)]
+    #[case(0_i32, 0_i32, true)]
+    #[case(-5_i32, -10_i32, false)]
+    #[case(-5_i32, 0_i32, true)]
     fn min_i32_constraint(
         #[case] min_val: i32,
         #[case] input: i32,
@@ -141,12 +141,12 @@ mod tests {
     }
 
     #[rstest]
-    #[case(10.5, 5.2, false)]
-    #[case(10.5, 10.5, true)]
-    #[case(10.5, 15.8, true)]
-    #[case(0.0, 0.0, true)]
-    #[case(-5.5, -10.2, false)]
-    #[case(-5.5, 0.1, true)]
+    #[case(10.5_f64, 5.2_f64, false)]
+    #[case(10.5_f64, 10.5_f64, true)]
+    #[case(10.5_f64, 15.8_f64, true)]
+    #[case(0.0_f64, 0.0_f64, true)]
+    #[case(-5.5_f64, -10.2_f64, false)]
+    #[case(-5.5_f64, 0.1_f64, true)]
     fn min_f64_constraint(
         #[case] min_val: f64,
         #[case] input: f64,
@@ -161,12 +161,12 @@ mod tests {
     }
 
     #[rstest]
-    #[case(10, 5, false)]
-    #[case(10, 10, false)]
-    #[case(10, 15, true)]
-    #[case(0, 1, true)]
-    #[case(-5, -10, false)]
-    #[case(-5, 0, true)]
+    #[case(10_i32, 5_i32, false)]
+    #[case(10_i32, 10_i32, false)]
+    #[case(10_i32, 15_i32, true)]
+    #[case(0_i32, 1_i32, true)]
+    #[case(-5_i32, -10_i32, false)]
+    #[case(-5_i32, 0_i32, true)]
     fn greater_than_i32_constraint(
         #[case] limit: i32,
         #[case] input: i32,
@@ -181,12 +181,12 @@ mod tests {
     }
 
     #[rstest]
-    #[case(10.5, 5.2, false)]
-    #[case(10.5, 10.5, false)]
-    #[case(10.5, 15.8, true)]
-    #[case(0.0, 0.1, true)]
-    #[case(-5.5, -10.2, false)]
-    #[case(-5.5, 0.1, true)]
+    #[case(10.5_f64, 5.2_f64, false)]
+    #[case(10.5_f64, 10.5_f64, false)]
+    #[case(10.5_f64, 15.8_f64, true)]
+    #[case(0.0_f64, 0.1_f64, true)]
+    #[case(-5.5_f64, -10.2_f64, false)]
+    #[case(-5.5_f64, 0.1_f64, true)]
     fn greater_than_f64_constraint(
         #[case] limit: f64,
         #[case] input: f64,
@@ -202,73 +202,73 @@ mod tests {
 
     #[rstest]
     // i32 tests
-    #[case(Max(10i32), 5, true)]
-    #[case(Max(10i32), 10, true)]
-    #[case(Max(10i32), 15, false)]
-    #[case(Max(0i32), 0, true)]
-    #[case(Max(-5i32), -10, true)]
-    #[case(Max(-5i32), 0, false)]
-    #[case(Min(10i32), 5, false)]
-    #[case(Min(10i32), 10, true)]
-    #[case(Min(10i32), 15, true)]
-    #[case(Min(0i32), 0, true)]
-    #[case(Min(-5i32), -10, false)]
-    #[case(Min(-5i32), 0, true)]
-    #[case(LessThan(10i32), 5, true)]
-    #[case(LessThan(10i32), 10, false)]
-    #[case(LessThan(10i32), 15, false)]
-    #[case(LessThan(0i32), 1, false)]
-    #[case(LessThan(-5i32), -10, true)]
-    #[case(LessThan(-5i32), 0, false)]
-    #[case(GreaterThan(10i32), 5, false)]
-    #[case(GreaterThan(10i32), 10, false)]
-    #[case(GreaterThan(10i32), 15, true)]
-    #[case(GreaterThan(0i32), 1, true)]
-    #[case(GreaterThan(-5i32), -10, false)]
-    #[case(GreaterThan(-5i32), 0, true)]
+    #[case(Max(10_i32), 5_i32, true)]
+    #[case(Max(10_i32), 10_i32, true)]
+    #[case(Max(10_i32), 15_i32, false)]
+    #[case(Max(0_i32), 0_i32, true)]
+    #[case(Max(-5_i32), -10_i32, true)]
+    #[case(Max(-5_i32), 0_i32, false)]
+    #[case(Min(10_i32), 5_i32, false)]
+    #[case(Min(10_i32), 10_i32, true)]
+    #[case(Min(10_i32), 15_i32, true)]
+    #[case(Min(0_i32), 0_i32, true)]
+    #[case(Min(-5_i32), -10_i32, false)]
+    #[case(Min(-5_i32), 0_i32, true)]
+    #[case(LessThan(10_i32), 5_i32, true)]
+    #[case(LessThan(10_i32), 10_i32, false)]
+    #[case(LessThan(10_i32), 15_i32, false)]
+    #[case(LessThan(0_i32), 1_i32, false)]
+    #[case(LessThan(-5_i32), -10_i32, true)]
+    #[case(LessThan(-5_i32), 0_i32, false)]
+    #[case(GreaterThan(10_i32), 5_i32, false)]
+    #[case(GreaterThan(10_i32), 10_i32, false)]
+    #[case(GreaterThan(10_i32), 15_i32, true)]
+    #[case(GreaterThan(0_i32), 1_i32, true)]
+    #[case(GreaterThan(-5_i32), -10_i32, false)]
+    #[case(GreaterThan(-5_i32), 0_i32, true)]
     // f64 tests
-    #[case(Max(10.5f64), 5.2, true)]
-    #[case(Max(10.5f64), 10.5, true)]
-    #[case(Max(10.5f64), 15.8, false)]
-    #[case(Max(0.0f64), 0.0, true)]
-    #[case(Max(-5.5f64), -10.2, true)]
-    #[case(Max(-5.5f64), 0.1, false)]
-    #[case(Min(10.5f64), 5.2, false)]
-    #[case(Min(10.5f64), 10.5, true)]
-    #[case(Min(10.5f64), 15.8, true)]
-    #[case(Min(0.0f64), 0.0, true)]
-    #[case(Min(-5.5f64), -10.2, false)]
-    #[case(Min(-5.5f64), 0.1, true)]
-    #[case(LessThan(10.5f64), 5.2, true)]
-    #[case(LessThan(10.5f64), 10.5, false)]
-    #[case(LessThan(10.5f64), 15.8, false)]
-    #[case(LessThan(0.0f64), -0.1, true)]
-    #[case(LessThan(-5.5f64), -10.2, true)]
-    #[case(LessThan(-5.5f64), 0.1, false)]
-    #[case(GreaterThan(10.5f64), 5.2, false)]
-    #[case(GreaterThan(10.5f64), 10.5, false)]
-    #[case(GreaterThan(10.5f64), 15.8, true)]
-    #[case(GreaterThan(0.0f64), 0.1, true)]
-    #[case(GreaterThan(-5.5f64), -10.2, false)]
-    #[case(GreaterThan(-5.5f64), 0.1, true)]
+    #[case(Max(10.5_f64), 5.2_f64, true)]
+    #[case(Max(10.5_f64), 10.5_f64, true)]
+    #[case(Max(10.5_f64), 15.8_f64, false)]
+    #[case(Max(0.0_f64), 0.0_f64, true)]
+    #[case(Max(-5.5_f64), -10.2_f64, true)]
+    #[case(Max(-5.5_f64), 0.1_f64, false)]
+    #[case(Min(10.5_f64), 5.2_f64, false)]
+    #[case(Min(10.5_f64), 10.5_f64, true)]
+    #[case(Min(10.5_f64), 15.8_f64, true)]
+    #[case(Min(0.0_f64), 0.0_f64, true)]
+    #[case(Min(-5.5_f64), -10.2_f64, false)]
+    #[case(Min(-5.5_f64), 0.1_f64, true)]
+    #[case(LessThan(10.5_f64), 5.2_f64, true)]
+    #[case(LessThan(10.5_f64), 10.5_f64, false)]
+    #[case(LessThan(10.5_f64), 15.8_f64, false)]
+    #[case(LessThan(0.0_f64), -0.1_f64, true)]
+    #[case(LessThan(-5.5_f64), -10.2_f64, true)]
+    #[case(LessThan(-5.5_f64), 0.1_f64, false)]
+    #[case(GreaterThan(10.5_f64), 5.2_f64, false)]
+    #[case(GreaterThan(10.5_f64), 10.5_f64, false)]
+    #[case(GreaterThan(10.5_f64), 15.8_f64, true)]
+    #[case(GreaterThan(0.0_f64), 0.1_f64, true)]
+    #[case(GreaterThan(-5.5_f64), -10.2_f64, false)]
+    #[case(GreaterThan(-5.5_f64), 0.1_f64, true)]
     // usize tests
-    #[case(Max(100usize), 50usize, true)]
-    #[case(Max(100usize), 150usize, false)]
-    #[case(Min(10usize), 50usize, true)]
-    #[case(Min(10usize), 5usize, false)]
-    #[case(LessThan(50usize), 30usize, true)]
-    #[case(LessThan(50usize), 60usize, false)]
-    #[case(GreaterThan(20usize), 30usize, true)]
-    #[case(GreaterThan(20usize), 15usize, false)]
+    #[case(Max(100_usize), 50_usize, true)]
+    #[case(Max(100_usize), 150_usize, false)]
+    #[case(Min(10_usize), 50_usize, true)]
+    #[case(Min(10_usize), 5_usize, false)]
+    #[case(LessThan(50_usize), 30_usize, true)]
+    #[case(LessThan(50_usize), 60_usize, false)]
+    #[case(GreaterThan(20_usize), 30_usize, true)]
+    #[case(GreaterThan(20_usize), 15_usize, false)]
     // u8 tests
-    #[case(Max(200u8), 100u8, true)]
-    #[case(Max(200u8), 255u8, false)]
-    #[case(Min(50u8), 100u8, true)]
-    #[case(Min(50u8), 25u8, false)]
+    #[case(Max(200_u8), 100_u8, true)]
+    #[case(Max(200_u8), 255_u8, false)]
+    #[case(Min(50_u8), 100_u8, true)]
+    #[case(Min(50_u8), 25_u8, false)]
     // floating point precision tests
-    #[case(Max(1.0f64), 0.999_999_9, true)]
-    #[case(Max(1.0f64), 1.0, true)]
-    #[case(Max(1.0f64), 1.000_000_1, false)]
+    #[case(Max(1.0_f64), 0.999_999_9_f64, true)]
+    #[case(Max(1.0_f64), 1.0_f64, true)]
+    #[case(Max(1.0_f64), 1.000_000_1_f64, false)]
     fn range_constraints<T>(
         #[case] constraint: impl Constraint<T>,
         #[case] value: T,
@@ -281,10 +281,10 @@ mod tests {
 
     #[rstest]
     fn error_messages_format() {
-        let max_constraint = Max(42i32);
-        let min_constraint = Min(10i32);
-        let less_than_constraint = LessThan(100i32);
-        let greater_than_constraint = GreaterThan(5i32);
+        let max_constraint = Max(42_i32);
+        let min_constraint = Min(10_i32);
+        let less_than_constraint = LessThan(100_i32);
+        let greater_than_constraint = GreaterThan(5_i32);
 
         assert_eq!(max_constraint.error_msg(), "can't be greater than 42");
         assert_eq!(min_constraint.error_msg(), "can't be less than 10");

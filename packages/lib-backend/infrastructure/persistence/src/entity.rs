@@ -18,7 +18,10 @@ where
 {
     fn into_domain(self) -> T {
         self.try_into().unwrap_or_else(|_| {
-            panic!("Expected `{}` from the db to be valid", type_name::<T>())
+            panic!(
+                "Expected `{}` from the db should be valid",
+                type_name::<T>()
+            )
         })
     }
 }
@@ -76,7 +79,7 @@ mod tests {
     }
 
     #[rstest]
-    #[should_panic(expected = "from the db to be valid")]
+    #[should_panic(expected = "from the db should be valid")]
     fn into_domain_panic_on_failure() {
         let db_entity = TestDbEntity("invalid".to_string());
         let _: TestDomain = db_entity.into_domain();

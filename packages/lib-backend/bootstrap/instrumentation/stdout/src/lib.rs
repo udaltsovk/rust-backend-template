@@ -4,7 +4,7 @@ use tracing_subscriber::{
     filter::Directive,
     fmt::{
         self, Layer,
-        format::{Compact, DefaultFields, Format},
+        format::{self, Format},
     },
     layer::SubscriberExt as _,
     util::SubscriberInitExt as _,
@@ -42,8 +42,14 @@ pub fn filter_layer() -> EnvFilter {
 
 #[must_use]
 #[inline]
-pub fn fmt_layer<S>() -> Layer<S, DefaultFields, Format<Compact>> {
-    fmt::layer().compact()
+pub fn fmt_layer<S>() -> Layer<S, format::DefaultFields, Format<format::Full>> {
+    fmt::layer()
+        .with_span_events(format::FmtSpan::CLOSE)
+        .with_line_number(true)
+        .with_thread_names(true)
+        .log_internal_errors(true)
+        .with_level(true)
+        .with_target(true)
 }
 
 pub async fn wrap<F>(future: F)

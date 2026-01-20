@@ -15,13 +15,13 @@ where
     #[error(transparent)]
     Service(S::Error),
 
-    #[error("user with email `{0}` already exists")]
+    #[error("user with the specified email already exists")]
     EmailAlreadyUsed(Email),
 
-    #[error("user with email `{email}` does not exist")]
+    #[error("user with the specified email does not exist")]
     NotFoundByEmail { email: Email, from_auth: bool },
 
-    #[error("user with id `{0}` does not exist")]
+    #[error("user with the specified id does not exist")]
     NotFoundById(Id<User>),
 
     #[error("invalid password")]

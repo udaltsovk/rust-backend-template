@@ -7,7 +7,7 @@ use axum::{
 };
 use tower_http::catch_panic::{CatchPanicLayer, ResponseForPanic};
 
-use crate::context::JsonErrorStruct;
+use crate::errors::JsonError;
 
 #[derive(Clone)]
 pub struct PanicHandler;
@@ -26,10 +26,11 @@ impl ResponseForPanic for PanicHandler {
         _err: Box<dyn Any + Send + 'static>,
     ) -> Response<Self::ResponseBody> {
         tracing::error!("Service panicked");
-        JsonErrorStruct::new(
+
+        JsonError::new(
             StatusCode::INTERNAL_SERVER_ERROR,
-            "internal_server_error",
-            vec!["Service panicked"],
+            "INTERNAL_SERVER_ERROR",
+            "Service panicked",
         )
         .into_response()
     }

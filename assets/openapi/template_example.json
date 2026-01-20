@@ -14,34 +14,84 @@
   },
   "servers": [
     {
-      "url": "/{api_version}",
-      "description": "Default server",
-      "variables": {
-        "api_version": {
-          "default": "v0",
-          "description": "Api version to use",
-          "enum": [
-            "v0"
-          ]
-        }
-      }
+      "url": "/",
+      "description": "Default server"
     }
   ],
   "paths": {
-    "/clients/bulk": {
+    "/user/sign-up": {
       "post": {
         "tags": [
-          "clients"
+          "B2C"
         ],
-        "operationId": "bulk_upsert",
+        "summary": "Регистрация нового пользователя",
+        "description": "Регистрирует нового пользователя и возвращает токен доступа.",
+        "operationId": "sign_up",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/UpsertJsonClient"
+                "$ref": "#/components/schemas/CreateJsonUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Пользователь успешно зарегистрирован.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonUserSession"
                 }
+              }
+            }
+          },
+          "400": {
+            "description": "невалидный JSON, неподдерживаемый Content-Type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericJsonError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Такой email уже зарегистрирован в системе",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "поля не прошли валидацию",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationJsonError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/sign-in": {
+      "post": {
+        "tags": [
+          "B2C"
+        ],
+        "operationId": "log_in",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJsonSession"
               }
             }
           },
@@ -53,20 +103,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/JsonClient"
-                  }
+                  "$ref": "#/components/schemas/JsonUserSession"
                 }
               }
             }
           },
           "400": {
+            "description": "невалидный JSON, неподдерживаемый Content-Type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericJsonError"
+                }
+              }
+            }
+          },
+          "401": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JsonErrorStruct"
+                  "$ref": "#/components/schemas/JsonError"
                 }
               }
             }
@@ -74,202 +131,305 @@
         }
       }
     },
-    "/clients/{client_id}": {
+    "/user/profile": {
       "get": {
         "tags": [
-          "clients"
+          "B2C"
         ],
-        "operationId": "find_by_id",
-        "parameters": [
-          {
-            "name": "client_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
+        "operationId": "get_profile",
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/JsonClient"
-                  }
+                  "$ref": "#/components/schemas/JsonUser"
                 }
               }
             }
           },
-          "404": {
+          "401": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JsonErrorStruct"
+                  "$ref": "#/components/schemas/JsonError"
                 }
               }
             }
           }
-        }
-      }
-    },
-    "/time/advance": {
-      "post": {
-        "operationId": "advance",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JsonTime"
-              }
-            }
-          },
-          "required": true
         },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonTime"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonErrorStruct"
-                }
-              }
-            }
+        "security": [
+          {
+            "user": []
           }
-        }
+        ]
       }
     }
   },
   "components": {
     "schemas": {
-      "JsonClient": {
+      "CreateJsonSession": {
         "type": "object",
         "required": [
-          "id",
-          "login",
-          "age",
-          "gender",
-          "location"
+          "email",
+          "password"
         ],
         "properties": {
-          "id": {
+          "email": {
             "type": "string",
-            "format": "uuid"
+            "description": ""
           },
-          "login": {
-            "type": "string"
-          },
-          "age": {
-            "type": "integer",
-            "format": "u-int16",
-            "minimum": 0
-          },
-          "gender": {
-            "$ref": "#/components/schemas/JsonClientGender"
-          },
-          "location": {
-            "type": "string"
+          "password": {
+            "type": "string",
+            "description": ""
           }
         }
       },
-      "JsonClientGender": {
-        "type": "string",
-        "enum": [
-          "MALE",
-          "FEMALE"
+      "CreateJsonUser": {
+        "type": "object",
+        "required": [
+          "name",
+          "surname",
+          "email",
+          "password",
+          "other"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "Мария"
+            ],
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "surname": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "Федотова"
+            ],
+            "maxLength": 120,
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "format": "idn-email",
+            "description": "",
+            "examples": [
+              "cu_fan@edu.hse.ru"
+            ],
+            "maxLength": 120,
+            "minLength": 8
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "",
+            "examples": [
+              "HardPa$$w0rd!iamthewinner"
+            ],
+            "maxLength": 60,
+            "minLength": 8,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%*?&])[A-Za-z\\\\d@$!%*?&]{8,}$"
+          },
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Ссылка на фото пользователя",
+            "examples": [
+              "https://cdn2.thecatapi.com/images/3lo.jpg"
+            ],
+            "maxLength": 350
+          },
+          "other": {
+            "$ref": "#/components/schemas/JsonUserTargetSettings"
+          }
+        }
+      },
+      "FieldError": {
+        "type": "object",
+        "required": [
+          "field",
+          "issue"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "rejectedValue": {}
+        }
+      },
+      "GenericJsonError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/JsonErrorStruct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "context": {}
+            }
+          }
+        ]
+      },
+      "JsonError": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/GenericJsonError"
+          },
+          {
+            "$ref": "#/components/schemas/ValidationJsonError"
+          }
         ]
       },
       "JsonErrorStruct": {
         "type": "object",
-        "description": "Error response structure",
         "required": [
-          "error_code",
-          "errors"
+          "code",
+          "message",
+          "traceId",
+          "timestamp",
+          "path"
         ],
         "properties": {
-          "error_code": {
-            "type": "string",
-            "description": "Response error code"
+          "code": {
+            "type": "string"
           },
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Response error list"
+          "message": {
+            "type": "string"
+          },
+          "traceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "path": {
+            "type": "string",
+            "format": "uri"
           }
         }
       },
-      "JsonTime": {
+      "JsonUser": {
         "type": "object",
-        "description": "",
         "required": [
-          "current_date"
+          "name",
+          "surname",
+          "email",
+          "other"
         ],
         "properties": {
-          "current_date": {
-            "type": "integer",
-            "format": "u-int32",
-            "description": "Текущий день (целое число).",
-            "default": 1,
-            "minimum": 1
+          "name": {
+            "type": "string",
+            "description": ""
+          },
+          "surname": {
+            "type": "string",
+            "description": ""
+          },
+          "email": {
+            "type": "string",
+            "description": ""
+          },
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": ""
+          },
+          "other": {
+            "$ref": "#/components/schemas/JsonUserTargetSettings"
           }
         }
       },
-      "UpsertJsonClient": {
+      "JsonUserSession": {
         "type": "object",
         "required": [
-          "id",
-          "login",
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Токен доступа для авторизованных запросов. После успешной аутентификации СТАРЫЕ ТОКЕНЫ ПЕРЕСТАЮТ РАБОТАТЬ.",
+            "examples": [
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3Njg1ODE1MjMsImlhdCI6MTc2ODU3NzkyMywic3ViIjoiMDE5YmM2ZGEtM2Y0Yi03MTcwLTg4NDItMDMzY2MwZjA0ZTUwIiwicm9sZSI6IlVTRVIiLCJqdGkiOiIwMTliYzc3NS03ODI3LTc2NDEtODdmYy00YzlkYTc5ODlkZGEifQ.MCS_MLo8g4CciJ--qxXfBgPflVrhmmbdd4J9zqq69Sk"
+            ]
+          }
+        }
+      },
+      "JsonUserTargetSettings": {
+        "type": "object",
+        "description": "Таргет настройки пользователя",
+        "required": [
           "age",
-          "gender",
-          "location"
+          "country"
         ],
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": ""
-          },
-          "login": {
-            "type": "string",
-            "description": ""
-          },
           "age": {
             "type": "integer",
-            "format": "int32",
-            "description": ""
+            "format": "u-int8",
+            "description": "Возраст пользователя",
+            "examples": [
+              13
+            ],
+            "maximum": 100,
+            "minimum": 0
           },
-          "gender": {
-            "$ref": "#/components/schemas/JsonClientGender"
-          },
-          "location": {
+          "country": {
             "type": "string",
-            "description": ""
+            "format": "iso-3166-alpha-2",
+            "description": "Страна пользователя в формате ISO 3166-1 alpha-2, регистр может быть разным. Страна с данным кодом должна обязательно существовать.",
+            "examples": [
+              "ru"
+            ]
           }
         }
+      },
+      "ValidationJsonError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/JsonErrorStruct"
+          },
+          {
+            "type": "object",
+            "required": [
+              "fieldErrors"
+            ],
+            "properties": {
+              "fieldErrors": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FieldError"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "securitySchemes": {
+      "user": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   },
   "tags": [
     {
-      "name": "clients",
+      "name": "B2C",
       "description": ""
     }
   ]

@@ -19,11 +19,6 @@ pub use axum;
     feature = "presentation-api-rest"
 ))]
 pub use axum_otel_metrics;
-#[cfg(all(
-    feature = "bootstrap-instrumentation-opentelemetry",
-    feature = "presentation-api-rest"
-))]
-pub use axum_tracing_opentelemetry;
 #[cfg(feature = "bootstrap")]
 pub use bootstrap;
 #[cfg(any(feature = "infrastructure-services",))]

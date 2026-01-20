@@ -34,53 +34,53 @@ mod tests {
 
     #[fixture]
     fn phone_constraint() -> Matches {
-        Matches::try_from(r"^\d{3}-\d{3}-\d{4}$").unwrap()
+        Matches::try_from(r"^\d{3}-\d{3}-\d{4}$").expect("valid phone regex")
     }
 
     #[fixture]
     fn email_constraint() -> Matches {
         Matches::try_from(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .unwrap()
+            .expect("valid email regex")
     }
 
     #[fixture]
     fn starts_with_test_constraint() -> Matches {
-        Matches::try_from(r"^test").unwrap()
+        Matches::try_from("^test").expect("valid starts with test regex")
     }
 
     #[fixture]
     fn ends_with_test_constraint() -> Matches {
-        Matches::try_from(r"test$").unwrap()
+        Matches::try_from("test$").expect("valid ends with test regex")
     }
 
     #[fixture]
     fn contains_test_constraint() -> Matches {
-        Matches::try_from(r"test").unwrap()
+        Matches::try_from("test").expect("valid contains test regex")
     }
 
     #[fixture]
     fn digits_only_constraint() -> Matches {
-        Matches::try_from(r"^\d+$").unwrap()
+        Matches::try_from(r"^\d+$").expect("valid digits only regex")
     }
 
     #[fixture]
     fn letters_only_constraint() -> Matches {
-        Matches::try_from(r"^[a-zA-Z]+$").unwrap()
+        Matches::try_from("^[a-zA-Z]+$").expect("valid letters only regex")
     }
 
     #[fixture]
     fn word_chars_constraint() -> Matches {
-        Matches::try_from(r"^\w+$").unwrap()
+        Matches::try_from(r"^\w+$").expect("valid word chars regex")
     }
 
     #[fixture]
     fn case_sensitive_constraint() -> Matches {
-        Matches::try_from(r"^Test$").unwrap()
+        Matches::try_from("^Test$").expect("valid case sensitive regex")
     }
 
     #[fixture]
     fn case_insensitive_constraint() -> Matches {
-        Matches::try_from(r"(?i)^test$").unwrap()
+        Matches::try_from("(?i)^test$").expect("valid case insensitive regex")
     }
 
     #[rstest]
@@ -183,34 +183,39 @@ mod tests {
     #[rstest]
     fn matches_constraint_quantifiers() {
         // Optional character
-        let optional = Matches::try_from(r"^colou?r$").unwrap();
+        let optional = Matches::try_from("^colou?r$")
+            .expect("valid optional quantifier regex");
         assert!(optional.check(&"color".to_string()));
         assert!(optional.check(&"colour".to_string()));
         assert!(!optional.check(&"colouur".to_string()));
 
         // One or more
-        let one_or_more = Matches::try_from(r"^go+d$").unwrap();
+        let one_or_more = Matches::try_from("^go+d$")
+            .expect("valid one or more quantifier regex");
         assert!(one_or_more.check(&"god".to_string()));
         assert!(one_or_more.check(&"good".to_string()));
         assert!(one_or_more.check(&"goood".to_string()));
         assert!(!one_or_more.check(&"gd".to_string()));
 
         // Zero or more
-        let zero_or_more = Matches::try_from(r"^go*d$").unwrap();
+        let zero_or_more = Matches::try_from("^go*d$")
+            .expect("valid zero or more quantifier regex");
         assert!(zero_or_more.check(&"gd".to_string()));
         assert!(zero_or_more.check(&"god".to_string()));
         assert!(zero_or_more.check(&"good".to_string()));
         assert!(zero_or_more.check(&"goood".to_string()));
 
         // Exact count
-        let exact_count = Matches::try_from(r"^\d{3}$").unwrap();
+        let exact_count = Matches::try_from(r"^\d{3}$")
+            .expect("valid exact count quantifier regex");
         assert!(exact_count.check(&"123".to_string()));
         assert!(exact_count.check(&"000".to_string()));
         assert!(!exact_count.check(&"12".to_string()));
         assert!(!exact_count.check(&"1234".to_string()));
 
         // Range count
-        let range_count = Matches::try_from(r"^\d{2,4}$").unwrap();
+        let range_count = Matches::try_from(r"^\d{2,4}$")
+            .expect("valid range count quantifier regex");
         assert!(range_count.check(&"12".to_string()));
         assert!(range_count.check(&"123".to_string()));
         assert!(range_count.check(&"1234".to_string()));
@@ -221,7 +226,8 @@ mod tests {
     #[rstest]
     fn matches_constraint_groups_and_alternatives() {
         // Alternatives
-        let alternatives = Matches::try_from(r"^(cat|dog|bird)$").unwrap();
+        let alternatives = Matches::try_from("^(cat|dog|bird)$")
+            .expect("valid alternatives regex");
         assert!(alternatives.check(&"cat".to_string()));
         assert!(alternatives.check(&"dog".to_string()));
         assert!(alternatives.check(&"bird".to_string()));
@@ -229,8 +235,8 @@ mod tests {
         assert!(!alternatives.check(&"catdog".to_string()));
 
         // Non-capturing groups
-        let non_capturing =
-            Matches::try_from(r"^(?:Mr|Ms|Dr)\. [A-Z][a-z]+$").unwrap();
+        let non_capturing = Matches::try_from(r"^(?:Mr|Ms|Dr)\. [A-Z][a-z]+$")
+            .expect("valid non-capturing groups regex");
         assert!(non_capturing.check(&"Mr. Smith".to_string()));
         assert!(non_capturing.check(&"Ms. Johnson".to_string()));
         assert!(non_capturing.check(&"Dr. Brown".to_string()));
@@ -240,7 +246,8 @@ mod tests {
 
     #[rstest]
     fn matches_constraint_unicode() {
-        let unicode_pattern = Matches::try_from(r"^[\p{L}\p{N}]+$").unwrap();
+        let unicode_pattern = Matches::try_from(r"^[\p{L}\p{N}]+$")
+            .expect("valid unicode pattern regex");
 
         // Should match Unicode letters and numbers
         assert!(unicode_pattern.check(&"café".to_string()));
@@ -267,10 +274,10 @@ mod tests {
 
     #[rstest]
     fn matches_try_from_valid_regex() {
-        let result = Matches::try_from(r"^[a-z]+$");
+        let result = Matches::try_from("^[a-z]+$");
         assert!(result.is_ok());
 
-        let constraint = result.unwrap();
+        let constraint = result.expect("valid regex");
         assert!(constraint.check(&"hello".to_string()));
         assert!(!constraint.check(&"Hello".to_string()));
     }
@@ -278,29 +285,32 @@ mod tests {
     #[rstest]
     fn matches_try_from_invalid_regex() {
         // Invalid regex patterns should return Err
-        assert!(Matches::try_from(r"[").is_err()); // Unclosed bracket
-        assert!(Matches::try_from(r"(").is_err()); // Unclosed parenthesis
-        assert!(Matches::try_from(r"*").is_err()); // Invalid quantifier
-        assert!(Matches::try_from(r"?").is_err()); // Invalid quantifier
-        assert!(Matches::try_from(r"+").is_err()); // Invalid quantifier
-        assert!(Matches::try_from(r"(?P<").is_err()); // Invalid named group
+        assert!(Matches::try_from("[").is_err()); // Unclosed bracket
+        assert!(Matches::try_from("(").is_err()); // Unclosed parenthesis
+        assert!(Matches::try_from("*").is_err()); // Invalid quantifier
+        assert!(Matches::try_from("?").is_err()); // Invalid quantifier
+        assert!(Matches::try_from("+").is_err()); // Invalid quantifier
+        assert!(Matches::try_from("(?P<").is_err()); // Invalid named group
         assert!(Matches::try_from(r"\").is_err()); // Incomplete escape
     }
 
     #[rstest]
     fn matches_constraint_empty_string() {
         // Pattern that matches empty string
-        let empty_allowed = Matches::try_from(r"^$").unwrap();
+        let empty_allowed =
+            Matches::try_from("^$").expect("valid empty allowed regex");
         assert!(empty_allowed.check(&String::new()));
         assert!(!empty_allowed.check(&"a".to_string()));
 
         // Pattern that matches empty or non-empty
-        let optional_content = Matches::try_from(r"^.*$").unwrap();
+        let optional_content =
+            Matches::try_from("^.*$").expect("valid optional content regex");
         assert!(optional_content.check(&String::new()));
         assert!(optional_content.check(&"anything".to_string()));
 
         // Pattern that requires non-empty
-        let non_empty_required = Matches::try_from(r"^.+$").unwrap();
+        let non_empty_required =
+            Matches::try_from("^.+$").expect("valid non-empty required regex");
         assert!(!non_empty_required.check(&String::new()));
         assert!(non_empty_required.check(&"a".to_string()));
     }
@@ -308,17 +318,20 @@ mod tests {
     #[rstest]
     fn matches_constraint_special_characters() {
         // Test escaping special regex characters
-        let literal_dot = Matches::try_from(r"^hello\.world$").unwrap();
+        let literal_dot = Matches::try_from(r"^hello\.world$")
+            .expect("valid literal dot regex");
         assert!(literal_dot.check(&"hello.world".to_string()));
         assert!(!literal_dot.check(&"helloXworld".to_string()));
 
         // Test literal brackets
-        let literal_brackets = Matches::try_from(r"^\[test\]$").unwrap();
+        let literal_brackets = Matches::try_from(r"^\[test\]$")
+            .expect("valid literal brackets regex");
         assert!(literal_brackets.check(&"[test]".to_string()));
         assert!(!literal_brackets.check(&"test".to_string()));
 
         // Test literal parentheses
-        let literal_parens = Matches::try_from(r"^\(test\)$").unwrap();
+        let literal_parens = Matches::try_from(r"^\(test\)$")
+            .expect("valid literal parentheses regex");
         assert!(literal_parens.check(&"(test)".to_string()));
         assert!(!literal_parens.check(&"test".to_string()));
     }
@@ -326,12 +339,14 @@ mod tests {
     #[rstest]
     fn matches_constraint_multiline() {
         // Single line mode (default)
-        let single_line = Matches::try_from(r"^test$").unwrap();
+        let single_line =
+            Matches::try_from("^test$").expect("valid single line regex");
         assert!(single_line.check(&"test".to_string()));
         assert!(!single_line.check(&"test\nmore".to_string()));
 
         // Multiline mode
-        let multiline = Matches::try_from(r"(?m)^test$").unwrap();
+        let multiline =
+            Matches::try_from("(?m)^test$").expect("valid multiline regex");
         assert!(multiline.check(&"test".to_string()));
         assert!(multiline.check(&"before\ntest\nafter".to_string()));
         assert!(!multiline.check(&"testing".to_string()));

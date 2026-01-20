@@ -213,24 +213,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "axum-tracing-opentelemetry"
-version = "0.30.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05af8b4203aad45345bcac3f3d05df82da9a2711ed1c3d2f81f1dc0ebd9130f7"
-dependencies = [
- "axum",
- "futures-core",
- "futures-util",
- "http",
- "opentelemetry",
- "pin-project-lite",
- "tower",
- "tracing",
- "tracing-opentelemetry",
- "tracing-opentelemetry-instrumentation-sdk",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.76"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -354,6 +336,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "windows-link 0.2.0",
 ]
@@ -1396,7 +1379,6 @@ dependencies = [
  "async-trait",
  "axum",
  "axum-otel-metrics",
- "axum-tracing-opentelemetry",
  "chrono",
  "lib-application",
  "lib-bootstrap",
@@ -1450,6 +1432,8 @@ dependencies = [
  "pastey",
  "regex",
  "rstest 0.26.1",
+ "serde",
+ "serde_json",
  "tokio",
  "uuid",
  "validator-rs",
@@ -1574,17 +1558,23 @@ name = "lib-presentation-api-rest"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "chrono",
  "lib-domain",
+ "opentelemetry",
  "rstest 0.26.1",
  "serde",
  "serde_json",
  "serde_urlencoded",
+ "tap",
  "tokio",
  "tower",
  "tower-http",
  "tracing",
+ "tracing-otel-extra",
+ "tracing-subscriber",
  "utoipa",
  "utoipa-scalar",
+ "uuid",
 ]
 
 [[package]]
@@ -3334,6 +3324,7 @@ version = "0.1.0"
 dependencies = [
  "lib",
  "rust_iso3166",
+ "serde",
  "thiserror 2.0.17",
  "url",
 ]
@@ -3452,6 +3443,7 @@ dependencies = [
  "derive_more",
  "lib",
  "serde",
+ "serde_json",
  "template_example-application",
  "template_example-domain",
  "thiserror 2.0.17",
@@ -3767,6 +3759,7 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
+ "uuid",
 ]
 
 [[package]]
@@ -3844,13 +3837,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "tracing-opentelemetry-instrumentation-sdk"
-version = "0.31.0"
+name = "tracing-otel-extra"
+version = "0.30.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad59746664e45161625561841c0c9385565913c2d349fdd04cae89502fb5f30a"
+checksum = "6ed0f6548e8f24615cc84637e708fbaacc18a93d36d4d0b567754cb36457837d"
 dependencies = [
+ "anyhow",
  "http",
  "opentelemetry",
+ "opentelemetry-http",
+ "serde",
+ "serde_json",
  "tracing",
  "tracing-opentelemetry",
 ]

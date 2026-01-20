@@ -3,12 +3,19 @@ use std::net::SocketAddr;
 use axum::{Json, Router, routing::get};
 use tokio::{net::TcpListener, signal};
 use tower::ServiceBuilder;
+use tower_http::{
+    request_id::{MakeRequestUuid, SetRequestIdLayer},
+    trace::TraceLayer,
+};
 use utoipa::openapi::OpenApi;
 use utoipa_scalar::{Scalar, Servable as _};
 
 use crate::{
     panic_handler::PanicHandler,
     routes::{fallback_404, fallback_405},
+    tracing::{
+        AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator, Level,
+    },
 };
 
 pub struct RestApiBuilder<M>
@@ -49,7 +56,17 @@ where
                 .route("/openapi.json", get(async move || openapi_json));
         }
 
-        let middlewares = ServiceBuilder::new().layer(PanicHandler::layer());
+        let middlewares = ServiceBuilder::new()
+            .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
+            .layer(
+                TraceLayer::new_for_http()
+                    .make_span_with(
+                        AxumOtelSpanCreator::new().level(Level::INFO),
+                    )
+                    .on_response(AxumOtelOnResponse::new().level(Level::INFO))
+                    .on_failure(AxumOtelOnFailure::new()),
+            )
+            .layer(PanicHandler::layer());
 
         let router = router
             .layer(middlewares)

@@ -80,10 +80,10 @@ mod tests {
     }
 
     #[rstest]
-    #[case(3, vec![1, 2, 3], true)]
-    #[case(2, vec![1, 2, 3], false)]
-    #[case(5, vec![1, 2, 3], true)]
-    #[case(3, vec![], true)]
+    #[case(3, vec![1_i32, 2_i32, 3_i32], true)]
+    #[case(2, vec![1_i32, 2_i32, 3_i32], false)]
+    #[case(5, vec![1_i32, 2_i32, 3_i32], true)]
+    #[case(3, Vec::<i32>::new(), true)]
     fn max_vec_constraint(
         #[case] max_len: usize,
         #[case] input: Vec<i32>,
@@ -116,10 +116,10 @@ mod tests {
     }
 
     #[rstest]
-    #[case(4, vec![1, 2, 3], true)]
-    #[case(3, vec![1, 2, 3], false)]
-    #[case(2, vec![1, 2, 3], false)]
-    #[case(1, vec![], true)]
+    #[case(4, vec![1_i32, 2_i32, 3_i32], true)]
+    #[case(3, vec![1_i32, 2_i32, 3_i32], false)]
+    #[case(2, vec![1_i32, 2_i32, 3_i32], false)]
+    #[case(1, Vec::<i32>::new(), true)]
     fn less_than_vec_constraint(
         #[case] limit: usize,
         #[case] input: Vec<i32>,
@@ -152,10 +152,10 @@ mod tests {
     }
 
     #[rstest]
-    #[case(3, vec![1, 2, 3], true)]
-    #[case(4, vec![1, 2, 3], false)]
-    #[case(2, vec![1, 2, 3], true)]
-    #[case(0, vec![], true)]
+    #[case(3, vec![1_i32, 2_i32, 3_i32], true)]
+    #[case(4, vec![1_i32, 2_i32, 3_i32], false)]
+    #[case(2, vec![1_i32, 2_i32, 3_i32], true)]
+    #[case(0, Vec::<i32>::new(), true)]
     fn min_vec_constraint(
         #[case] min_len: usize,
         #[case] input: Vec<i32>,
@@ -188,10 +188,10 @@ mod tests {
     }
 
     #[rstest]
-    #[case(2, vec![1, 2, 3], true)]
-    #[case(3, vec![1, 2, 3], false)]
-    #[case(4, vec![1, 2, 3], false)]
-    #[case(0, vec![1], true)]
+    #[case(2, vec![1_i32, 2_i32, 3_i32], true)]
+    #[case(3, vec![1_i32, 2_i32, 3_i32], false)]
+    #[case(4, vec![1_i32, 2_i32, 3_i32], false)]
+    #[case(0, vec![1_i32], true)]
     fn greater_than_vec_constraint(
         #[case] limit: usize,
         #[case] input: Vec<i32>,
@@ -208,21 +208,31 @@ mod tests {
     #[rstest]
     fn unicode_string_length() {
         // Test that we count characters, not bytes
-        let constraint = Max(3);
-        assert!(!constraint.check(&"café".to_string())); // 4 bytes, 4 chars - should fail for Max(3)
+        {
+            let constraint = Max(3);
+            assert!(!constraint.check(&"café".to_string())); // 4 bytes, 4 chars - should fail for Max(3)
+        }
 
-        let constraint = Max(4);
-        assert!(constraint.check(&"café".to_string())); // Should pass for Max(4)
+        {
+            let constraint = Max(4);
+            assert!(constraint.check(&"café".to_string())); // Should pass for Max(4)
+        }
 
-        let constraint = Min(4);
-        assert!(constraint.check(&"café".to_string())); // Should pass for Min(4)
+        {
+            let constraint = Min(4);
+            assert!(constraint.check(&"café".to_string())); // Should pass for Min(4)
+        }
 
         // Test with emoji
-        let constraint = Max(2);
-        assert!(constraint.check(&"🚀🎉".to_string())); // 2 emoji characters
+        {
+            let constraint = Max(2);
+            assert!(constraint.check(&"🚀🎉".to_string())); // 2 emoji characters
+        }
 
-        let constraint = Max(1);
-        assert!(!constraint.check(&"🚀🎉".to_string())); // Should fail for Max(1)
+        {
+            let constraint = Max(1);
+            assert!(!constraint.check(&"🚀🎉".to_string())); // Should fail for Max(1)
+        }
     }
 
     #[rstest]

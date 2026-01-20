@@ -15,7 +15,7 @@ where
     #[error(transparent)]
     Service(S::Error),
 
-    #[error("session with id `{0}` does not exist")]
+    #[error("session with the specified id does not exist")]
     NotFound(Id<Session>),
 }
 

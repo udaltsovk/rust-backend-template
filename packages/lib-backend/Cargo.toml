@@ -21,7 +21,6 @@ bootstrap-instrumentation-opentelemetry = [
   "bootstrap-instrumentation",
   "bootstrap/instrumentation-opentelemetry",
   "dep:axum-otel-metrics",
-  "dep:axum-tracing-opentelemetry",
 ]
 
 bootstrap-instrumentation-opentelemetry-http-proto = [
@@ -45,7 +44,6 @@ bootstrap-instrumentation-stdout = [
 ]
 
 domain = ["dep:domain", "dep:pastey", "dep:uuid"]
-domain-telegram = ["domain", "domain/telegram"]
 
 infrastructure = ["dep:infrastructure"]
 
@@ -110,16 +108,13 @@ pastey = { workspace = true, optional = true }
 tap = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 tower = { workspace = true, optional = true }
+tower-http = { workspace = true, optional = true, features = ["cors"] }
 uuid = { workspace = true, optional = true, features = ["v7"] }
 
 async-trait = { version = "0.1", optional = true }
 axum-otel-metrics = { version = "0.12", optional = true }
-axum-tracing-opentelemetry = { version = "0.30", optional = true, features = [
-  "tracing_level_info",
-] }
 chrono = { version = "0.4", optional = true }
 model-mapper = { version = "0.6", optional = true }
-tower-http = { version = "0.6", optional = true, features = ["cors"] }
 utoipa-axum = { version = "0.2", optional = true }
 
 [lints]

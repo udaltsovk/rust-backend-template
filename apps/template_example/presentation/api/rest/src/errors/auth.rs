@@ -1,5 +1,6 @@
 use axum::http::StatusCode;
-use lib::presentation::api::rest::context::InternalErrorStringExt as _;
+use lib::presentation::api::rest::errors::InternalErrorStringExt as _;
+use serde_json::Value;
 
 use crate::ApiError;
 
@@ -12,7 +13,7 @@ pub enum AuthError {
 impl ApiError {
     pub fn invalid_credentials<T>(
         error: T,
-    ) -> (StatusCode, &'static str, String)
+    ) -> (StatusCode, &'static str, String, Value)
     where
         T: ToString,
     {
@@ -20,6 +21,7 @@ impl ApiError {
             StatusCode::UNAUTHORIZED,
             "invalid_credentials",
             error.to_internal_error_string("Invalid credentials"),
+            Value::Null,
         )
     }
 }
@@ -39,7 +41,8 @@ impl From<AuthError> for ApiError {
         Self::UseCase {
             status_code,
             error_code,
-            error,
+            message: error,
+            context: Value::Null,
         }
     }
 }

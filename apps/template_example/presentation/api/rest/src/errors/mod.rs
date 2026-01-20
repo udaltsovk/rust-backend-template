@@ -8,17 +8,20 @@ use axum::{
 use domain::error::DomainError;
 use lib::{
     domain::validation::error::ValidationErrors,
-    presentation::api::rest::context::{
-        InternalErrorStringExt as _, JsonErrorStruct,
-    },
+    presentation::api::rest::errors::{InternalErrorStringExt as _, JsonError},
 };
+use serde_json::Value;
 use tracing::{error, warn};
 
-pub use crate::errors::{auth::AuthError, bad_request::BadRequestResponse};
+pub use crate::errors::{
+    auth::AuthError, bad_request::BadRequestResponse,
+    validation::ValidationFailedResponse,
+};
 
 mod auth;
 mod bad_request;
 mod usecase;
+mod validation;
 
 #[derive(thiserror::Error, Debug)]
 pub enum ApiError {
@@ -34,18 +37,19 @@ pub enum ApiError {
     #[error("{0}")]
     UnknownApiVerRejection(String),
 
-    #[error("{error}")]
+    #[error("{message}")]
     UseCase {
         status_code: StatusCode,
         error_code: &'static str,
-        error: String,
+        message: String,
+        context: Value,
     },
 }
 
 impl ApiError {
     pub fn internal_server_error<T>(
         error: T,
-    ) -> (StatusCode, &'static str, String)
+    ) -> (StatusCode, &'static str, String, Value)
     where
         T: ToString,
     {
@@ -55,6 +59,7 @@ impl ApiError {
             error.to_internal_error_string(
                 "Something went wrong on our side...",
             ),
+            Value::Null,
         )
     }
 }
@@ -96,7 +101,7 @@ impl IntoResponse for ApiError {
         self.log();
         match self {
             Self::Validation(validation_errors) => {
-                BadRequestResponse::from(validation_errors).into()
+                ValidationFailedResponse::from(validation_errors).into()
             },
             Self::JsonRejection(rejection) => {
                 BadRequestResponse::from(rejection).into()
@@ -104,16 +109,20 @@ impl IntoResponse for ApiError {
             Self::ApiPathRejection(rejection) => {
                 BadRequestResponse::from(rejection).into()
             },
-            Self::UnknownApiVerRejection(version) => JsonErrorStruct::new(
+            Self::UnknownApiVerRejection(version) => JsonError::new(
                 StatusCode::NOT_FOUND,
                 "unknown_api_version",
-                vec![format!("Unknown api version ({version}).")],
+                format!("Unknown api version ({version})."),
             ),
             Self::UseCase {
                 status_code,
                 error_code,
-                error,
-            } => JsonErrorStruct::new(status_code, error_code, vec![error]),
+                message: error,
+                context,
+            } => {
+                JsonError::with_context(status_code, error_code, error, context)
+                    .expect("context from value should serialize successfully")
+            },
         }
         .into_response()
     }

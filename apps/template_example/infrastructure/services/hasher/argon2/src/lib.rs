@@ -48,7 +48,7 @@ impl Argon2Service {
             .p_cost(4)
             .output_len(32)
             .build()
-            .expect("hasher params to be valid")
+            .expect("hasher params should be valid")
     }
 
     pub fn new() -> Self {

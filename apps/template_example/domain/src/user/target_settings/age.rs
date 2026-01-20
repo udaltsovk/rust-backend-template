@@ -15,6 +15,7 @@ use lib::{
     },
     paste,
 };
+use serde::Serialize;
 
 #[derive(DomainType)]
 #[cfg_attr(debug_assertions, derive(Debug))]
@@ -23,7 +24,15 @@ pub struct UserTargetSettingsAge(u8);
 impl UserTargetSettingsAge {
     fn constraints<T>() -> Constraints<T>
     where
-        T: Num + PartialOrd + Display + Send + Sync + 'static,
+        T: Num
+            + Serialize
+            + Clone
+            + Debug
+            + PartialOrd
+            + Display
+            + Send
+            + Sync
+            + 'static,
         T::FromStrRadixErr: Debug,
     {
         Constraints::builder("age")

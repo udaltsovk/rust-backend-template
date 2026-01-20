@@ -5,9 +5,6 @@ use uuid::Uuid;
 
 pub mod validation;
 
-#[cfg(feature = "telegram")]
-pub mod telegram;
-
 #[derive_where(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Id<T> {
     pub value: Uuid,
@@ -15,6 +12,7 @@ pub struct Id<T> {
 }
 
 impl<T> Id<T> {
+    #[must_use]
     pub const fn new(value: Uuid) -> Self {
         Self {
             value,
@@ -22,6 +20,7 @@ impl<T> Id<T> {
         }
     }
 
+    #[must_use]
     pub fn generate() -> Self {
         Self::new(Uuid::now_v7())
     }
@@ -58,6 +57,7 @@ where
         self.as_ref().clone()
     }
 
+    #[must_use]
     fn it_should_be_safe_to_unwrap<E>(
         field: &'static str,
     ) -> impl FnOnce(E) -> T {
@@ -131,7 +131,7 @@ mod tests {
         assert_eq!(cloned_id.value, uuid);
 
         // Test Debug
-        let debug_str = format!("{:?}", id);
+        let debug_str = format!("{id:?}");
         assert!(debug_str.contains("Id"));
         assert!(debug_str.contains(&uuid.to_string()));
     }

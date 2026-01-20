@@ -1,20 +1,20 @@
 use axum::{http::StatusCode, response::IntoResponse};
 
-use crate::context::JsonErrorStruct;
+use crate::errors::JsonError;
 
 pub async fn fallback_404() -> impl IntoResponse {
-    JsonErrorStruct::new(
+    JsonError::new(
         StatusCode::NOT_FOUND,
-        "not_found",
-        vec!["the specified route does not exist".to_string()],
+        "NOT_FOUND",
+        "the specified route does not exist",
     )
 }
 
 pub async fn fallback_405() -> impl IntoResponse {
-    JsonErrorStruct::new(
+    JsonError::new(
         StatusCode::METHOD_NOT_ALLOWED,
-        "method_not_allowed",
-        vec!["the specified route does not support this method".to_string()],
+        "METHOD_NOT_ALLOWED",
+        "the specified route does not support this method",
     )
 }
 
@@ -37,10 +37,10 @@ mod tests {
     #[rstest]
     #[tokio::test]
     async fn fallback_404_returns_correct_error_structure() {
-        let error_struct = JsonErrorStruct::new(
+        let error_struct = JsonError::new(
             StatusCode::NOT_FOUND,
             "not_found",
-            vec!["the specified route does not exist".to_string()],
+            "the specified route does not exist",
         );
 
         // Test that our function creates the same structure
@@ -50,13 +50,16 @@ mod tests {
         // Verify status matches
         assert_eq!(actual_response.status(), StatusCode::NOT_FOUND);
 
-        // The actual JsonErrorStruct would be serialized in the response body,
+        // The actual JsonError would be serialized in the response body,
         // but we can verify the structure by creating it directly
-        assert_eq!(error_struct.status_code, StatusCode::NOT_FOUND);
-        assert_eq!(error_struct.error_code, "not_found");
         assert_eq!(
-            error_struct.errors,
-            vec!["the specified route does not exist".to_string()]
+            error_struct.inner_struct().status_code,
+            StatusCode::NOT_FOUND
+        );
+        assert_eq!(error_struct.inner_struct().error_code, "not_found");
+        assert_eq!(
+            error_struct.inner_struct().message,
+            "the specified route does not exist"
         );
     }
 
@@ -72,12 +75,10 @@ mod tests {
     #[rstest]
     #[tokio::test]
     async fn fallback_405_returns_correct_error_structure() {
-        let error_struct = JsonErrorStruct::new(
+        let error_struct = JsonError::new(
             StatusCode::METHOD_NOT_ALLOWED,
             "method_not_allowed",
-            vec![
-                "the specified route does not support this method".to_string(),
-            ],
+            "the specified route does not support this method",
         );
 
         // Test that our function creates the same structure
@@ -88,13 +89,17 @@ mod tests {
         assert_eq!(actual_response.status(), StatusCode::METHOD_NOT_ALLOWED);
 
         // Verify the structure matches what we expect
-        assert_eq!(error_struct.status_code, StatusCode::METHOD_NOT_ALLOWED);
-        assert_eq!(error_struct.error_code, "method_not_allowed");
         assert_eq!(
-            error_struct.errors,
-            vec![
-                "the specified route does not support this method".to_string()
-            ]
+            error_struct.inner_struct().status_code,
+            StatusCode::METHOD_NOT_ALLOWED
+        );
+        assert_eq!(
+            error_struct.inner_struct().error_code,
+            "method_not_allowed"
+        );
+        assert_eq!(
+            error_struct.inner_struct().message,
+            "the specified route does not support this method"
         );
     }
 
@@ -139,26 +144,16 @@ mod tests {
     #[tokio::test]
     async fn fallback_404_error_message_is_descriptive() {
         // Create the expected error structure
-        let expected_error = JsonErrorStruct::new(
+        let expected_error = JsonError::new(
             StatusCode::NOT_FOUND,
             "not_found",
-            vec!["the specified route does not exist"],
+            "the specified route does not exist",
         );
 
-        assert_eq!(expected_error.error_code, "not_found");
+        assert_eq!(expected_error.inner_struct().error_code, "not_found");
         assert_eq!(
-            expected_error
-                .errors
-                .first()
-                .expect("Error message should exist"),
+            expected_error.inner_struct().message,
             "the specified route does not exist"
-        );
-        assert!(
-            !expected_error
-                .errors
-                .first()
-                .expect("Error message should exist")
-                .is_empty()
         );
     }
 
@@ -166,38 +161,31 @@ mod tests {
     #[tokio::test]
     async fn fallback_405_error_message_is_descriptive() {
         // Create the expected error structure
-        let expected_error = JsonErrorStruct::new(
+        let expected_error = JsonError::new(
             StatusCode::METHOD_NOT_ALLOWED,
             "method_not_allowed",
-            vec!["the specified route does not support this method"],
+            "the specified route does not support this method",
         );
 
-        assert_eq!(expected_error.error_code, "method_not_allowed");
         assert_eq!(
-            expected_error
-                .errors
-                .first()
-                .expect("Error message should exist"),
-            "the specified route does not support this method"
+            expected_error.inner_struct().error_code,
+            "method_not_allowed"
         );
-        assert!(
-            !expected_error
-                .errors
-                .first()
-                .expect("Error message should exist")
-                .is_empty()
+        assert_eq!(
+            expected_error.inner_struct().message,
+            "the specified route does not support this method"
         );
     }
 
     #[rstest]
     #[tokio::test]
     async fn fallback_functions_use_json_error_struct() {
-        // Verify that both functions use JsonErrorStruct internally
+        // Verify that both functions use JsonError internally
         // by checking that the responses have the expected status codes
         let response_404 = fallback_404().await.into_response();
         let response_405 = fallback_405().await.into_response();
 
-        // JsonErrorStruct should set these status codes correctly
+        // JsonError should set these status codes correctly
         assert_eq!(response_404.status(), StatusCode::NOT_FOUND);
         assert_eq!(response_405.status(), StatusCode::METHOD_NOT_ALLOWED);
     }

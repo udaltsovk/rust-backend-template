@@ -6,12 +6,19 @@ edition = "2024"
 [dependencies]
 derive-where.workspace = true
 pastey.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 uuid = { workspace = true, features = ["v7"] }
 
 num-traits = "0.2"
 regex = "1.12"
 validator-rs = "0.1"
 
+
 [dev-dependencies]
 rstest = { workspace = true }
 tokio = { workspace = true }
+
+
+[lints]
+workspace = true

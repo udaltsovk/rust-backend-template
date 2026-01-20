@@ -2,12 +2,8 @@ use std::net::SocketAddr;
 
 use lib::{
     async_trait,
-    axum::{
-        Router,
-        http::{HeaderValue, Method, header},
-    },
+    axum::http::{HeaderValue, Method, header},
     axum_otel_metrics::{HttpMetricsLayerBuilder, PathSkipper},
-    axum_tracing_opentelemetry::middleware::OtelAxumLayer,
     presentation::api::rest::startup::RestApi,
     tower::ServiceBuilder,
     tower_http::cors::CorsLayer,
@@ -33,7 +29,7 @@ impl BootstrapperExt for RestApi {
         } else {
             CorsLayer::new()
                 .allow_origin(config.domain.parse::<HeaderValue>().expect(
-                    "`DEPLOY_DOMAIN` value to be parseable `HeaderValue`",
+                    "`DEPLOY_DOMAIN` value should be parseable `HeaderValue`",
                 ))
                 .allow_methods([
                     Method::GET,
@@ -51,15 +47,10 @@ impl BootstrapperExt for RestApi {
         };
 
         let (router, openapi) = routes::router()
-            .layer(
-                ServiceBuilder::new()
-                    .layer(metric_layer)
-                    .layer(OtelAxumLayer::default())
-                    .layer(cors_layer),
-            )
+            .layer(ServiceBuilder::new().layer(metric_layer).layer(cors_layer))
             .split_for_parts();
 
-        Self::builder(Router::new().nest("/{api_version}", router), modules)
+        Self::builder(router, modules)
             .with_openapi(openapi)
             .build()
             .run(SocketAddr::from(config))

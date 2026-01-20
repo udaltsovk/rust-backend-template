@@ -18,9 +18,9 @@ macro_rules! has {
     };
 }
 
-has!(lowercase, |c| c.is_lowercase(), "lowercase letter");
+has!(lowercase, char::is_lowercase, "lowercase letter");
 
-has!(uppercase, |c| c.is_uppercase(), "uppercase letter");
+has!(uppercase, char::is_uppercase, "uppercase letter");
 
 has!(digit, |c| c.is_ascii_digit(), "digit");
 

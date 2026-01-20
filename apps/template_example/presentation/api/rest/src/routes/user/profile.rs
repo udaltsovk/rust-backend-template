@@ -1,9 +1,7 @@
 use application::usecase::user::UserUseCase as _;
 use axum::{extract::State, http::StatusCode, response::IntoResponse};
 use lib::{
-    presentation::api::rest::{
-        context::JsonErrorStruct, response::ResponseExt as _,
-    },
+    presentation::api::rest::{errors::JsonError, response::ResponseExt as _},
     tap::{Conv as _, Pipe as _},
 };
 
@@ -24,7 +22,7 @@ use crate::{
     responses(
 
         (status = OK, body = JsonUser),
-        (status = UNAUTHORIZED, body = JsonErrorStruct),
+        (status = UNAUTHORIZED, body = JsonError),
     ),
 )]
 pub async fn get_profile<M: ModulesExt>(

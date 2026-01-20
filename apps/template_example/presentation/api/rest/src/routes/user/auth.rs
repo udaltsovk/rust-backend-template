@@ -5,7 +5,7 @@ use axum::{extract::State, http::StatusCode, response::IntoResponse};
 use domain::session::entity::SessionEntity;
 use lib::{
     presentation::api::rest::{
-        context::JsonErrorStruct, model::ParseableJson as _,
+        errors::JsonError, model::ParseableJson as _,
         response::ResponseExt as _,
     },
     tap::{Conv as _, Pipe as _},
@@ -13,7 +13,7 @@ use lib::{
 
 use crate::{
     ApiError, ModulesExt,
-    errors::BadRequestResponse,
+    errors::{BadRequestResponse, ValidationFailedResponse},
     extractors::Json,
     models::{
         session::{CreateJsonSession, JsonUserSession},
@@ -38,9 +38,10 @@ use crate::{
         ),
         (
             status = CONFLICT,
-            body = JsonErrorStruct,
+            body = JsonError,
             description = "Такой email уже зарегистрирован в системе"
         ),
+        ValidationFailedResponse,
         BadRequestResponse
     ),
 )]
@@ -75,7 +76,7 @@ pub async fn sign_up<M: ModulesExt>(
         ),
         (
             status = UNAUTHORIZED,
-            body = JsonErrorStruct
+            body = JsonError
         ),
         BadRequestResponse
     ),
