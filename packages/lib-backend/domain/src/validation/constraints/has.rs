@@ -1,11 +1,10 @@
-use crate::validation::constraints::Constraint;
-
+#[macro_export]
 macro_rules! has {
     ($name: ident, $matcher: expr, $msg: literal) => {
         pastey::paste! {
             pub struct [<$name:camel>];
 
-            impl Constraint<String> for [<$name:camel>] {
+            impl $crate::validation::constraints::Constraint<String> for [<$name:camel>] {
                 fn check(&self, value: &String) -> bool {
                     value.chars().any($matcher)
                 }
@@ -17,6 +16,8 @@ macro_rules! has {
         }
     };
 }
+
+has!(letter, |c| c.is_ascii_alphabetic(), "letter");
 
 has!(lowercase, char::is_lowercase, "lowercase letter");
 
