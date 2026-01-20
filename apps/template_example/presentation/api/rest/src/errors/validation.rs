@@ -1,6 +1,6 @@
 use lib::{
     domain::validation::error::ValidationErrors,
-    presentation::api::rest::validation_error_response,
+    presentation::api::rest::validation_error_response_openapi as validation_error_response,
 };
 
 validation_error_response!(

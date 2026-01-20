@@ -1,5 +1,5 @@
 use axum::extract::rejection::{JsonRejection, PathRejection};
-use lib::presentation::api::rest::generic_error_response;
+use lib::presentation::api::rest::generic_error_response_openapi as generic_error_response;
 
 generic_error_response!(
     /// невалидный JSON, неподдерживаемый Content-Type
