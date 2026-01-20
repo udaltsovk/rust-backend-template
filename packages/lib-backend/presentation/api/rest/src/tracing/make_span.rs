@@ -1,8 +1,8 @@
 use std::{net::SocketAddr, str::FromStr as _};
 
 use axum::{
-    extract::{ConnectInfo, MatchedPath},
-    http::{self, Uri, uri::PathAndQuery},
+    extract::ConnectInfo,
+    http::{self, uri::PathAndQuery},
 };
 use opentelemetry::trace::SpanKind;
 use tap::Pipe as _;
@@ -46,10 +46,7 @@ impl Default for AxumOtelSpanCreator {
 impl<B> MakeSpan<B> for AxumOtelSpanCreator {
     fn make_span(&mut self, request: &http::Request<B>) -> tracing::Span {
         let http_method = request.method().as_str();
-        let http_route = request
-            .extensions()
-            .get::<MatchedPath>()
-            .map(|p| Uri::from_str(p.as_str()).expect("path should be valid"));
+        let http_route = request.uri().clone();
 
         let request_id = fields::extract_request_id(request)
             .pipe(Uuid::from_str)
@@ -60,10 +57,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             .get::<ConnectInfo<SocketAddr>>()
             .map(|ConnectInfo(ip)| tracing::field::debug(ip));
 
-        let span_name = http_route.as_ref().map_or_else(
-            || http_method.to_string(),
-            |route| format!("{http_method} {route}"),
-        );
+        let span_name = format!("{http_method} {http_route}");
 
         let span = dyn_span!(
             self.level,
@@ -72,7 +66,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             http.versions = ?request.version(),
             http.host = ?fields::extract_host(request),
             http.method = ?fields::extract_http_method(request),
-            http.route = http_route.as_ref().map(ToString::to_string),
+            http.route = http_route.to_string(),
             http.scheme = ?fields::extract_http_scheme(request),
             http.status_code = Empty,
             http.target = request.uri().path_and_query().map(PathAndQuery::as_str),

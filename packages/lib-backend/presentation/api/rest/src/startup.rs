@@ -84,9 +84,9 @@ where
             .layer(PanicHandler::layer());
 
         let router = router
-            .layer(middlewares)
             .fallback(fallback_404)
-            .method_not_allowed_fallback(fallback_405);
+            .method_not_allowed_fallback(fallback_405)
+            .layer(middlewares);
 
         RestApi {
             router,

@@ -98,16 +98,13 @@ impl Otel {
             .configure_meter_provider()
             .configure_tracer_provider();
 
-        if let Err(err) = tracing_subscriber::registry()
+        tracing_subscriber::registry()
             .with(stdout::filter_layer())
             .with(stdout::fmt_layer())
             .with(otel.log_layer())
             .with(otel.trace_layer())
             .with(MetricsLayer::new())
-            .try_init()
-        {
-            tracing::error!("Failed to initialize tracing subscriber: {err:?}");
-        }
+            .init();
 
         otel.setup_metrics();
 

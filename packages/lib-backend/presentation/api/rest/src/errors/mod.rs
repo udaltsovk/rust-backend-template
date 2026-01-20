@@ -20,7 +20,7 @@ pub mod validation;
 
 #[derive(Debug)]
 pub struct RequestMeta {
-    pub http_route: Option<Uri>,
+    pub http_route: Uri,
     pub request_id: Option<Uuid>,
 }
 
@@ -74,11 +74,9 @@ impl JsonErrorStruct {
                 subscriber.downcast_ref::<tracing_subscriber::Registry>()
                 && let Some(span_ref) = registry.span(id)
                 && let Some(meta) = span_ref.extensions().get::<RequestMeta>()
-                && let Some(http_route) = &meta.http_route
-                && let Some(request_id) = &meta.request_id
             {
-                http_route_option = Some(http_route.clone());
-                request_id_option = Some(*request_id);
+                http_route_option = Some(meta.http_route.clone());
+                request_id_option = meta.request_id;
             }
         });
 
