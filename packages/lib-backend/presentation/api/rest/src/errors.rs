@@ -10,6 +10,7 @@ use serde_json::Value;
 use tap::Pipe as _;
 use tracing::Span;
 use tracing_subscriber::registry::LookupSpan as _;
+#[cfg(feature = "openapi")]
 use utoipa::ToSchema;
 use uuid::Uuid;
 
@@ -19,7 +20,8 @@ pub struct RequestMeta {
     pub request_id: Option<Uuid>,
 }
 
-#[derive(Serialize, ToSchema, Clone, Debug)]
+#[derive(Serialize, Clone, Debug)]
+#[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct FieldError {
     pub field: String,
@@ -107,14 +109,16 @@ impl From<FieldErrors> for Vec<FieldError> {
     }
 }
 
-#[derive(Serialize, ToSchema, Debug)]
+#[derive(Serialize, Debug)]
+#[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(untagged, rename_all = "camelCase")]
 pub enum JsonError {
     Generic(GenericJsonError),
     Validation(ValidationJsonError),
 }
 
-#[derive(Serialize, ToSchema, Debug)]
+#[derive(Serialize, Debug)]
+#[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct GenericJsonError {
     #[serde(flatten)]
@@ -124,7 +128,8 @@ pub struct GenericJsonError {
     pub context: Value,
 }
 
-#[derive(Serialize, ToSchema, Debug)]
+#[derive(Serialize, Debug)]
+#[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationJsonError {
     #[serde(flatten)]
@@ -133,7 +138,8 @@ pub struct ValidationJsonError {
     pub field_errors: Vec<FieldError>,
 }
 
-#[derive(Serialize, ToSchema, Debug)]
+#[derive(Serialize, Debug)]
+#[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct JsonErrorStruct {
     #[serde(skip)]
@@ -148,7 +154,7 @@ pub struct JsonErrorStruct {
 
     pub timestamp: DateTime<Utc>,
 
-    #[schema(format = Uri)]
+    #[cfg_attr(feature = "openapi", schema(format = Uri))]
     pub path: String,
 }
 

@@ -5,7 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-lib = { workspace = true, features = ["presentation-api-rest"] }
+lib = { workspace = true, features = ["presentation-api-rest-openapi"] }
 domain = { path = "../../../domain", package = "template_example-domain" }
 application = { path = "../../../application", package = "template_example-application" }
 

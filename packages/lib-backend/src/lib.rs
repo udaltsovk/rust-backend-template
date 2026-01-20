@@ -54,7 +54,7 @@ pub use tap;
 pub use tower;
 #[cfg(feature = "bootstrap")]
 pub use tower_http;
-#[cfg(any(feature = "presentation-api-rest",))]
+#[cfg(any(feature = "presentation-api-rest-openapi"))]
 pub use utoipa_axum;
 #[cfg(any(
     feature = "domain",

@@ -6,6 +6,7 @@ edition.workspace = true
 
 [features]
 rest = ["dep:rest"]
+rest-openapi = ["rest", "rest/openapi"]
 
 [dependencies]
 rest = { path = "./rest", package = "lib-presentation-api-rest", optional = true }

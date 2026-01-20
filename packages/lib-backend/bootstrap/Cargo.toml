@@ -26,14 +26,14 @@ instrumentation-opentelemetry-grpc-tonic = [
 
 instrumentation-stdout = ["instrumentation", "instrumentation/stdout"]
 
-openapi = ["dep:serde_json", "dep:thiserror", "dep:utoipa"]
+openapi = ["dep:serde_json", "dep:utoipa"]
 
 [dependencies]
 instrumentation = { path = "./instrumentation", package = "lib-infrastructure-instrumentation", optional = true }
 
 fromenv.workspace = true
 serde_json = { workspace = true, optional = true }
-thiserror = { workspace = true, optional = true }
+thiserror.workspace = true
 tracing.workspace = true
 utoipa = { workspace = true, optional = true }
 

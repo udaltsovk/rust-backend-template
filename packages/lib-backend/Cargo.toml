@@ -87,6 +87,10 @@ presentation-api-rest = [
   "presentation-api",
   "presentation/api-rest",
   "dep:axum",
+]
+presentation-api-rest-openapi = [
+  "presentation-api-rest",
+  "presentation/api-rest-openapi",
   "dep:utoipa-axum",
 ]
 

@@ -7,6 +7,7 @@ edition.workspace = true
 [features]
 api = ["dep:api"]
 api-rest = ["api", "api/rest"]
+api-rest-openapi = ["api-rest", "api/rest-openapi"]
 
 bot = ["dep:bot"]
 bot-telegram = ["bot", "bot/telegram"]
