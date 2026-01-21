@@ -40,10 +40,27 @@ pub fn filter_layer() -> EnvFilter {
         .add_directive(parse_directive("tungstenite=off"))
 }
 
+#[cfg(not(debug_assertions))]
 #[must_use]
 #[inline]
-pub fn fmt_layer<S>() -> Layer<S, format::DefaultFields, Format<format::Full>> {
+pub fn fmt_layer<S>() -> Layer<S, format::DefaultFields, Format<format::Compact>>
+{
     fmt::layer()
+        .compact()
+        .with_span_events(format::FmtSpan::CLOSE)
+        .with_line_number(true)
+        .with_thread_names(true)
+        .log_internal_errors(true)
+        .with_level(true)
+        .with_target(true)
+}
+
+#[cfg(debug_assertions)]
+#[must_use]
+#[inline]
+pub fn fmt_layer<S>() -> Layer<S, format::Pretty, Format<format::Pretty>> {
+    fmt::layer()
+        .pretty()
         .with_span_events(format::FmtSpan::CLOSE)
         .with_line_number(true)
         .with_thread_names(true)
