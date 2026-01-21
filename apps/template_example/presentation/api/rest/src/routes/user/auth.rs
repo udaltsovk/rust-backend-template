@@ -5,8 +5,7 @@ use axum::{extract::State, http::StatusCode, response::IntoResponse};
 use domain::session::entity::SessionEntity;
 use lib::{
     presentation::api::rest::{
-        errors::JsonError, model::ParseableJson as _,
-        response::ResponseExt as _,
+        errors::JsonError, model::Parseable as _, response::ResponseExt as _,
     },
     tap::{Conv as _, Pipe as _},
 };

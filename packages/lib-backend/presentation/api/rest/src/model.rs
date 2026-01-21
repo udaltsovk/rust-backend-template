@@ -3,13 +3,13 @@ use std::{any::type_name, marker::PhantomData};
 use domain::validation::ValidationConfirmation;
 pub use domain::validation::error::ValidationErrors;
 
-pub trait ParseableJson<T> {
+pub trait Parseable<T> {
     fn parse(self) -> Result<T, ValidationErrors>;
 }
 
-impl<J, T> ParseableJson<Vec<T>> for Vec<J>
+impl<J, T> Parseable<Vec<T>> for Vec<J>
 where
-    J: ParseableJson<T>,
+    J: Parseable<T>,
 {
     fn parse(self) -> Result<Vec<T>, ValidationErrors> {
         let (errors, converted): (Vec<_>, Vec<_>) = self
@@ -29,7 +29,7 @@ where
 
 pub struct NestedValidator<J, T>
 where
-    J: ParseableJson<T>,
+    J: Parseable<T>,
 {
     inner: Result<T, ValidationErrors>,
     _phantom: PhantomData<J>,
@@ -37,7 +37,7 @@ where
 
 impl<J, T> NestedValidator<J, T>
 where
-    J: ParseableJson<T>,
+    J: Parseable<T>,
 {
     pub fn new(value: J, errors: &mut ValidationErrors) -> Self {
         let res: Result<T, ValidationErrors> = value.parse();
@@ -64,7 +64,7 @@ where
 
 pub trait IntoNestedValidator<T>
 where
-    Self: ParseableJson<T> + Sized,
+    Self: Parseable<T> + Sized,
 {
     fn into_nested_validator(
         self,
@@ -74,7 +74,7 @@ where
 
 impl<J, T> IntoNestedValidator<T> for J
 where
-    J: ParseableJson<T> + Sized,
+    J: Parseable<T> + Sized,
 {
     #[inline]
     fn into_nested_validator(

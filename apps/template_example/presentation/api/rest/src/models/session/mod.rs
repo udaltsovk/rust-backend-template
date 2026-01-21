@@ -2,7 +2,7 @@ use derive_more::From;
 use domain::session::CreateSession;
 use lib::{
     domain::{into_validators, validation::error::ValidationErrors},
-    presentation::api::rest::model::ParseableJson,
+    presentation::api::rest::model::Parseable,
 };
 use serde::{Deserialize, Serialize};
 use utoipa::{ToResponse, ToSchema};
@@ -24,7 +24,7 @@ pub struct CreateJsonSession {
     password: String,
 }
 
-impl ParseableJson<CreateSession> for CreateJsonSession {
+impl Parseable<CreateSession> for CreateJsonSession {
     fn parse(self) -> Result<CreateSession, ValidationErrors> {
         let (errors, (email, password)) =
             into_validators!(self.email, self.password);

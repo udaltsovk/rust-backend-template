@@ -5,7 +5,7 @@ use lib::{
         validation::error::ValidationErrors,
     },
     model_mapper::Mapper,
-    presentation::api::rest::{into_nested_validators, model::ParseableJson},
+    presentation::api::rest::{into_nested_validators, model::Parseable},
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -79,7 +79,7 @@ pub struct CreateJsonUser {
     other: JsonUserTargetSettings,
 }
 
-impl ParseableJson<CreateUser> for CreateJsonUser {
+impl Parseable<CreateUser> for CreateJsonUser {
     fn parse(self) -> Result<CreateUser, ValidationErrors> {
         let (mut errors, (name, surname, email, password)) = into_validators!(
             self.name,

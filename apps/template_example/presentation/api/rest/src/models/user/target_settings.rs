@@ -2,7 +2,7 @@ use domain::user::target_settings::UserTargetSettings;
 use lib::{
     domain::{into_validators, validation::error::ValidationErrors},
     model_mapper::Mapper,
-    presentation::api::rest::model::ParseableJson,
+    presentation::api::rest::model::Parseable,
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -27,7 +27,7 @@ pub struct JsonUserTargetSettings {
     pub country: String,
 }
 
-impl ParseableJson<UserTargetSettings> for JsonUserTargetSettings {
+impl Parseable<UserTargetSettings> for JsonUserTargetSettings {
     fn parse(self) -> Result<UserTargetSettings, ValidationErrors> {
         let (errors, (age, country)) = into_validators!(self.age, self.country);
 
