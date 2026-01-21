@@ -4,7 +4,10 @@ use lib::{
     DomainType,
     domain::{
         try_from_option,
-        validation::{Constraints, error::ValidationErrors},
+        validation::{
+            Constraints,
+            error::{ValidationErrors, ValidationResult},
+        },
     },
 };
 
@@ -20,7 +23,7 @@ static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
 impl TryFrom<String> for Email {
     type Error = ValidationErrors;
 
-    fn try_from(value: String) -> Result<Self, ValidationErrors> {
+    fn try_from(value: String) -> ValidationResult<Self> {
         CONSTRAINTS
             .check(&value)
             .into_result(|_| Self(value.to_lowercase()))

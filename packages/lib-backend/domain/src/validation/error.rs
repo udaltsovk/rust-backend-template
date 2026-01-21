@@ -36,6 +36,8 @@ impl fmt::Display for ValidationError {
 #[derive(Clone, Debug)]
 pub struct ValidationErrors(Vec<ValidationError>);
 
+pub type ValidationResult<T> = Result<T, ValidationErrors>;
+
 impl ValidationErrors {
     #[must_use]
     pub const fn new() -> Self {

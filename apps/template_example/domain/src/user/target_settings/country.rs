@@ -5,7 +5,9 @@ use lib::{
     domain::{
         try_from_option,
         validation::{
-            Constraints, constraints::Constraint, error::ValidationErrors,
+            Constraints,
+            constraints::Constraint,
+            error::{ValidationErrors, ValidationResult},
         },
     },
 };
@@ -23,7 +25,7 @@ static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
 impl TryFrom<String> for UserTargetSettingsCountry {
     type Error = ValidationErrors;
 
-    fn try_from(value: String) -> Result<Self, ValidationErrors> {
+    fn try_from(value: String) -> ValidationResult<Self> {
         CONSTRAINTS.check(&value).into_result(|_| Self(value))
     }
 }

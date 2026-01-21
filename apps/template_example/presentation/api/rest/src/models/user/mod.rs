@@ -2,7 +2,7 @@ use domain::user::{CreateUser, User};
 use lib::{
     domain::{
         into_option_validators, into_validators,
-        validation::error::ValidationErrors,
+        validation::error::ValidationResult,
     },
     model_mapper::Mapper,
     presentation::api::rest::{into_nested_validators, model::Parseable},
@@ -85,7 +85,7 @@ pub struct CreateJsonUser {
 impl Parseable<CreateUser> for CreateJsonUser {
     const FIELD: &str = "user";
 
-    fn parse(self) -> Result<CreateUser, ValidationErrors> {
+    fn parse(self) -> ValidationResult<CreateUser> {
         let (mut errors, (name, surname, email, password)) = into_validators!(
             self.name,
             self.surname,

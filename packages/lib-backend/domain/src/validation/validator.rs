@@ -1,9 +1,12 @@
 use std::any::type_name;
 
-use crate::validation::{ValidationConfirmation, error::ValidationErrors};
+use crate::validation::{
+    ValidationConfirmation,
+    error::{ValidationErrors, ValidationResult},
+};
 
 pub struct Validator<T> {
-    inner: Result<T, ValidationErrors>,
+    inner: ValidationResult<T>,
 }
 
 impl<T> Validator<T> {
@@ -11,7 +14,7 @@ impl<T> Validator<T> {
     where
         T: TryFrom<F, Error = ValidationErrors>,
     {
-        let res: Result<T, ValidationErrors> = value.try_into();
+        let res: ValidationResult<T> = value.try_into();
 
         if let Err(ref err) = res {
             errors.extend(err.clone());

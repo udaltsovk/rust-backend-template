@@ -1,12 +1,12 @@
 use std::{any::type_name, marker::PhantomData};
 
-use domain::validation::ValidationConfirmation;
 pub use domain::validation::error::ValidationErrors;
+use domain::validation::{ValidationConfirmation, error::ValidationResult};
 
 pub trait Parseable<T> {
     const FIELD: &str;
 
-    fn parse(self) -> Result<T, ValidationErrors>;
+    fn parse(self) -> ValidationResult<T>;
 }
 
 impl<I, T> Parseable<Vec<T>> for Vec<I>
@@ -15,7 +15,7 @@ where
 {
     const FIELD: &str = I::FIELD;
 
-    fn parse(self) -> Result<Vec<T>, ValidationErrors> {
+    fn parse(self) -> ValidationResult<Vec<T>> {
         let (errors, converted): (Vec<_>, Vec<_>) = self
             .into_iter()
             .map(|v| match v.parse() {
@@ -37,7 +37,7 @@ where
 {
     const FIELD: &str = I::FIELD;
 
-    fn parse(self) -> Result<T, ValidationErrors> {
+    fn parse(self) -> ValidationResult<T> {
         self.map(I::parse).transpose()?.ok_or_else(|| {
             ValidationErrors::with_error(
                 Self::FIELD,
@@ -52,7 +52,7 @@ pub struct NestedValidator<J, I>
 where
     J: Parseable<I>,
 {
-    inner: Result<I, ValidationErrors>,
+    inner: ValidationResult<I>,
     _phantom: PhantomData<J>,
 }
 
@@ -61,7 +61,7 @@ where
     J: Parseable<I>,
 {
     pub fn new(value: J, errors: &mut ValidationErrors) -> Self {
-        let res: Result<I, ValidationErrors> = value.parse();
+        let res: ValidationResult<I> = value.parse();
 
         if let Err(ref err) = res {
             errors.extend(err.clone());

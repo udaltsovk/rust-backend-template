@@ -1,6 +1,6 @@
 use domain::user::target_settings::UserTargetSettings;
 use lib::{
-    domain::{into_validators, validation::error::ValidationErrors},
+    domain::{into_validators, validation::error::ValidationResult},
     model_mapper::Mapper,
     presentation::api::rest::model::Parseable,
 };
@@ -33,7 +33,7 @@ pub struct JsonUserTargetSettings {
 impl Parseable<UserTargetSettings> for JsonUserTargetSettings {
     const FIELD: &str = "target";
 
-    fn parse(self) -> Result<UserTargetSettings, ValidationErrors> {
+    fn parse(self) -> ValidationResult<UserTargetSettings> {
         let (errors, (age, country)) = into_validators!(self.age, self.country);
 
         errors.into_result(|ok| UserTargetSettings {

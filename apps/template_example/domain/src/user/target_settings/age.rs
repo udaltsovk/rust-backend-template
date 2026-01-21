@@ -10,7 +10,7 @@ use lib::{
         validation::{
             Constraints,
             constraints::{self, range::Num},
-            error::ValidationErrors,
+            error::{ValidationErrors, ValidationResult},
         },
     },
     paste,
@@ -53,7 +53,7 @@ macro_rules! numeric_constraints {
             impl TryFrom<$type> for UserTargetSettingsAge {
                 type Error = ValidationErrors;
 
-                fn try_from(value: $type) -> Result<Self, ValidationErrors> {
+                fn try_from(value: $type) -> ValidationResult<Self> {
                     [<CONSTRAINTS_ $type:upper>].check(&value).into_result(|_| {
                         Self(value.try_into().unwrap_or_else(
                             Self::it_should_be_safe_to_unwrap([<CONSTRAINTS_ $type:upper>].name()),
