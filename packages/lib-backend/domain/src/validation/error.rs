@@ -51,6 +51,17 @@ impl ValidationErrors {
         self.0.append(&mut other.0);
     }
 
+    pub fn with_error<P, M, V>(path: P, issue: M, rejected_value: V) -> Self
+    where
+        P: ToString,
+        M: ToString,
+        V: Serialize,
+    {
+        let mut this = Self::new();
+        this.push(path, issue, rejected_value);
+        this
+    }
+
     #[expect(
         clippy::needless_pass_by_value,
         reason = "clippy doesn't know that we want &str here too"

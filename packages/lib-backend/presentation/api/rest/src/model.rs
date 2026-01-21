@@ -4,13 +4,17 @@ use domain::validation::ValidationConfirmation;
 pub use domain::validation::error::ValidationErrors;
 
 pub trait Parseable<T> {
+    const FIELD: &str;
+
     fn parse(self) -> Result<T, ValidationErrors>;
 }
 
-impl<J, T> Parseable<Vec<T>> for Vec<J>
+impl<I, T> Parseable<Vec<T>> for Vec<I>
 where
-    J: Parseable<T>,
+    I: Parseable<T>,
 {
+    const FIELD: &str = I::FIELD;
+
     fn parse(self) -> Result<Vec<T>, ValidationErrors> {
         let (errors, converted): (Vec<_>, Vec<_>) = self
             .into_iter()
@@ -27,20 +31,37 @@ where
     }
 }
 
-pub struct NestedValidator<J, T>
+impl<I, T> Parseable<T> for Option<I>
 where
-    J: Parseable<T>,
+    I: Parseable<T>,
 {
-    inner: Result<T, ValidationErrors>,
+    const FIELD: &str = I::FIELD;
+
+    fn parse(self) -> Result<T, ValidationErrors> {
+        self.map(I::parse).transpose()?.ok_or_else(|| {
+            ValidationErrors::with_error(
+                Self::FIELD,
+                "should be not null",
+                None::<()>,
+            )
+        })
+    }
+}
+
+pub struct NestedValidator<J, I>
+where
+    J: Parseable<I>,
+{
+    inner: Result<I, ValidationErrors>,
     _phantom: PhantomData<J>,
 }
 
-impl<J, T> NestedValidator<J, T>
+impl<J, I> NestedValidator<J, I>
 where
-    J: Parseable<T>,
+    J: Parseable<I>,
 {
     pub fn new(value: J, errors: &mut ValidationErrors) -> Self {
-        let res: Result<T, ValidationErrors> = value.parse();
+        let res: Result<I, ValidationErrors> = value.parse();
 
         if let Err(ref err) = res {
             errors.extend(err.clone());
@@ -52,7 +73,7 @@ where
         }
     }
 
-    pub fn validated(self, _confirmation: ValidationConfirmation) -> T {
+    pub fn validated(self, _confirmation: ValidationConfirmation) -> I {
         self.inner.unwrap_or_else(|_| {
             panic!(
                 "`{}` should be Ok because error vec is empty",
@@ -72,15 +93,15 @@ where
     ) -> NestedValidator<Self, T>;
 }
 
-impl<J, T> IntoNestedValidator<T> for J
+impl<I, T> IntoNestedValidator<T> for I
 where
-    J: Parseable<T> + Sized,
+    I: Parseable<T> + Sized,
 {
     #[inline]
     fn into_nested_validator(
         self,
         errors: &mut ValidationErrors,
-    ) -> NestedValidator<J, T> {
+    ) -> NestedValidator<I, T> {
         NestedValidator::new(self, errors)
     }
 }

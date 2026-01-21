@@ -1,21 +1,12 @@
-use crate::{
-    DomainType,
-    validation::{ValidationConfirmation, Validator, error::ValidationErrors},
+use crate::validation::{
+    ValidationConfirmation, Validator, error::ValidationErrors,
 };
 
-pub struct OptionValidator<T, I>
-where
-    I: From<T> + Clone,
-    T: DomainType<I>,
-{
-    inner: Option<Validator<T, I>>,
+pub struct OptionValidator<T> {
+    inner: Option<Validator<T>>,
 }
 
-impl<T, I> OptionValidator<T, I>
-where
-    I: From<T> + Clone,
-    T: DomainType<I>,
-{
+impl<T> OptionValidator<T> {
     pub fn new<F>(value: Option<F>, errors: &mut ValidationErrors) -> Self
     where
         T: TryFrom<F, Error = ValidationErrors>,
@@ -30,28 +21,26 @@ where
     }
 }
 
-pub trait IntoOptionValidator<F, T, I>
+pub trait IntoOptionValidator<F, T>
 where
     Self: Sized,
-    I: From<T> + Clone,
-    T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
+    T: TryFrom<F, Error = ValidationErrors>,
 {
     fn into_option_validator(
         self,
         errors: &mut ValidationErrors,
-    ) -> OptionValidator<T, I>;
+    ) -> OptionValidator<T>;
 }
 
-impl<F, T, I> IntoOptionValidator<F, T, I> for Option<F>
+impl<F, T> IntoOptionValidator<F, T> for Option<F>
 where
-    I: From<T> + Clone,
-    T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
+    T: TryFrom<F, Error = ValidationErrors>,
 {
     #[inline]
     fn into_option_validator(
         self,
         errors: &mut ValidationErrors,
-    ) -> OptionValidator<T, I> {
+    ) -> OptionValidator<T> {
         OptionValidator::new(self, errors)
     }
 }

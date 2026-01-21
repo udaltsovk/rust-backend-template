@@ -1,6 +1,9 @@
-use std::{fmt, marker::PhantomData};
+#![feature(iter_intersperse)]
+
+use std::{fmt, marker::PhantomData, sync::OnceLock};
 
 use derive_where::derive_where;
+use strum::VariantNames;
 use uuid::Uuid;
 
 pub mod validation;
@@ -62,6 +65,33 @@ where
         field: &'static str,
     ) -> impl FnOnce(E) -> T {
         move |_| panic!("We've validated {field} value, so it should be safe")
+    }
+}
+
+pub trait DomainTypeEnum: VariantNames {
+    fn parse_error() -> &'static str {
+        static ERROR: OnceLock<String> = OnceLock::new();
+        ERROR.get_or_init(|| {
+            let variants: Vec<_> = Self::VARIANTS
+                .iter()
+                .map(|variant| format!("`{variant}`"))
+                .collect();
+
+            let (last, rest) = variants
+                .split_last()
+                .expect("enum should have at least one variant");
+
+            let parts: String =
+                rest.iter().cloned().intersperse(", ".to_string()).collect();
+
+            let last_part = if rest.is_empty() {
+                last.clone()
+            } else {
+                format!(" or {last}")
+            };
+
+            format!("must be {parts}{last_part}")
+        })
     }
 }
 

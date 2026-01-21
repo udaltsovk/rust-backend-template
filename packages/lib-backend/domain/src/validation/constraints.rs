@@ -57,6 +57,7 @@ impl<T> Default for ConstraintVec<T> {
 pub struct ConstraintsBuilder<T> {
     name: &'static str,
     constraints: ConstraintVec<T>,
+    none_msg: Option<&'static str>,
 }
 
 impl<T> ConstraintsBuilder<T> {
@@ -73,7 +74,14 @@ impl<T> ConstraintsBuilder<T> {
         Self {
             name,
             constraints,
+            none_msg: None,
         }
+    }
+
+    #[must_use]
+    pub const fn with_none_msg(mut self, message: &'static str) -> Self {
+        self.none_msg = Some(message);
+        self
     }
 
     #[must_use]
@@ -89,14 +97,16 @@ impl<T> ConstraintsBuilder<T> {
     pub fn build(self) -> Constraints<T> {
         Constraints {
             name: self.name,
-            constraints: self.constraints,
+            inner: self.constraints,
+            none_msg: self.none_msg.unwrap_or("must be not null"),
         }
     }
 }
 
 pub struct Constraints<T> {
     name: &'static str,
-    constraints: ConstraintVec<T>,
+    inner: ConstraintVec<T>,
+    none_msg: &'static str,
 }
 
 impl<T> Constraints<T>
@@ -125,14 +135,15 @@ where
     pub fn derived(name: &'static str, source: &Self) -> Self {
         Self {
             name,
-            constraints: source.constraints.clone(),
+            inner: source.inner.clone(),
+            none_msg: source.none_msg,
         }
     }
 
     pub fn check(&self, value: &T) -> ValidationErrors {
         let mut errors = ValidationErrors::new();
 
-        for constraint in &self.constraints.0 {
+        for constraint in &self.inner.0 {
             if !constraint.check(value) {
                 let message = constraint.error_msg();
                 errors.push(self.name, message, value.clone());
@@ -140,5 +151,9 @@ where
         }
 
         errors
+    }
+
+    pub fn none_error(&self) -> ValidationErrors {
+        ValidationErrors::with_error(self.name, self.none_msg, None::<T>)
     }
 }

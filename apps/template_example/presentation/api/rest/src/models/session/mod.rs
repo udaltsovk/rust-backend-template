@@ -25,6 +25,8 @@ pub struct CreateJsonSession {
 }
 
 impl Parseable<CreateSession> for CreateJsonSession {
+    const FIELD: &str = "credentials";
+
     fn parse(self) -> Result<CreateSession, ValidationErrors> {
         let (errors, (email, password)) =
             into_validators!(self.email, self.password);

@@ -13,6 +13,7 @@ use utoipa::ToSchema;
 pub struct JsonUserTargetSettings {
     /// Возраст пользователя
     #[schema(
+        required,
         format = UInt8,
         minimum = 0,
         maximum = 100,
@@ -20,14 +21,18 @@ pub struct JsonUserTargetSettings {
             13
         )
     )]
-    pub age: i64,
+    #[mapper(with = Some(age.into()))]
+    pub age: Option<i64>,
 
     /// Страна пользователя в формате ISO 3166-1 alpha-2, регистр может быть разным. Страна с данным кодом должна обязательно существовать.
-    #[schema(format = "iso-3166-alpha-2", examples("ru"))]
-    pub country: String,
+    #[schema(required, format = "iso-3166-alpha-2", examples("ru"))]
+    #[mapper(with = Some(country.into()))]
+    pub country: Option<String>,
 }
 
 impl Parseable<UserTargetSettings> for JsonUserTargetSettings {
+    const FIELD: &str = "target";
+
     fn parse(self) -> Result<UserTargetSettings, ValidationErrors> {
         let (errors, (age, country)) = into_validators!(self.age, self.country);
 

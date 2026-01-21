@@ -35,15 +35,16 @@ pub struct JsonUser {
 #[derive(Deserialize, ToSchema, Debug)]
 pub struct CreateJsonUser {
     ///
-    #[schema(min_length = 1, max_length = 100, examples("Мария"))]
-    name: String,
+    #[schema(required, min_length = 1, max_length = 100, examples("Мария"))]
+    name: Option<String>,
 
     ///
-    #[schema(min_length = 1, max_length = 120, examples("Федотова"))]
-    surname: String,
+    #[schema(required, min_length = 1, max_length = 120, examples("Федотова"))]
+    surname: Option<String>,
 
     ///
     #[schema(
+        required,
         format = IdnEmail,
         min_length = 8,
         max_length = 120,
@@ -51,10 +52,11 @@ pub struct CreateJsonUser {
             "cu_fan@edu.hse.ru"
         )
     )]
-    email: String,
+    email: Option<String>,
 
     ///
     #[schema(
+        required,
         format = Password,
         min_length = 8,
         max_length = 60,
@@ -63,7 +65,7 @@ pub struct CreateJsonUser {
             "HardPa$$w0rd!iamthewinner"
         )
     )]
-    password: String,
+    password: Option<String>,
 
     /// Ссылка на фото пользователя
     #[schema(
@@ -76,10 +78,13 @@ pub struct CreateJsonUser {
     avatar_url: Option<String>,
 
     ///
-    other: JsonUserTargetSettings,
+    #[schema(required)]
+    other: Option<JsonUserTargetSettings>,
 }
 
 impl Parseable<CreateUser> for CreateJsonUser {
+    const FIELD: &str = "user";
+
     fn parse(self) -> Result<CreateUser, ValidationErrors> {
         let (mut errors, (name, surname, email, password)) = into_validators!(
             self.name,

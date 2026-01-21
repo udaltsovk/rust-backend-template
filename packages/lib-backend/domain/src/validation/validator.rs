@@ -1,24 +1,12 @@
-use std::{any::type_name, marker::PhantomData};
+use std::any::type_name;
 
-use crate::{
-    DomainType,
-    validation::{ValidationConfirmation, error::ValidationErrors},
-};
+use crate::validation::{ValidationConfirmation, error::ValidationErrors};
 
-pub struct Validator<T, I>
-where
-    I: From<T> + Clone,
-    T: DomainType<I>,
-{
+pub struct Validator<T> {
     inner: Result<T, ValidationErrors>,
-    _phantom: PhantomData<I>,
 }
 
-impl<T, I> Validator<T, I>
-where
-    I: From<T> + Clone,
-    T: DomainType<I>,
-{
+impl<T> Validator<T> {
     pub fn new<F>(value: F, errors: &mut ValidationErrors) -> Self
     where
         T: TryFrom<F, Error = ValidationErrors>,
@@ -31,7 +19,6 @@ where
 
         Self {
             inner: res,
-            _phantom: PhantomData,
         }
     }
 
@@ -45,22 +32,20 @@ where
     }
 }
 
-pub trait IntoValidator<T, I>
+pub trait IntoValidator<T>
 where
     Self: Sized,
-    I: From<T> + Clone,
-    T: DomainType<I> + TryFrom<Self, Error = ValidationErrors>,
+    T: TryFrom<Self, Error = ValidationErrors>,
 {
-    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T, I>;
+    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T>;
 }
 
-impl<F, T, I> IntoValidator<T, I> for F
+impl<F, T> IntoValidator<T> for F
 where
-    I: From<T> + Clone,
-    T: DomainType<I> + TryFrom<F, Error = ValidationErrors>,
+    T: TryFrom<F, Error = ValidationErrors>,
 {
     #[inline]
-    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T, I> {
+    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T> {
         Validator::new(self, errors)
     }
 }

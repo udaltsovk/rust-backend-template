@@ -2,8 +2,11 @@ use std::sync::LazyLock;
 
 use lib::{
     DomainType,
-    domain::validation::{
-        Constraints, constraints::Constraint, error::ValidationErrors,
+    domain::{
+        try_from_option,
+        validation::{
+            Constraints, constraints::Constraint, error::ValidationErrors,
+        },
     },
 };
 
@@ -24,6 +27,12 @@ impl TryFrom<String> for UserTargetSettingsCountry {
         CONSTRAINTS.check(&value).into_result(|_| Self(value))
     }
 }
+
+try_from_option!(
+    domain_type = UserTargetSettingsCountry,
+    from_ty = String,
+    constraints = CONSTRAINTS
+);
 
 struct IsIso3166Alpha2CountryCode;
 

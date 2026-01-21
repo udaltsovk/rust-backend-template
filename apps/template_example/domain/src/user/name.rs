@@ -2,7 +2,10 @@ use std::sync::LazyLock;
 
 use lib::{
     DomainType,
-    domain::validation::{Constraints, error::ValidationErrors},
+    domain::{
+        try_from_option,
+        validation::{Constraints, error::ValidationErrors},
+    },
 };
 
 use crate::user::constraints::NAME_SURNAME_CONSTRAINTS;
@@ -22,3 +25,9 @@ impl TryFrom<String> for UserName {
         CONSTRAINTS.check(&value).into_result(|_| Self(value))
     }
 }
+
+try_from_option!(
+    domain_type = UserName,
+    from_ty = String,
+    constraints = CONSTRAINTS
+);

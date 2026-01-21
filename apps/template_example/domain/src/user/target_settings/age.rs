@@ -6,7 +6,7 @@ use std::{
 use lib::{
     DomainType,
     domain::{
-        DomainType as _,
+        DomainType as _, try_from_option,
         validation::{
             Constraints,
             constraints::{self, range::Num},
@@ -73,3 +73,9 @@ macro_rules! numeric_constraints {
 
 numeric_constraints!(i16);
 numeric_constraints!(i64);
+
+try_from_option!(
+    domain_type = UserTargetSettingsAge,
+    from_ty = i64,
+    constraints = CONSTRAINTS_I64
+);

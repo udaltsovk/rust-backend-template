@@ -2,7 +2,10 @@ use std::{fmt, sync::LazyLock};
 
 use lib::{
     DomainType,
-    domain::validation::{Constraints, error::ValidationErrors},
+    domain::{
+        try_from_option,
+        validation::{Constraints, error::ValidationErrors},
+    },
 };
 
 use crate::constraints::EMAIL_CONSTRAINTS;
@@ -23,6 +26,12 @@ impl TryFrom<String> for Email {
             .into_result(|_| Self(value.to_lowercase()))
     }
 }
+
+try_from_option!(
+    domain_type = Email,
+    from_ty = String,
+    constraints = CONSTRAINTS
+);
 
 impl fmt::Display for Email {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

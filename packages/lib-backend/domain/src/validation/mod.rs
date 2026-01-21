@@ -1,6 +1,7 @@
 pub mod constraints;
 pub mod error;
 mod option_validator;
+mod try_from_option;
 mod validator;
 
 pub use constraints::Constraints;

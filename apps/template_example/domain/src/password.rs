@@ -2,7 +2,10 @@ use std::sync::LazyLock;
 
 use lib::{
     DomainType,
-    domain::validation::{Constraints, error::ValidationErrors},
+    domain::{
+        try_from_option,
+        validation::{Constraints, error::ValidationErrors},
+    },
 };
 
 use crate::constraints::PASSWORD_CONSTRAINTS;
@@ -22,6 +25,12 @@ impl TryFrom<String> for Password {
         CONSTRAINTS.check(&value).into_result(|_| Self(value))
     }
 }
+
+try_from_option!(
+    domain_type = Password,
+    from_ty = String,
+    constraints = CONSTRAINTS
+);
 
 impl Password {
     #[must_use]
