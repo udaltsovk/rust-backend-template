@@ -39,8 +39,6 @@ pub use mobc_sqlx;
     feature = "presentation-api",
 ))]
 pub use model_mapper;
-#[cfg(any(feature = "domain", feature = "application"))]
-pub use pastey::paste;
 #[cfg(feature = "presentation")]
 pub use presentation;
 #[cfg(any(

@@ -9,6 +9,7 @@ edition.workspace = true
 
 [dependencies]
 derive-where.workspace = true
+pastey.workspace = true
 
 [dev-dependencies]
 rstest.workspace = true

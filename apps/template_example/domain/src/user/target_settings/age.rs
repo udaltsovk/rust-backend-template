@@ -6,14 +6,15 @@ use std::{
 use lib::{
     DomainType,
     domain::{
-        DomainType as _, try_from_option,
+        DomainType as _,
+        pastey::paste,
+        try_from_option,
         validation::{
             Constraints,
             constraints::{self, range::Num},
             error::{ValidationErrors, ValidationResult},
         },
     },
-    paste,
 };
 use serde::Serialize;
 

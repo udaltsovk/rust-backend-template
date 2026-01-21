@@ -1,6 +1,8 @@
 use std::{fmt, marker::PhantomData};
 
 use derive_where::derive_where;
+#[doc(hidden)]
+pub use pastey;
 use uuid::Uuid;
 
 pub mod validation;

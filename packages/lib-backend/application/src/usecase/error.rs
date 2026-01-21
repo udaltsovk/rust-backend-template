@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! usecase_result {
     ($name: ident) => {
-        pastey::paste! {
+        $crate::pastey::paste! {
             pub type [<$name UseCaseResult>]<R, S, T> = Result<T, [<$name UseCaseError>]<R, S>>;
         }
     };

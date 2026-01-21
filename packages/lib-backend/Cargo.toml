@@ -5,7 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
-application = ["dep:application", "dep:async-trait", "dep:pastey", "dep:tap"]
+application = ["dep:application", "dep:async-trait", "dep:tap"]
 
 bootstrap = ["dep:bootstrap", "dep:async-trait", "dep:tower", "dep:tower-http"]
 
@@ -43,7 +43,7 @@ bootstrap-instrumentation-stdout = [
   "bootstrap/instrumentation-stdout",
 ]
 
-domain = ["dep:domain", "dep:pastey", "dep:uuid"]
+domain = ["dep:domain", "dep:uuid"]
 
 infrastructure = ["dep:infrastructure"]
 
@@ -108,7 +108,6 @@ presentation = { path = "./presentation", package = "lib-presentation", optional
 axum = { workspace = true, optional = true }
 mobc-redis = { workspace = true, optional = true }
 mobc-sqlx = { workspace = true, optional = true }
-pastey = { workspace = true, optional = true }
 tap = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 tower = { workspace = true, optional = true }

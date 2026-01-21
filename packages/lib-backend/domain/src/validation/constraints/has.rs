@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! has {
     ($name: ident, $matcher: expr, $msg: literal) => {
-        pastey::paste! {
+        $crate::pastey::paste! {
             pub struct [<$name:camel>];
 
             impl $crate::validation::constraints::Constraint<String> for [<$name:camel>] {

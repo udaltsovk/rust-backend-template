@@ -1389,7 +1389,6 @@ dependencies = [
  "mobc-redis",
  "mobc-sqlx",
  "model-mapper",
- "pastey",
  "tap",
  "thiserror 2.0.17",
  "tower",
@@ -1403,6 +1402,7 @@ name = "lib-application"
 version = "0.1.0"
 dependencies = [
  "derive-where",
+ "pastey",
  "rstest 0.26.1",
 ]
 
@@ -3312,7 +3312,6 @@ version = "0.1.0"
 dependencies = [
  "derive-where",
  "lib",
- "pastey",
  "template_example-domain",
  "thiserror 2.0.17",
  "tracing",

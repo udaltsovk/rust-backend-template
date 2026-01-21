@@ -9,7 +9,6 @@ lib = { workspace = true, features = ["domain", "application"] }
 domain = { path = "../domain", package = "template_example-domain" }
 
 derive-where.workspace = true
-pastey.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
 
