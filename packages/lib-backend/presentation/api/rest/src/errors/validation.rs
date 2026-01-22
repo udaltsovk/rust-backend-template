@@ -8,7 +8,8 @@ use utoipa::ToSchema;
 
 use crate::errors::{JsonError, JsonErrorStruct};
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct FieldError {
@@ -31,12 +32,14 @@ impl From<ValidationError> for FieldError {
         Self {
             field: path,
             issue,
-            rejected_value,
+            rejected_value: serde_json::to_value(rejected_value)
+                .unwrap_or_default(),
         }
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 pub struct FieldErrors(Vec<FieldError>);
 
 impl FieldErrors {
@@ -97,7 +100,8 @@ impl From<FieldErrors> for Vec<FieldError> {
     }
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationJsonError {

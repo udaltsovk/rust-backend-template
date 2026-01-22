@@ -25,7 +25,7 @@ utoipa = { workspace = true, features = [
 ] }
 
 axum-extra = { version = "0.12", features = ["typed-header"] }
-derive_more = { version = "2.1", features = ["from"] }
+derive_more = { version = "2.1", features = ["from", "into"] }
 
 [lints]
 workspace = true

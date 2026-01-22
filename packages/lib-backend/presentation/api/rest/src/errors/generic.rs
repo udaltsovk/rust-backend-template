@@ -7,7 +7,8 @@ use utoipa::ToSchema;
 
 use crate::errors::{JsonError, JsonErrorStruct};
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct GenericJsonError {

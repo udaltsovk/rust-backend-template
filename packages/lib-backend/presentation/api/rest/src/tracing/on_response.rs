@@ -3,7 +3,8 @@ use tower_http::trace::OnResponse;
 use tracing::Level;
 use tracing_otel_extra::dyn_event;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 pub struct AxumOtelOnResponse {
     level: Level,
 }

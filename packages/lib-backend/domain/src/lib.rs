@@ -67,60 +67,6 @@ where
     }
 }
 
-// TODO: make this a derive macro
-#[macro_export]
-macro_rules! try_from_string {
-    (
-        enum = $enum: ident,
-        field = $field: literal $(,)*
-    ) => {
-        impl $enum {
-            fn parse_error() -> &'static str {
-                static ERROR: std::sync::OnceLock<String> =
-                    std::sync::OnceLock::new();
-                ERROR.get_or_init(|| {
-                    let variants: Vec<_> = Self::VARIANTS
-                        .iter()
-                        .map(|variant| format!("`{variant}`"))
-                        .collect();
-
-                    let (last, rest) = variants
-                        .split_last()
-                        .expect("enum should have at least one variant");
-
-                    let parts: String = rest
-                        .iter()
-                        .cloned()
-                        .intersperse(", ".to_string())
-                        .collect();
-
-                    let last_part = if rest.is_empty() {
-                        last.clone()
-                    } else {
-                        format!(" or {last}")
-                    };
-
-                    format!("must be {parts}{last_part}")
-                })
-            }
-        }
-
-        impl TryFrom<String> for $enum {
-            type Error = $crate::validation::error::ValidationErrors;
-
-            fn try_from(value: String) -> Result<Self, Self::Error> {
-                value.parse().map_err(|_| {
-                    $crate::validation::error::ValidationErrors::with_error(
-                        $field,
-                        Self::parse_error(),
-                        value,
-                    )
-                })
-            }
-        }
-    };
-}
-
 #[cfg(test)]
 mod tests {
     use rstest::rstest;

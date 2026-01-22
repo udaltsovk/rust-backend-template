@@ -6,12 +6,12 @@ use domain::{
 };
 use lib::{
     async_trait,
-    domain::{DomainType as _, Id},
+    domain::{DomainType, Id},
     infrastructure::persistence::postgres::error::PostgresAdapterError,
     instrument_all,
     tap::{Conv as _, Pipe as _},
 };
-use sqlx::{Acquire as _, query_file_as};
+use sqlx::query_file_as;
 
 use crate::{
     entity::user::{StoredUser, target_settings::StoredUserTargetSettings},
@@ -30,25 +30,30 @@ impl UserRepository for PostgresRepositoryImpl<User> {
         password_hash: String,
     ) -> Result<User, Self::AdapterError> {
         let mut connection = self.pool.get().await?;
-        let mut transaction = connection.begin().await?;
+
+        let id = id.value;
+        let name = source.name.into_inner();
+        let surname = source.surname.into_inner();
+        let email = source.email.into_inner();
+        let avatar_url =
+            source.avatar_url.flatten().map(DomainType::into_inner);
+        let target_settings: StoredUserTargetSettings =
+            source.target_settings.into();
 
         let user = query_file_as!(
             StoredUser,
             "sql/user/create.sql",
-            id.value,
-            source.name.cloned_inner(),
-            source.surname.cloned_inner(),
-            source.email.cloned_inner(),
+            id,
+            name,
+            surname,
+            email,
             password_hash,
-            source.avatar_url.map(|v| v.cloned_inner()),
-            source.target_settings.conv::<StoredUserTargetSettings>()
-                as StoredUserTargetSettings,
+            avatar_url,
+            target_settings as _
         )
-        .fetch_one(&mut *transaction)
+        .fetch_one(&mut *connection)
         .await?
         .conv::<User>();
-
-        transaction.commit().await?;
 
         Ok(user)
     }

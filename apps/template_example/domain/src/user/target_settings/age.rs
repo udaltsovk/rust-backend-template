@@ -6,9 +6,8 @@ use std::{
 use lib::{
     DomainType,
     domain::{
-        DomainType as _,
+        DomainType as _, impl_try_from_external_input,
         pastey::paste,
-        try_from_option,
         validation::{
             Constraints,
             constraints::{self, range::Num},
@@ -75,8 +74,8 @@ macro_rules! numeric_constraints {
 numeric_constraints!(i16);
 numeric_constraints!(i64);
 
-try_from_option!(
+impl_try_from_external_input!(
     domain_type = UserTargetSettingsAge,
-    from_ty = i64,
+    input_type = i64,
     constraints = CONSTRAINTS_I64
 );

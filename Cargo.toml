@@ -18,11 +18,13 @@ metrics = "0.24"
 mobc = "0.9"
 mobc-redis = "0.9"
 mobc-sqlx = "2.0"
+model-mapper = "0.6"
 opentelemetry = "0.30"
 pastey = "0.2"
 rstest = "0.26"
 serde = "1.0"
 serde_json = "1.0"
+serde-value = "0.7"
 strum = "0.27"
 tap = "1.0"
 tikv-jemallocator = "0.6"
@@ -51,6 +53,7 @@ strip = true
 opt-level = 3
 panic = "unwind"
 codegen-units = 1
+
 
 [workspace.lints.rust]
 # unknown_lints = "allow"

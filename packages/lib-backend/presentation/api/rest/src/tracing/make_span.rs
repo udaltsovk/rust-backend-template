@@ -17,7 +17,8 @@ use uuid::Uuid;
 
 use crate::errors::RequestMeta;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 pub struct AxumOtelSpanCreator {
     level: Level,
 }

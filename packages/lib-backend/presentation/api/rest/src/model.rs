@@ -31,39 +31,25 @@ where
     }
 }
 
-impl<I, T> Parseable<T> for Option<I>
+pub struct NestedValidator<J, D>
 where
-    I: Parseable<T>,
+    J: Parseable<D>,
 {
-    const FIELD: &str = I::FIELD;
-
-    fn parse(self) -> ValidationResult<T> {
-        self.map(I::parse).transpose()?.ok_or_else(|| {
-            ValidationErrors::with_error(
-                Self::FIELD,
-                "should be not null",
-                None::<()>,
-            )
-        })
-    }
-}
-
-pub struct NestedValidator<J, I>
-where
-    J: Parseable<I>,
-{
-    inner: ValidationResult<I>,
+    inner: ValidationResult<D>,
     _phantom: PhantomData<J>,
 }
 
-impl<J, I> NestedValidator<J, I>
+impl<J, D> NestedValidator<J, D>
 where
-    J: Parseable<I>,
+    J: Parseable<D>,
 {
-    pub fn new(value: J, errors: &mut ValidationErrors) -> Self {
-        let res: ValidationResult<I> = value.parse();
+    pub fn new(input: J, errors: &mut ValidationErrors) -> Self {
+        let mut res: ValidationResult<D> = input.parse();
 
-        if let Err(ref err) = res {
+        if let Err(err) = &mut res {
+            err.inner_mut().iter_mut().for_each(|error| {
+                error.path = format!("{}.{}", J::FIELD, error.path);
+            });
             errors.extend(err.clone());
         }
 
@@ -73,7 +59,7 @@ where
         }
     }
 
-    pub fn validated(self, _confirmation: ValidationConfirmation) -> I {
+    pub fn validated(self, _confirmation: ValidationConfirmation) -> D {
         self.inner.unwrap_or_else(|_| {
             panic!(
                 "`{}` should be Ok because error vec is empty",

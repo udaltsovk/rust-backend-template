@@ -2,12 +2,13 @@ use derive_more::From;
 use domain::session::CreateSession;
 use lib::{
     domain::{into_validators, validation::error::ValidationResult},
-    presentation::api::rest::model::Parseable,
+    presentation::api::rest::{UserInput, model::Parseable},
 };
 use serde::{Deserialize, Serialize};
 use utoipa::{ToResponse, ToSchema};
 
-#[derive(From, Serialize, ToSchema, ToResponse, Debug)]
+#[derive(From, Serialize, ToSchema, ToResponse)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 pub struct JsonUserSession {
     /// Токен доступа для авторизованных запросов. После успешной аутентификации СТАРЫЕ ТОКЕНЫ ПЕРЕСТАЮТ РАБОТАТЬ.
     #[schema(examples(
@@ -16,12 +17,15 @@ pub struct JsonUserSession {
     token: String,
 }
 
-#[derive(Deserialize, ToSchema, Debug)]
+#[derive(Deserialize, ToSchema)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 pub struct CreateJsonSession {
     ///
-    email: String,
+    #[serde(default)]
+    email: UserInput<String>,
     ///
-    password: String,
+    #[serde(default)]
+    password: UserInput<String>,
 }
 
 impl Parseable<CreateSession> for CreateJsonSession {

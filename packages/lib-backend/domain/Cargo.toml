@@ -7,11 +7,12 @@ edition = "2024"
 derive-where.workspace = true
 pastey.workspace = true
 serde.workspace = true
-serde_json.workspace = true
+serde-value.workspace = true
 uuid = { workspace = true, features = ["v7"] }
 
 num-traits = "0.2"
 regex = "1.12"
+result-like = "0.5"
 validator-rs = "0.1"
 
 

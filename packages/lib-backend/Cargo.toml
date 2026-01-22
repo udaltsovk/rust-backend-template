@@ -117,7 +117,7 @@ uuid = { workspace = true, optional = true, features = ["v7"] }
 async-trait = { version = "0.1", optional = true }
 axum-otel-metrics = { version = "0.12", optional = true }
 chrono = { version = "0.4", optional = true }
-model-mapper = { version = "0.6", optional = true }
+model-mapper = { workspace = true, optional = true }
 utoipa-axum = { version = "0.2", optional = true }
 
 [lints]

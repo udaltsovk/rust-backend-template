@@ -1,4 +1,7 @@
-use lib::domain::Id;
+use lib::domain::{
+    Id,
+    validation::{Nullable, Optional},
+};
 
 use crate::{
     email::Email,
@@ -31,6 +34,6 @@ pub struct CreateUser {
     pub surname: UserSurname,
     pub email: Email,
     pub password: Password,
-    pub avatar_url: Option<UserAvatarUrl>,
+    pub avatar_url: Optional<Nullable<UserAvatarUrl>>,
     pub target_settings: UserTargetSettings,
 }

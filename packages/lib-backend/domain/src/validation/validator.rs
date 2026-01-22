@@ -1,6 +1,7 @@
-use std::any::type_name;
+use std::{any::type_name, fmt::Debug};
 
 use crate::validation::{
+    ExternalInput, Nullable, Optional, OptionalNullable,
     ValidationConfirmation,
     error::{ValidationErrors, ValidationResult},
 };
@@ -10,19 +11,36 @@ pub struct Validator<T> {
 }
 
 impl<T> Validator<T> {
-    pub fn new<F>(value: F, errors: &mut ValidationErrors) -> Self
-    where
-        T: TryFrom<F, Error = ValidationErrors>,
-    {
-        let res: ValidationResult<T> = value.try_into();
-
-        if let Err(ref err) = res {
-            errors.extend(err.clone());
+    pub fn from_result(
+        result: ValidationResult<T>,
+        errors: &mut ValidationErrors,
+    ) -> Self {
+        if let Err(errrors) = &result {
+            errors.extend(errrors.clone());
         }
 
         Self {
-            inner: res,
+            inner: result,
         }
+    }
+
+    pub fn map<U, F>(self, f: F) -> Validator<U>
+    where
+        F: FnOnce(T) -> U,
+    {
+        Validator {
+            inner: self.inner.map(f),
+        }
+    }
+
+    pub fn required<F>(
+        input: ExternalInput<F>,
+        errors: &mut ValidationErrors,
+    ) -> Self
+    where
+        T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
+    {
+        Self::from_result(input.try_into(), errors)
     }
 
     pub fn validated(self, _confirmation: ValidationConfirmation) -> T {
@@ -35,39 +53,148 @@ impl<T> Validator<T> {
     }
 }
 
-pub trait IntoValidator<T>
-where
-    Self: Sized,
-    T: TryFrom<Self, Error = ValidationErrors>,
-{
-    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T>;
-}
+impl<T> Validator<Nullable<T>> {
+    pub fn required_nullable<F>(
+        input: ExternalInput<F>,
+        errors: &mut ValidationErrors,
+    ) -> Self
+    where
+        T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
+        F: Debug,
+    {
+        match input {
+            ExternalInput::None => Self {
+                inner: Ok(Nullable::Null),
+            },
+            input => {
+                let Validator {
+                    inner: res,
+                } = Validator::required(input, errors);
 
-impl<F, T> IntoValidator<T> for F
-where
-    T: TryFrom<F, Error = ValidationErrors>,
-{
-    #[inline]
-    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<T> {
-        Validator::new(self, errors)
+                Self {
+                    inner: res.map(Nullable::NonNull),
+                }
+            },
+        }
     }
 }
 
-#[macro_export]
-macro_rules! into_validators {
-    ($($field: expr),*) => {
-        {
-            #[allow(unused_imports)]
-            use $crate::validation::{IntoValidator as _, error::ValidationErrors};
+impl<T> Validator<Optional<T>> {
+    pub fn optional<F>(
+        input: ExternalInput<F>,
+        errors: &mut ValidationErrors,
+    ) -> Self
+    where
+        T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
+        F: Debug,
+    {
+        match input {
+            ExternalInput::Missing => Self {
+                inner: Ok(Optional::Missing),
+            },
+            input => {
+                let Validator {
+                    inner: res,
+                } = Validator::required(input, errors);
 
-            #[allow(unused_mut)]
-            let mut errors = ValidationErrors::new();
-
-            let validators = ($(
-              $field.into_validator(&mut errors)
-            ),*);
-
-            (errors, validators)
+                Self {
+                    inner: res.map(Optional::Present),
+                }
+            },
         }
-    };
+    }
+}
+
+impl<T> Validator<OptionalNullable<T>> {
+    pub fn optional_nullable<F>(
+        input: ExternalInput<F>,
+        errors: &mut ValidationErrors,
+    ) -> Self
+    where
+        T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
+        F: Debug,
+    {
+        match input {
+            ExternalInput::Missing => Self {
+                inner: Ok(OptionalNullable::Missing),
+            },
+            ExternalInput::None => Self {
+                inner: Ok(OptionalNullable::Null),
+            },
+            input => {
+                let Validator {
+                    inner: res,
+                } = Validator::required(input, errors);
+
+                Self {
+                    inner: res.map(OptionalNullable::Just),
+                }
+            },
+        }
+    }
+}
+
+pub trait IntoValidator<T, D, R>
+where
+    Self: Sized,
+    D: TryFrom<ExternalInput<T>, Error = ValidationErrors>,
+    ExternalInput<T>: From<Self>,
+{
+    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<R>;
+}
+
+impl<F, T, D> IntoValidator<T, D, D> for F
+where
+    D: TryFrom<ExternalInput<T>, Error = ValidationErrors>,
+    ExternalInput<T>: From<F>,
+{
+    #[inline]
+    fn into_validator(self, errors: &mut ValidationErrors) -> Validator<D> {
+        Validator::required(self.into(), errors)
+    }
+}
+
+impl<F, T, D> IntoValidator<T, D, Nullable<D>> for F
+where
+    D: TryFrom<ExternalInput<T>, Error = ValidationErrors>,
+    ExternalInput<T>: From<F>,
+    T: Debug,
+{
+    #[inline]
+    fn into_validator(
+        self,
+        errors: &mut ValidationErrors,
+    ) -> Validator<Nullable<D>> {
+        Validator::required_nullable(self.into(), errors)
+    }
+}
+
+impl<F, T, D> IntoValidator<T, D, Optional<D>> for F
+where
+    D: TryFrom<ExternalInput<T>, Error = ValidationErrors>,
+    ExternalInput<T>: From<F>,
+    T: Debug,
+{
+    #[inline]
+    fn into_validator(
+        self,
+        errors: &mut ValidationErrors,
+    ) -> Validator<Optional<D>> {
+        Validator::optional(self.into(), errors)
+    }
+}
+
+impl<F, T, D> IntoValidator<T, D, OptionalNullable<D>> for F
+where
+    D: TryFrom<ExternalInput<T>, Error = ValidationErrors>,
+    ExternalInput<T>: From<F>,
+    T: Debug,
+{
+    #[inline]
+    fn into_validator(
+        self,
+        errors: &mut ValidationErrors,
+    ) -> Validator<OptionalNullable<D>> {
+        Validator::optional_nullable(self.into(), errors)
+    }
 }

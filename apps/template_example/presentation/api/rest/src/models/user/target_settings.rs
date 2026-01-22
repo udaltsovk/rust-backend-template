@@ -2,13 +2,14 @@ use domain::user::target_settings::UserTargetSettings;
 use lib::{
     domain::{into_validators, validation::error::ValidationResult},
     model_mapper::Mapper,
-    presentation::api::rest::model::Parseable,
+    presentation::api::rest::{UserInput, model::Parseable},
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 /// Таргет настройки пользователя
-#[derive(Mapper, Deserialize, Serialize, ToSchema, Debug)]
+#[derive(Mapper, Deserialize, Serialize, ToSchema)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 #[mapper(ty = UserTargetSettings, from)]
 pub struct JsonUserTargetSettings {
     /// Возраст пользователя
@@ -21,13 +22,15 @@ pub struct JsonUserTargetSettings {
             13
         )
     )]
-    #[mapper(with = Some(age.into()))]
-    pub age: Option<i64>,
+    #[mapper(with = UserInput::from_domain)]
+    #[serde(default)]
+    pub age: UserInput<i64>,
 
     /// Страна пользователя в формате ISO 3166-1 alpha-2, регистр может быть разным. Страна с данным кодом должна обязательно существовать.
     #[schema(required, format = "iso-3166-alpha-2", examples("ru"))]
-    #[mapper(with = Some(country.into()))]
-    pub country: Option<String>,
+    #[mapper(with = UserInput::from_domain)]
+    #[serde(default)]
+    pub country: UserInput<String>,
 }
 
 impl Parseable<UserTargetSettings> for JsonUserTargetSettings {

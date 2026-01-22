@@ -3,7 +3,7 @@ use std::sync::LazyLock;
 use lib::{
     DomainType,
     domain::{
-        try_from_option,
+        impl_try_from_external_input,
         validation::{
             Constraints,
             constraints::Constraint,
@@ -30,9 +30,9 @@ impl TryFrom<String> for UserTargetSettingsCountry {
     }
 }
 
-try_from_option!(
+impl_try_from_external_input!(
     domain_type = UserTargetSettingsCountry,
-    from_ty = String,
+    input_type = String,
     constraints = CONSTRAINTS
 );
 

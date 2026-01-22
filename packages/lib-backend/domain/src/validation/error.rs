@@ -1,11 +1,12 @@
-use std::{error::Error, fmt};
+use std::{convert::Infallible, error::Error, fmt};
 
 use serde::Serialize;
-use serde_json::Value;
+use serde_value::Value;
 
 use crate::validation::ValidationConfirmation;
 
 #[derive(Clone, Debug)]
+#[must_use]
 pub struct ValidationError {
     pub path: String,
     pub issue: String,
@@ -13,7 +14,6 @@ pub struct ValidationError {
 }
 
 impl ValidationError {
-    #[must_use]
     pub fn prepend_path<P>(mut self, path: P) -> Self
     where
         P: fmt::Display,
@@ -27,19 +27,19 @@ impl fmt::Display for ValidationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Path: {}, Issue: {}, Rejected value: {}",
+            "Path: {}, Issue: {}, Rejected value: {:?}",
             self.path, self.issue, self.rejected_value
         )
     }
 }
 
 #[derive(Clone, Debug)]
+#[must_use]
 pub struct ValidationErrors(Vec<ValidationError>);
 
 pub type ValidationResult<T> = Result<T, ValidationErrors>;
 
 impl ValidationErrors {
-    #[must_use]
     pub const fn new() -> Self {
         Self(vec![])
     }
@@ -47,6 +47,14 @@ impl ValidationErrors {
     #[must_use]
     pub fn into_inner(self) -> Vec<ValidationError> {
         self.0
+    }
+
+    pub const fn inner_mut(&mut self) -> &mut Vec<ValidationError> {
+        &mut self.0
+    }
+
+    pub fn inner(&self) -> &[ValidationError] {
+        &self.0
     }
 
     pub fn extend(&mut self, mut other: Self) {
@@ -77,8 +85,8 @@ impl ValidationErrors {
         let error = ValidationError {
             path: path.to_string(),
             issue: issue.to_string(),
-            rejected_value: serde_json::to_value(rejected_value)
-                .unwrap_or_default(),
+            rejected_value: serde_value::to_value(rejected_value)
+                .unwrap_or(Value::Option(None)),
         };
         self.0.push(error);
     }
@@ -132,5 +140,11 @@ impl From<Vec<Self>> for ValidationErrors {
 impl FromIterator<Self> for ValidationErrors {
     fn from_iter<T: IntoIterator<Item = Self>>(iter: T) -> Self {
         iter.into_iter().collect::<Vec<_>>().into()
+    }
+}
+
+impl From<Infallible> for ValidationErrors {
+    fn from(_: Infallible) -> Self {
+        Self::new()
     }
 }

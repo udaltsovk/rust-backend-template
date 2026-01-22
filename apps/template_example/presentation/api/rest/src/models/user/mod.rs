@@ -1,20 +1,20 @@
 use domain::user::{CreateUser, User};
 use lib::{
-    domain::{
-        into_option_validators, into_validators,
-        validation::error::ValidationResult,
-    },
+    domain::{into_validators, validation::error::ValidationResult},
     model_mapper::Mapper,
-    presentation::api::rest::{into_nested_validators, model::Parseable},
+    presentation::api::rest::{
+        UserInput, into_nested_validators, model::Parseable,
+    },
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 use crate::models::user::target_settings::JsonUserTargetSettings;
 
-mod target_settings;
+pub mod target_settings;
 
-#[derive(Mapper, Serialize, ToSchema, Debug)]
+#[derive(Mapper, Serialize, ToSchema)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 #[mapper(ty = User, from, ignore_extra)]
 pub struct JsonUser {
     ///
@@ -32,15 +32,17 @@ pub struct JsonUser {
     other: JsonUserTargetSettings,
 }
 
-#[derive(Deserialize, ToSchema, Debug)]
+#[derive(Deserialize, ToSchema)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 pub struct CreateJsonUser {
-    ///
     #[schema(required, min_length = 1, max_length = 100, examples("Мария"))]
-    name: Option<String>,
+    #[serde(default)]
+    name: UserInput<String>,
 
     ///
     #[schema(required, min_length = 1, max_length = 120, examples("Федотова"))]
-    surname: Option<String>,
+    #[serde(default)]
+    surname: UserInput<String>,
 
     ///
     #[schema(
@@ -52,7 +54,8 @@ pub struct CreateJsonUser {
             "cu_fan@edu.hse.ru"
         )
     )]
-    email: Option<String>,
+    #[serde(default)]
+    email: UserInput<String>,
 
     ///
     #[schema(
@@ -65,7 +68,8 @@ pub struct CreateJsonUser {
             "HardPa$$w0rd!iamthewinner"
         )
     )]
-    password: Option<String>,
+    #[serde(default)]
+    password: UserInput<String>,
 
     /// Ссылка на фото пользователя
     #[schema(
@@ -75,28 +79,25 @@ pub struct CreateJsonUser {
             "https://cdn2.thecatapi.com/images/3lo.jpg"
         )
     )]
-    avatar_url: Option<String>,
+    #[serde(default)]
+    avatar_url: UserInput<String>,
 
     ///
     #[schema(required)]
-    other: Option<JsonUserTargetSettings>,
+    other: JsonUserTargetSettings,
 }
 
 impl Parseable<CreateUser> for CreateJsonUser {
     const FIELD: &str = "user";
 
     fn parse(self) -> ValidationResult<CreateUser> {
-        let (mut errors, (name, surname, email, password)) = into_validators!(
+        let (mut errors, (name, surname, email, password, avatar_url)) = into_validators!(
             self.name,
             self.surname,
             self.email,
-            self.password
+            self.password,
+            self.avatar_url
         );
-
-        let (option_errors, avatar_url) =
-            into_option_validators!(self.avatar_url);
-
-        errors.extend(option_errors);
 
         let (nested_errors, target_settings) =
             into_nested_validators!(self.other);

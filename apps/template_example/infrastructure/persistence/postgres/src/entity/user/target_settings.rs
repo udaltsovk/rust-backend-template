@@ -6,7 +6,8 @@ use lib::{
 };
 use sqlx::{FromRow, Type};
 
-#[derive(Mapper, FromRow, Type, Debug)]
+#[derive(Mapper, FromRow, Type)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 #[mapper(ty = UserTargetSettings, from, into)]
 #[sqlx(type_name = "user_target_settings")]
 pub struct StoredUserTargetSettings {

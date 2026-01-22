@@ -54,10 +54,17 @@ impl<T> Default for ConstraintVec<T> {
     }
 }
 
+type TypeMismatchFn = fn(&'static str) -> String;
+
+static DEFAULT_TYPE_MISMATCH_FN: TypeMismatchFn =
+    |expected| format!("must be {expected}");
+
 pub struct ConstraintsBuilder<T> {
     name: &'static str,
     constraints: ConstraintVec<T>,
+    type_mismatch_fn: Option<TypeMismatchFn>,
     none_msg: Option<&'static str>,
+    missing_msg: Option<&'static str>,
 }
 
 impl<T> ConstraintsBuilder<T> {
@@ -74,13 +81,30 @@ impl<T> ConstraintsBuilder<T> {
         Self {
             name,
             constraints,
+            type_mismatch_fn: None,
             none_msg: None,
+            missing_msg: None,
         }
+    }
+
+    #[must_use]
+    pub fn with_type_mismatch_fn(
+        mut self,
+        msg_fn: fn(&'static str) -> String,
+    ) -> Self {
+        self.type_mismatch_fn = Some(msg_fn);
+        self
     }
 
     #[must_use]
     pub const fn with_none_msg(mut self, message: &'static str) -> Self {
         self.none_msg = Some(message);
+        self
+    }
+
+    #[must_use]
+    pub const fn with_missing_msg(mut self, message: &'static str) -> Self {
+        self.missing_msg = Some(message);
         self
     }
 
@@ -98,7 +122,11 @@ impl<T> ConstraintsBuilder<T> {
         Constraints {
             name: self.name,
             inner: self.constraints,
-            none_msg: self.none_msg.unwrap_or("must be not null"),
+            type_mismatch_fn: self
+                .type_mismatch_fn
+                .unwrap_or(DEFAULT_TYPE_MISMATCH_FN),
+            none_msg: self.none_msg.unwrap_or("must not be null"),
+            missing_msg: self.missing_msg.unwrap_or("must be present"),
         }
     }
 }
@@ -106,7 +134,9 @@ impl<T> ConstraintsBuilder<T> {
 pub struct Constraints<T> {
     name: &'static str,
     inner: ConstraintVec<T>,
+    type_mismatch_fn: TypeMismatchFn,
     none_msg: &'static str,
+    missing_msg: &'static str,
 }
 
 impl<T> Constraints<T>
@@ -136,7 +166,9 @@ where
         Self {
             name,
             inner: source.inner.clone(),
+            type_mismatch_fn: source.type_mismatch_fn,
             none_msg: source.none_msg,
+            missing_msg: source.missing_msg,
         }
     }
 
@@ -151,9 +183,5 @@ where
         }
 
         errors
-    }
-
-    pub fn none_error(&self) -> ValidationErrors {
-        ValidationErrors::with_error(self.name, self.none_msg, None::<T>)
     }
 }

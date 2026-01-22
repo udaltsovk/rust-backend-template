@@ -2,9 +2,12 @@ use std::sync::LazyLock;
 
 use lib::{
     DomainType,
-    domain::validation::{
-        Constraints,
-        error::{ValidationErrors, ValidationResult},
+    domain::{
+        impl_try_from_external_input,
+        validation::{
+            Constraints,
+            error::{ValidationErrors, ValidationResult},
+        },
     },
 };
 
@@ -25,3 +28,9 @@ impl TryFrom<String> for UserAvatarUrl {
         CONSTRAINTS.check(&value).into_result(|_| Self(value))
     }
 }
+
+impl_try_from_external_input!(
+    domain_type = UserAvatarUrl,
+    input_type = String,
+    constraints = CONSTRAINTS
+);
