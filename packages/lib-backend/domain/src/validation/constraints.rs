@@ -1,7 +1,4 @@
-use std::{
-    fmt::{Debug, Display},
-    sync::Arc,
-};
+use std::{fmt::Debug, sync::Arc};
 
 use derive_where::derive_where;
 pub use regex;
@@ -141,7 +138,7 @@ pub struct Constraints<T> {
 
 impl<T> Constraints<T>
 where
-    T: Serialize + Debug + Display + Clone + Send + Sync + 'static,
+    T: Serialize + Debug + Clone + Send + Sync + 'static,
 {
     #[must_use]
     pub const fn builder(name: &'static str) -> ConstraintsBuilder<T> {
