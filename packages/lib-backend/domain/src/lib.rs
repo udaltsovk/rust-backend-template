@@ -3,6 +3,7 @@ use std::{fmt, marker::PhantomData};
 use derive_where::derive_where;
 #[doc(hidden)]
 pub use pastey;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 pub mod validation;
@@ -43,6 +44,24 @@ impl<T> From<Id<T>> for Uuid {
 impl<T> fmt::Display for Id<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.value.fmt(f)
+    }
+}
+
+impl<'de, T> Deserialize<'de> for Id<T> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        Uuid::deserialize(deserializer).map(Self::from)
+    }
+}
+
+impl<T> Serialize for Id<T> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.value.serialize(serializer)
     }
 }
 
