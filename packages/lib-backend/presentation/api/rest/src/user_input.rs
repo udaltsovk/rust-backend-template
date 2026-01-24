@@ -15,7 +15,7 @@ use utoipa::{
 // TODO: Fix openapi
 // Maybe we should consider using aide...
 
-#[derive(Mapper, Default)]
+#[derive(Mapper, Default, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[mapper(ty = ExternalInput, into)]
 pub enum UserInput<T> {

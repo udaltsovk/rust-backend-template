@@ -18,7 +18,7 @@ use crate::input_impls;
 #[derive(Clone, Copy)]
 pub struct ValidationConfirmation(());
 
-#[derive(Default)]
+#[derive(Default, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[must_use]
 pub enum ExternalInput<T> {
