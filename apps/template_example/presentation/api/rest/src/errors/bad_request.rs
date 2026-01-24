@@ -13,7 +13,7 @@ macro_rules! from_axum_rejections {
         $(
             impl From<$rejection> for BadRequestResponse {
                 fn from(rejection: $rejection) -> Self {
-                    Self::with_context(
+                    Self::with_details(
                         concat!("Invalid ", $name),
                         serde_json::json!({"error": rejection.to_string()})
                     )

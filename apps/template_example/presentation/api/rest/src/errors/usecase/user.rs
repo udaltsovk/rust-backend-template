@@ -13,7 +13,7 @@ where
     S: ServicesModuleExt,
 {
     fn from(error: UserUseCaseError<R, S>) -> Self {
-        let (status_code, error_code, error, context) = {
+        let (status_code, error_code, error, details) = {
             use StatusCode as C;
             use UserUseCaseError as E;
             match error {
@@ -61,7 +61,7 @@ where
             status_code,
             error_code,
             message: error,
-            context,
+            details,
         }
     }
 }

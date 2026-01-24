@@ -42,7 +42,7 @@ impl From<AuthError> for ApiError {
             status_code,
             error_code,
             message: error,
-            context: Value::Null,
+            details: Value::Null,
         }
     }
 }

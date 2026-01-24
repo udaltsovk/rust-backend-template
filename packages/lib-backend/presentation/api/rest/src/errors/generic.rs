@@ -16,24 +16,24 @@ pub struct GenericJsonError {
     pub error: JsonErrorStruct,
 
     #[serde(skip_serializing_if = "Value::is_null")]
-    pub context: Value,
+    pub details: Value,
 }
 
 impl JsonError {
-    pub fn with_context<S, M, C>(
+    pub fn with_details<S, M, D>(
         status_code: S,
         error_code: &'static str,
         message: M,
-        context: C,
+        details: D,
     ) -> Result<Self, serde_json::Error>
     where
         S: Into<StatusCode>,
         M: ToString,
-        C: Serialize,
+        D: Serialize,
     {
         Self::Generic(GenericJsonError {
             error: JsonErrorStruct::new(status_code, error_code, message),
-            context: serde_json::to_value(context)?,
+            details: serde_json::to_value(details)?,
         })
         .pipe(Ok)
     }
@@ -49,7 +49,7 @@ impl JsonError {
     {
         Self::Generic(GenericJsonError {
             error: JsonErrorStruct::new(status_code, error_code, message),
-            context: Value::Null,
+            details: Value::Null,
         })
     }
 }
@@ -96,14 +96,14 @@ macro_rules! generic_error_response {
             }
 
             #[must_use]
-            pub fn with_context<M, C>(message: M, context: C) -> Result<Self, $crate::serde_json::Error>
+            pub fn with_details<M, D>(message: M, details: D) -> Result<Self, $crate::serde_json::Error>
             where
                 M: ToString,
-                C: serde::Serialize,
+                D: serde::Serialize,
             {
                 Ok(Self($crate::errors::generic::GenericJsonError {
                     error: $crate::errors::JsonErrorStruct::new(Self::STATUS_CODE, Self::ERROR_CODE, message),
-                    context: $crate::serde_json::to_value(context)?
+                    details: $crate::serde_json::to_value(details)?
                 }))
             }
 
@@ -114,20 +114,20 @@ macro_rules! generic_error_response {
             {
                 Self($crate::errors::generic::GenericJsonError {
                     error: $crate::errors::JsonErrorStruct::new(Self::STATUS_CODE, Self::ERROR_CODE, message),
-                    context: $crate::serde_json::Value::Null
+                    details: $crate::serde_json::Value::Null
                 })
             }
         }
 
         impl From<$name> for $crate::errors::JsonError {
             fn from(error: $name) -> Self {
-                Self::with_context(
+                Self::with_details(
                     $name::STATUS_CODE,
                     $name::ERROR_CODE,
                     error.0.error.message,
-                    error.0.context
+                    error.0.details
                 )
-                .expect("context is already a value so it should be ok")
+                .expect("details is already a value so it should be ok")
             }
         }
     };
