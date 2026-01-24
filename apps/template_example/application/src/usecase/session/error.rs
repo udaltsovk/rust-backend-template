@@ -1,5 +1,5 @@
 use domain::session::Session;
-use lib::{application::usecase_result, domain::Id};
+use lib::{application::application_result, domain::Id};
 
 use crate::{repository::RepositoriesModuleExt, service::ServicesModuleExt};
 
@@ -19,4 +19,4 @@ where
     NotFound(Id<Session>),
 }
 
-usecase_result!(Session);
+application_result!(SessionUseCase<R, S>);

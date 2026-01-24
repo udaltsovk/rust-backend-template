@@ -1,5 +1,3 @@
-mod error;
-
 #[macro_export]
 macro_rules! usecase_struct {
     ($repos_ext: ident, $services_ext: ident) => {

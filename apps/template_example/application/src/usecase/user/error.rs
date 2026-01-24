@@ -1,5 +1,5 @@
 use domain::{email::Email, user::User};
-use lib::{application::usecase_result, domain::Id};
+use lib::{application::application_result, domain::Id};
 
 use crate::{repository::RepositoriesModuleExt, service::ServicesModuleExt};
 
@@ -28,4 +28,4 @@ where
     InvalidPassword,
 }
 
-usecase_result!(User);
+application_result!(UserUseCase<R, S>);
