@@ -8,7 +8,7 @@ derive-where.workspace = true
 pastey.workspace = true
 serde.workspace = true
 serde-value.workspace = true
-uuid = { workspace = true, features = ["v7"] }
+uuid = { workspace = true, features = ["v7", "serde"] }
 
 num-traits = "0.2"
 regex = "1.12"
