@@ -4,6 +4,7 @@ use std::{
 };
 
 use derive_where::derive_where;
+pub use regex;
 use serde::Serialize;
 
 use crate::validation::error::ValidationErrors;
@@ -15,13 +16,12 @@ mod email;
 pub mod has;
 pub mod length;
 pub mod range;
-mod regex;
-
+mod regex_constraint;
 pub use alphanumeric::IsAlphanumeric;
 pub use ascii::IsAscii;
 pub use ascii_alphanumeric::IsAsciiAlphanumeric;
 pub use email::IsValidEmail;
-pub use regex::Matches;
+pub use regex_constraint::Matches;
 
 pub trait Constraint<T> {
     fn check(&self, value: &T) -> bool;
