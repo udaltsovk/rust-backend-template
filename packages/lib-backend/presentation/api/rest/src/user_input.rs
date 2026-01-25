@@ -99,7 +99,7 @@ impl<T> ToSchema for UserInput<T> where T: ToSchema + ComposeSchema {}
 
 #[derive(Serialize, Clone, Default)]
 #[cfg_attr(debug_assertions, derive(Debug))]
-pub struct LossyUserInput<T>(UserInput<T>);
+pub struct LossyUserInput<T>(pub UserInput<T>);
 
 impl<T> LossyUserInput<T> {
     pub fn from_domain<D, I>(domain_value: D) -> Self
@@ -112,7 +112,7 @@ impl<T> LossyUserInput<T> {
     }
 }
 
-impl<T> From<LossyUserInput<T>> for ExternalInput<T>
+impl<T, D> From<LossyUserInput<T>> for ExternalInput<D>
 where
     Self: From<UserInput<T>>,
 {
