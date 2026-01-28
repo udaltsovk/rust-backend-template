@@ -1,13 +1,12 @@
-use std::fmt::Debug;
+use anyhow::Result;
+pub use domain::password::{Password, PasswordHash};
 
 pub trait HasherService {
-    type AdapterError: Debug + Send + Sync;
-
-    fn hash(&self, data: &[u8]) -> Result<String, Self::AdapterError>;
+    fn hash(&self, data: &Password) -> Result<PasswordHash>;
 
     fn verify(
         &self,
-        data: &[u8],
-        original_hash: &str,
-    ) -> Result<(), Self::AdapterError>;
+        data: &Password,
+        original_hash: &PasswordHash,
+    ) -> Result<()>;
 }

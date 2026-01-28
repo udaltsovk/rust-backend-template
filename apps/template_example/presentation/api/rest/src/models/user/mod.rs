@@ -6,6 +6,7 @@ use lib::{
         UserInput, into_nested_validators, model::Parseable,
     },
 };
+use redact::Secret;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -19,14 +20,18 @@ pub mod target_settings;
 pub struct JsonUser {
     ///
     name: String,
+
     ///
     surname: String,
+
     ///
     email: String,
+
     ///
     #[serde(skip_serializing_if = "Option::is_none")]
     #[mapper(opt)]
     avatar_url: Option<String>,
+
     ///
     #[mapper(rename = target_settings)]
     other: JsonUserTargetSettings,
@@ -35,12 +40,24 @@ pub struct JsonUser {
 #[derive(Deserialize, ToSchema)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 pub struct CreateJsonUser {
-    #[schema(required, min_length = 1, max_length = 100, examples("Мария"))]
+    #[schema(
+        required,
+        min_length = 1,
+        max_length = 100,
+        examples("Мария"),
+        value_type = String,
+    )]
     #[serde(default)]
     name: UserInput<String>,
 
     ///
-    #[schema(required, min_length = 1, max_length = 120, examples("Федотова"))]
+    #[schema(
+        required,
+        min_length = 1,
+        max_length = 120,
+        examples("Федотова"),
+        value_type = String,
+    )]
     #[serde(default)]
     surname: UserInput<String>,
 
@@ -52,7 +69,8 @@ pub struct CreateJsonUser {
         max_length = 120,
         examples(
             "cu_fan@edu.hse.ru"
-        )
+        ),
+        value_type = String,
     )]
     #[serde(default)]
     email: UserInput<String>,
@@ -66,10 +84,11 @@ pub struct CreateJsonUser {
         pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
         examples(
             "HardPa$$w0rd!iamthewinner"
-        )
+        ),
+        value_type = String,
     )]
     #[serde(default)]
-    password: UserInput<String>,
+    password: UserInput<Secret<String>>,
 
     /// Ссылка на фото пользователя
     #[schema(
@@ -77,7 +96,8 @@ pub struct CreateJsonUser {
         max_length = 350,
         examples(
             "https://cdn2.thecatapi.com/images/3lo.jpg"
-        )
+        ),
+        value_type = String,
     )]
     #[serde(default)]
     avatar_url: UserInput<String>,

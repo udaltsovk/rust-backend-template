@@ -1,25 +1,16 @@
-use application::{
-    repository::RepositoriesModuleExt, service::ServicesModuleExt,
-    usecase::session::error::SessionUseCaseError,
-};
+use application::usecase::session::error::SessionUseCaseError;
 use axum::http::StatusCode;
 use serde_json::json;
 
 use crate::ApiError;
 
-impl<R, S> From<SessionUseCaseError<R, S>> for ApiError
-where
-    R: RepositoriesModuleExt,
-    S: ServicesModuleExt,
-{
-    fn from(error: SessionUseCaseError<R, S>) -> Self {
+impl From<SessionUseCaseError> for ApiError {
+    fn from(error: SessionUseCaseError) -> Self {
         let (status_code, error_code, error, details) = {
             use SessionUseCaseError as E;
             use StatusCode as C;
             match error {
-                E::Repository(_) | E::Service(_) => {
-                    Self::internal_server_error(error)
-                },
+                E::Infrastructure(_) => Self::internal_server_error(error),
                 E::NotFound(id) => (
                     C::UNAUTHORIZED,
                     "invalid_session",

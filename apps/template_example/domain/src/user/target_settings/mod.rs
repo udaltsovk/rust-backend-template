@@ -5,7 +5,7 @@ use crate::user::target_settings::{
 pub mod age;
 pub mod country;
 
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Debug)]
 pub struct UserTargetSettings {
     pub age: UserTargetSettingsAge,
     pub country: UserTargetSettingsCountry,

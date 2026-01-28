@@ -8,7 +8,9 @@ edition.workspace = true
 lib = { workspace = true, features = ["domain", "application"] }
 domain = { path = "../domain", package = "template_example-domain" }
 
+anyhow.workspace = true
 derive-where.workspace = true
+redact.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
 

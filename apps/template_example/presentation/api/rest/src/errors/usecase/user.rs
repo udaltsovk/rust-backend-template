@@ -1,25 +1,16 @@
-use application::{
-    repository::RepositoriesModuleExt, service::ServicesModuleExt,
-    usecase::user::error::UserUseCaseError,
-};
+use application::usecase::user::error::UserUseCaseError;
 use axum::http::StatusCode;
 use serde_json::json;
 
 use crate::ApiError;
 
-impl<R, S> From<UserUseCaseError<R, S>> for ApiError
-where
-    R: RepositoriesModuleExt,
-    S: ServicesModuleExt,
-{
-    fn from(error: UserUseCaseError<R, S>) -> Self {
+impl From<UserUseCaseError> for ApiError {
+    fn from(error: UserUseCaseError) -> Self {
         let (status_code, error_code, error, details) = {
             use StatusCode as C;
             use UserUseCaseError as E;
             match error {
-                E::Repository(_) | E::Service(_) => {
-                    Self::internal_server_error(error)
-                },
+                E::Infrastructure(_) => Self::internal_server_error(error),
 
                 E::EmailAlreadyUsed(ref email) => (
                     C::CONFLICT,

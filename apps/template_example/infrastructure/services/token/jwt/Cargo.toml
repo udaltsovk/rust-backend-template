@@ -9,6 +9,8 @@ lib = { workspace = true, features = ["infrastructure-services"] }
 domain = { path = "../../../../domain", package = "template_example-domain" }
 application = { path = "../../../../application", package = "template_example-application" }
 
+anyhow.workspace = true
+redact.workspace = true
 serde = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 tracing.workspace = true

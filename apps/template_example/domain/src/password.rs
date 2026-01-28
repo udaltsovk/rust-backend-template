@@ -9,38 +9,40 @@ use lib::{
             error::{ValidationErrors, ValidationResult},
         },
     },
+    tap::Pipe as _,
 };
+use redact::Secret;
 
 use crate::constraints::PASSWORD_CONSTRAINTS;
 
-#[derive(DomainType)]
-#[cfg_attr(debug_assertions, derive(Debug))]
-pub struct Password(String);
+#[derive(DomainType, Debug)]
+pub struct Password(Secret<String>);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
     Constraints::builder_with("password", &PASSWORD_CONSTRAINTS).build()
 });
 
-impl TryFrom<String> for Password {
+impl TryFrom<Secret<String>> for Password {
     type Error = ValidationErrors;
 
-    fn try_from(value: String) -> ValidationResult<Self> {
-        CONSTRAINTS.check(&value).into_result(|_| Self(value))
+    fn try_from(value: Secret<String>) -> ValidationResult<Self> {
+        CONSTRAINTS
+            .check(value.expose_secret())
+            .into_result(|_| Self(value))
     }
 }
 
 impl_try_from_external_input!(
     domain_type = Password,
-    input_type = String,
+    input_type = Secret<String>,
     constraints = CONSTRAINTS
 );
 
-impl Password {
-    #[must_use]
-    pub const fn as_bytes(&self) -> &[u8] {
-        self.0.as_bytes()
+#[derive(Debug)]
+pub struct PasswordHash(pub Secret<String>);
+
+impl From<String> for PasswordHash {
+    fn from(value: String) -> Self {
+        value.pipe(Secret::new).pipe(Self)
     }
 }
-
-#[cfg_attr(debug_assertions, derive(Debug))]
-pub struct PasswordHash(pub String);

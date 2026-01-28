@@ -12,8 +12,7 @@ use lib::{
     },
 };
 
-#[derive(DomainType)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(DomainType, Debug)]
 pub struct UserTargetSettingsCountry(String);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {

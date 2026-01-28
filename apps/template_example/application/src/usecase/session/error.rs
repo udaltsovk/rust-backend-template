@@ -1,22 +1,13 @@
 use domain::session::Session;
 use lib::{application::application_result, domain::Id};
 
-use crate::{repository::RepositoriesModuleExt, service::ServicesModuleExt};
-
 #[derive(thiserror::Error, Debug)]
-pub enum SessionUseCaseError<R, S>
-where
-    R: RepositoriesModuleExt,
-    S: ServicesModuleExt,
-{
-    #[error("Repository error: {0}")]
-    Repository(R::Error),
-
+pub enum SessionUseCaseError {
     #[error(transparent)]
-    Service(S::Error),
+    Infrastructure(#[from] anyhow::Error),
 
     #[error("session with the specified id does not exist")]
     NotFound(Id<Session>),
 }
 
-application_result!(SessionUseCase<R, S>);
+application_result!(SessionUseCase);

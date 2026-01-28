@@ -78,7 +78,7 @@ pub fn instrument_all2(
             };
 
             let a: Attribute = parse_quote! {
-                #[tracing::instrument(name = #name, level = #level, skip_all)]
+                #[tracing::instrument(name = #name, level = #level, skip(self))]
             };
             item_fn.attrs.push(a);
         });

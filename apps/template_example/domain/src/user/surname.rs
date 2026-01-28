@@ -13,8 +13,7 @@ use lib::{
 
 use crate::user::constraints::NAME_SURNAME_CONSTRAINTS;
 
-#[derive(DomainType)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(DomainType, Debug)]
 pub struct UserSurname(String);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {

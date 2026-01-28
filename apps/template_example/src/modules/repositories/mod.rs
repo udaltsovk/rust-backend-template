@@ -1,14 +1,13 @@
-use application::repository::RepositoriesModuleExt;
+use application::repository::{
+    RepositoriesModuleExt, session::SessionRepository, user::UserRepository,
+};
 use domain::{session::Session, user::User};
 use infrastructure::persistence::{
     postgres::{POSTGRES_MIGRATOR, repository::PostgresRepositoryImpl},
     redis::repository::RedisRepositoryImpl,
 };
 use lib::{
-    infrastructure::persistence::{
-        mobc_sqlx::MigratorExt as _, postgres::error::PostgresAdapterError,
-        redis::error::RedisAdapterError,
-    },
+    infrastructure::persistence::mobc_sqlx::MigratorExt as _,
     mobc_redis::{RedisConnectionManager, redis},
     mobc_sqlx::{
         SqlxConnectionManager,
@@ -64,24 +63,12 @@ impl RepositoriesModule {
     }
 }
 
-#[derive(thiserror::Error, Debug)]
-pub enum RepositoryError {
-    #[error(transparent)]
-    Postgres(#[from] PostgresAdapterError),
-    #[error(transparent)]
-    Redis(#[from] RedisAdapterError),
-}
-
 impl RepositoriesModuleExt for RepositoriesModule {
-    type Error = RepositoryError;
-    type SessionRepo = RedisRepositoryImpl<Session>;
-    type UserRepo = PostgresRepositoryImpl<User>;
-
-    fn user_repository(&self) -> &Self::UserRepo {
+    fn user_repository(&self) -> &dyn UserRepository {
         &self.user_repository
     }
 
-    fn session_repository(&self) -> &Self::SessionRepo {
+    fn session_repository(&self) -> &dyn SessionRepository {
         &self.session_repository
     }
 }

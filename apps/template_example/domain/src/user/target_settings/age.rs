@@ -17,8 +17,7 @@ use lib::{
 };
 use serde::Serialize;
 
-#[derive(DomainType)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(DomainType, Debug)]
 pub struct UserTargetSettingsAge(u8);
 
 impl UserTargetSettingsAge {

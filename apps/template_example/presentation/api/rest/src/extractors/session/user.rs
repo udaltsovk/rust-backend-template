@@ -11,6 +11,7 @@ use domain::{
     user::User,
 };
 use lib::{domain::Id, tap::Pipe as _};
+use redact::Secret;
 
 use crate::{ApiError, ModulesExt, errors::AuthError};
 
@@ -36,7 +37,7 @@ where
 
         let session = state
             .session_usecase()
-            .get_from_token(bearer.token())
+            .get_from_token(Secret::new(bearer.token()))
             .await?;
 
         #[expect(

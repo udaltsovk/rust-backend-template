@@ -1,27 +1,21 @@
 use domain::session::{Session, entity::SessionEntity};
 use lib::async_trait;
+use redact::Secret;
 
-use crate::{
-    repository::RepositoriesModuleExt, service::ServicesModuleExt,
-    usecase::session::error::SessionUseCaseResult,
-};
+use crate::usecase::session::error::SessionUseCaseResult;
 
 pub mod error;
 pub mod implementation;
 
 #[async_trait]
-pub trait SessionUseCase<R, S>
-where
-    R: RepositoriesModuleExt,
-    S: ServicesModuleExt,
-{
+pub trait SessionUseCase {
     async fn create(
         &self,
         entity: SessionEntity,
-    ) -> SessionUseCaseResult<R, S, String>;
+    ) -> SessionUseCaseResult<Secret<String>>;
 
     async fn get_from_token(
         &self,
-        token: &str,
-    ) -> SessionUseCaseResult<R, S, Session>;
+        token: Secret<&str>,
+    ) -> SessionUseCaseResult<Session>;
 }

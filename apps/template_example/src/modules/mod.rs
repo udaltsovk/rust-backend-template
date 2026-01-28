@@ -2,7 +2,7 @@ use application::usecase::{
     UseCase, session::SessionUseCase, user::UserUseCase,
 };
 use domain::{session::Session, user::User};
-use presentation::api::rest::{ModulesExt, UseCaseImpl};
+use presentation::api::rest::ModulesExt;
 
 pub use crate::modules::config::ModulesConfig;
 use crate::modules::{
@@ -19,24 +19,16 @@ pub struct Modules {
     repositories_module: RepositoriesModule,
     #[expect(dead_code, reason = "We might need that in the future")]
     services_module: ServicesModule,
-    user_usecase: UseCaseImpl<Self, User>,
-    session_usecase: UseCaseImpl<Self, Session>,
+    user_usecase: UseCase<User>,
+    session_usecase: UseCase<Session>,
 }
 
 impl ModulesExt for Modules {
-    type RepositoriesModule = RepositoriesModule;
-    type ServicesModule = ServicesModule;
-
-    fn user_usecase(
-        &self,
-    ) -> &impl UserUseCase<Self::RepositoriesModule, Self::ServicesModule> {
+    fn user_usecase(&self) -> &impl UserUseCase {
         &self.user_usecase
     }
 
-    fn session_usecase(
-        &self,
-    ) -> &impl SessionUseCase<Self::RepositoriesModule, Self::ServicesModule>
-    {
+    fn session_usecase(&self) -> &impl SessionUseCase {
         &self.session_usecase
     }
 }

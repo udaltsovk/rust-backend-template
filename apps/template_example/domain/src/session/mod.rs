@@ -7,7 +7,7 @@ use crate::{
 
 pub mod entity;
 
-#[derive(PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Session {
     pub id: Id<Self>,
     pub entity: SessionEntity,
@@ -26,6 +26,7 @@ impl Session {
     }
 }
 
+#[derive(Debug)]
 pub struct CreateSession {
     pub email: Email,
     pub password: Password,

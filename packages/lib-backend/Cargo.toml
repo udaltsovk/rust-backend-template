@@ -105,6 +105,7 @@ domain = { path = "./domain", package = "lib-domain", optional = true }
 macros = { path = "./macros", package = "lib-macros", optional = true }
 presentation = { path = "./presentation", package = "lib-presentation", optional = true }
 
+anyhow = { workspace = true, optional = true }
 axum = { workspace = true, optional = true }
 mobc-redis = { workspace = true, optional = true }
 mobc-sqlx = { workspace = true, optional = true }

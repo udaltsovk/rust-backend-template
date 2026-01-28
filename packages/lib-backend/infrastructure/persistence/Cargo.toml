@@ -6,12 +6,12 @@ edition.workspace = true
 
 [features]
 mobc-sqlx = ["dep:mobc-sqlx"]
-postgres = ["mobc-sqlx", "dep:postgres"]
+postgres = ["mobc-sqlx"]
 redis = ["dep:redis"]
 
 [dependencies]
 domain = { path = "../../domain", package = "lib-domain" }
-postgres = { path = "./postgres", package = "lib-infrastructure-persistence-postgres", optional = true }
+# postgres = { path = "./postgres", package = "lib-infrastructure-persistence-postgres", optional = true }
 redis = { path = "./redis", package = "lib-infrastructure-persistence-redis", optional = true }
 
 derive-where.workspace = true

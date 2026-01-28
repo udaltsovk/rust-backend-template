@@ -5,15 +5,6 @@ use model_mapper::Mapper;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_value::{Value, ValueDeserializer};
 use tap::{Conv as _, Pipe as _};
-#[cfg(feature = "openapi")]
-use utoipa::{
-    __dev::ComposeSchema,
-    ToSchema,
-    openapi::{RefOr, Schema},
-};
-
-// TODO: Fix openapi
-// Maybe we should consider using aide...
 
 #[derive(Mapper, Default, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(Debug))]
@@ -84,19 +75,6 @@ where
     }
 }
 
-#[cfg(feature = "openapi")]
-impl<T> ComposeSchema for UserInput<T>
-where
-    T: ComposeSchema,
-{
-    fn compose(new_generics: Vec<RefOr<Schema>>) -> RefOr<Schema> {
-        T::compose(new_generics)
-    }
-}
-
-#[cfg(feature = "openapi")]
-impl<T> ToSchema for UserInput<T> where T: ToSchema + ComposeSchema {}
-
 #[derive(Serialize, Clone, Default)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 pub struct LossyUserInput<T>(pub UserInput<T>);
@@ -155,16 +133,3 @@ where
         .pipe(Ok)
     }
 }
-
-#[cfg(feature = "openapi")]
-impl<T> ComposeSchema for LossyUserInput<T>
-where
-    T: ComposeSchema,
-{
-    fn compose(new_generics: Vec<RefOr<Schema>>) -> RefOr<Schema> {
-        UserInput::<T>::compose(new_generics)
-    }
-}
-
-#[cfg(feature = "openapi")]
-impl<T> ToSchema for LossyUserInput<T> where T: ToSchema + ComposeSchema {}

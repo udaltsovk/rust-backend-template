@@ -1,19 +1,10 @@
 use domain::{email::Email, user::User};
 use lib::{application::application_result, domain::Id};
 
-use crate::{repository::RepositoriesModuleExt, service::ServicesModuleExt};
-
 #[derive(thiserror::Error, Debug)]
-pub enum UserUseCaseError<R, S>
-where
-    R: RepositoriesModuleExt,
-    S: ServicesModuleExt,
-{
-    #[error("Repository error: {0}")]
-    Repository(R::Error),
-
+pub enum UserUseCaseError {
     #[error(transparent)]
-    Service(S::Error),
+    Infrastructure(#[from] anyhow::Error),
 
     #[error("user with the specified email already exists")]
     EmailAlreadyUsed(Email),
@@ -28,4 +19,4 @@ where
     InvalidPassword,
 }
 
-application_result!(UserUseCase<R, S>);
+application_result!(UserUseCase);

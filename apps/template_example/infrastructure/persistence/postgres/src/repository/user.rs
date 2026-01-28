@@ -1,3 +1,4 @@
+use anyhow::Result;
 use application::repository::user::UserRepository;
 use domain::{
     email::Email,
@@ -7,7 +8,6 @@ use domain::{
 use lib::{
     async_trait,
     domain::{DomainType, Id},
-    infrastructure::persistence::postgres::error::PostgresAdapterError,
     instrument_all,
     tap::{Conv as _, Pipe as _},
 };
@@ -21,20 +21,19 @@ use crate::{
 #[async_trait]
 #[instrument_all]
 impl UserRepository for PostgresRepositoryImpl<User> {
-    type AdapterError = PostgresAdapterError;
-
     async fn create(
         &self,
         id: Id<User>,
         source: CreateUser,
-        password_hash: String,
-    ) -> Result<User, Self::AdapterError> {
+        password_hash: PasswordHash,
+    ) -> Result<User> {
         let mut connection = self.pool.get().await?;
 
         let id = id.value;
         let name = source.name.into_inner();
         let surname = source.surname.into_inner();
         let email = source.email.into_inner();
+        let password_hash = password_hash.0.expose_secret();
         let avatar_url =
             source.avatar_url.flatten().map(DomainType::into_inner);
         let target_settings: StoredUserTargetSettings =
@@ -58,29 +57,23 @@ impl UserRepository for PostgresRepositoryImpl<User> {
         Ok(user)
     }
 
-    async fn find_by_id(
-        &self,
-        id: Id<User>,
-    ) -> Result<Option<(User, PasswordHash)>, Self::AdapterError> {
+    async fn find_by_id(&self, id: Id<User>) -> Result<Option<User>> {
         let mut connection = self.pool.get().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_id.sql", id.value)
             .fetch_optional(&mut *connection)
             .await?
-            .map(StoredUser::into_domain_tuple)
+            .map(User::from)
             .pipe(Ok)
     }
 
-    async fn find_by_email(
-        &self,
-        email: &Email,
-    ) -> Result<Option<(User, PasswordHash)>, Self::AdapterError> {
+    async fn find_by_email(&self, email: &Email) -> Result<Option<User>> {
         let mut connection = self.pool.get().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_email.sql", email.as_ref())
             .fetch_optional(&mut *connection)
             .await?
-            .map(StoredUser::into_domain_tuple)
+            .map(User::from)
             .pipe(Ok)
     }
 }

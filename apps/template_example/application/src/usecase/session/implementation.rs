@@ -1,29 +1,22 @@
 use domain::session::{Session, entity::SessionEntity};
 use lib::{async_trait, instrument_all};
+use redact::Secret;
 
-use crate::{
-    repository::{RepositoriesModuleExt, session::SessionRepository as _},
-    service::{ServicesModuleExt, token::TokenService as _},
-    usecase::{
-        UseCase,
-        session::{
-            SessionUseCase,
-            error::{SessionUseCaseError, SessionUseCaseResult},
-        },
+use crate::usecase::{
+    UseCase,
+    session::{
+        SessionUseCase,
+        error::{SessionUseCaseError, SessionUseCaseResult},
     },
 };
 
 #[async_trait]
 #[instrument_all]
-impl<R, S> SessionUseCase<R, S> for UseCase<R, S, Session>
-where
-    R: RepositoriesModuleExt,
-    S: ServicesModuleExt,
-{
+impl SessionUseCase for UseCase<Session> {
     async fn create(
         &self,
         entity: SessionEntity,
-    ) -> SessionUseCaseResult<R, S, String> {
+    ) -> SessionUseCaseResult<Secret<String>> {
         let session = {
             use SessionEntity as SE;
             match entity {
@@ -36,33 +29,29 @@ where
             .session_repository()
             .save(session)
             .await
-            .map_err(R::Error::from)
-            .map_err(SessionUseCaseError::Repository)?;
+            .map_err(SessionUseCaseError::Infrastructure)?;
 
         self.services
             .token_service()
             .generate(session)
-            .map_err(S::Error::from)
-            .map_err(SessionUseCaseError::Service)
+            .map_err(SessionUseCaseError::Infrastructure)
     }
 
     async fn get_from_token(
         &self,
-        token: &str,
-    ) -> SessionUseCaseResult<R, S, Session> {
+        token: Secret<&str>,
+    ) -> SessionUseCaseResult<Session> {
         let session = self
             .services
             .token_service()
             .parse(token)
-            .map_err(S::Error::from)
-            .map_err(SessionUseCaseError::Service)?;
+            .map_err(SessionUseCaseError::Infrastructure)?;
 
         self.repositories
             .session_repository()
             .find_by_entity(session.entity)
             .await
-            .map_err(R::Error::from)
-            .map_err(SessionUseCaseError::Repository)?
+            .map_err(SessionUseCaseError::Infrastructure)?
             .is_some_and(|ses| session == ses)
             .ok_or(SessionUseCaseError::NotFound(session.id))?;
 

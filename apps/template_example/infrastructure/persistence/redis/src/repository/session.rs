@@ -1,13 +1,11 @@
 use std::{str::FromStr as _, sync::LazyLock};
 
+use anyhow::Result;
 use application::repository::session::SessionRepository;
 use domain::session::{Session, entity::SessionEntity};
 use lib::{
-    async_trait,
-    infrastructure::persistence::redis::{Namespace, error::RedisAdapterError},
-    instrument_all,
-    tap::Pipe as _,
-    uuid::Uuid,
+    async_trait, infrastructure::persistence::redis::Namespace, instrument_all,
+    tap::Pipe as _, uuid::Uuid,
 };
 use redis::AsyncTypedCommands as _;
 
@@ -19,12 +17,7 @@ static NAMESPACE: LazyLock<Namespace> =
 #[async_trait]
 #[instrument_all]
 impl SessionRepository for RedisRepositoryImpl<Session> {
-    type AdapterError = RedisAdapterError;
-
-    async fn save(
-        &self,
-        source: Session,
-    ) -> Result<Session, Self::AdapterError> {
+    async fn save(&self, source: Session) -> Result<Session> {
         let mut connection = self.pool.get().await?;
 
         let (entity_type, entity_id) = source.entity.as_tuple();
@@ -45,7 +38,7 @@ impl SessionRepository for RedisRepositoryImpl<Session> {
     async fn find_by_entity(
         &self,
         entity: SessionEntity,
-    ) -> Result<Option<Session>, Self::AdapterError> {
+    ) -> Result<Option<Session>> {
         let mut connection = self.pool.get().await?;
 
         let (entity_type, entity_id) = entity.as_tuple();

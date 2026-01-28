@@ -6,7 +6,6 @@ edition.workspace = true
 
 [dependencies]
 mobc-redis.workspace = true
-thiserror.workspace = true
 
 [dev-dependencies]
 rstest.workspace = true

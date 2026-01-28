@@ -20,14 +20,20 @@ pub struct JsonUserTargetSettings {
         maximum = 100,
         examples(
             13
-        )
+        ),
+        value_type = i64,
     )]
     #[mapper(with = UserInput::from_domain)]
     #[serde(default)]
     pub age: UserInput<i64>,
 
     /// Страна пользователя в формате ISO 3166-1 alpha-2, регистр может быть разным. Страна с данным кодом должна обязательно существовать.
-    #[schema(required, format = "iso-3166-alpha-2", examples("ru"))]
+    #[schema(
+        required,
+        format = "iso-3166-alpha-2",
+        examples("ru"),
+        value_type = String,
+    )]
     #[mapper(with = UserInput::from_domain)]
     #[serde(default)]
     pub country: UserInput<String>,

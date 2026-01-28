@@ -1,5 +1,3 @@
-pub mod error;
-
 pub struct Namespace {
     path: String,
 }
