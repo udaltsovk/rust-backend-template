@@ -7,8 +7,8 @@ use lib::{
 
 use crate::{
     ApiError, ModulesExt,
+    dto::user::UserDto,
     extractors::{Json, session::UserSession},
-    models::user::JsonUser,
     routes::user::B2C_TAG,
 };
 
@@ -21,7 +21,7 @@ use crate::{
     ),
     responses(
 
-        (status = OK, body = JsonUser),
+        (status = OK, body = UserDto),
         (status = UNAUTHORIZED, body = JsonError),
     ),
 )]
@@ -34,7 +34,7 @@ pub async fn get_profile<M: ModulesExt>(
         .get_by_id(user_session.user_id)
         .await
         .map_err(ApiError::from)?
-        .conv::<JsonUser>()
+        .conv::<UserDto>()
         .pipe(Json)
         .into_response()
         .with_status(StatusCode::OK)

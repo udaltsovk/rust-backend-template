@@ -1,7 +1,7 @@
+mod dto;
 mod errors;
 mod extractors;
 pub mod middlewares;
-mod models;
 mod modules;
 mod openapi;
 pub mod routes;

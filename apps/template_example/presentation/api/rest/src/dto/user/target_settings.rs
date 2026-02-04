@@ -15,7 +15,7 @@ use utoipa::ToSchema;
 #[derive(Mapper, Deserialize, Serialize, ToSchema, Default)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[mapper(ty = UserTargetSettings, from)]
-pub struct JsonUserTargetSettings {
+pub struct UserTargetSettingsDto {
     /// Возраст пользователя
     #[schema(
         required,
@@ -43,7 +43,7 @@ pub struct JsonUserTargetSettings {
     pub country: UserInput<String>,
 }
 
-impl Parseable<UserTargetSettings> for JsonUserTargetSettings {
+impl Parseable<UserTargetSettings> for UserTargetSettingsDto {
     fn parse(self) -> ValidatorResult<UserTargetSettings> {
         let (errors, (age, country)) = into_validators!(
             field!(self.age, required, "age"),

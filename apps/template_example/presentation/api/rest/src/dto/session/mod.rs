@@ -10,7 +10,7 @@ use utoipa::{ToResponse, ToSchema};
 
 #[derive(From, Serialize, ToSchema, ToResponse)]
 #[cfg_attr(debug_assertions, derive(Debug))]
-pub struct JsonUserSession {
+pub struct SessionDto {
     /// Токен доступа для авторизованных запросов. После успешной аутентификации СТАРЫЕ ТОКЕНЫ ПЕРЕСТАЮТ РАБОТАТЬ.
     #[schema(
         examples(
@@ -24,7 +24,7 @@ pub struct JsonUserSession {
 
 #[derive(Deserialize, ToSchema, Default)]
 #[cfg_attr(debug_assertions, derive(Debug))]
-pub struct CreateJsonSession {
+pub struct CreateSessionDto {
     ///
     #[schema(
         required,
@@ -55,7 +55,7 @@ pub struct CreateJsonSession {
     password: UserInput<Secret<String>>,
 }
 
-impl Parseable<CreateSession> for CreateJsonSession {
+impl Parseable<CreateSession> for CreateSessionDto {
     fn parse(self) -> ValidatorResult<CreateSession> {
         let (errors, (email, password)) = into_validators!(
             field!(self.email, required, "email"),

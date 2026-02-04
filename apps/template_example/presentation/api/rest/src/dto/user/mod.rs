@@ -12,14 +12,14 @@ use redact::Secret;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-use crate::models::user::target_settings::JsonUserTargetSettings;
+use crate::dto::user::target_settings::UserTargetSettingsDto;
 
 pub mod target_settings;
 
 #[derive(Mapper, Serialize, ToSchema, Default)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[mapper(ty = User, from, ignore_extra)]
-pub struct JsonUser {
+pub struct UserDto {
     ///
     name: String,
 
@@ -36,12 +36,12 @@ pub struct JsonUser {
 
     ///
     #[mapper(rename = target_settings)]
-    other: JsonUserTargetSettings,
+    other: UserTargetSettingsDto,
 }
 
 #[derive(Deserialize, ToSchema)]
 #[cfg_attr(debug_assertions, derive(Debug))]
-pub struct CreateJsonUser {
+pub struct CreateUserDto {
     #[schema(
         required,
         min_length = 1,
@@ -105,12 +105,12 @@ pub struct CreateJsonUser {
     avatar_url: UserInput<String>,
 
     ///
-    #[schema(required, value_type = JsonUserTargetSettings)]
+    #[schema(required, value_type = UserTargetSettingsDto)]
     #[serde(default)]
-    other: UserInput<JsonUserTargetSettings>,
+    other: UserInput<UserTargetSettingsDto>,
 }
 
-impl Parseable<CreateUser> for CreateJsonUser {
+impl Parseable<CreateUser> for CreateUserDto {
     fn parse(self) -> ValidatorResult<CreateUser> {
         let (
             errors,

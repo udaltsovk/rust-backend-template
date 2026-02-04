@@ -13,12 +13,12 @@ use lib::{
 
 use crate::{
     ApiError, ModulesExt,
+    dto::{
+        session::{CreateSessionDto, SessionDto},
+        user::CreateUserDto,
+    },
     errors::{BadRequestResponse, ValidationFailedResponse},
     extractors::Json,
-    models::{
-        session::{CreateJsonSession, JsonUserSession},
-        user::CreateJsonUser,
-    },
     routes::user::B2C_TAG,
 };
 
@@ -29,11 +29,11 @@ use crate::{
     post,
     path = "/sign-up",
     tag = B2C_TAG,
-    request_body = CreateJsonUser,
+    request_body = CreateUserDto,
     responses(
         (
             status = OK,
-            body = JsonUserSession,
+            body = SessionDto,
             description = "Пользователь успешно зарегистрирован."
         ),
         (
@@ -47,7 +47,7 @@ use crate::{
 )]
 pub async fn sign_up<M: ModulesExt>(
     modules: State<M>,
-    Json(source): Json<CreateJsonUser>,
+    Json(source): Json<CreateUserDto>,
 ) -> Result<impl IntoResponse, ApiError> {
     let user = source.parse()?;
 
@@ -57,7 +57,7 @@ pub async fn sign_up<M: ModulesExt>(
         .session_usecase()
         .create(SessionEntity::from(&user))
         .await?
-        .conv::<JsonUserSession>()
+        .conv::<SessionDto>()
         .pipe(Json)
         .into_response()
         .with_status(StatusCode::OK)
@@ -68,11 +68,11 @@ pub async fn sign_up<M: ModulesExt>(
     post,
     path = "/sign-in",
     tag = B2C_TAG,
-    request_body = CreateJsonSession,
+    request_body = CreateSessionDto,
     responses(
         (
             status = OK,
-            body = JsonUserSession
+            body = SessionDto
         ),
         (
             status = UNAUTHORIZED,
@@ -83,7 +83,7 @@ pub async fn sign_up<M: ModulesExt>(
 )]
 pub async fn log_in<M: ModulesExt>(
     modules: State<M>,
-    Json(source): Json<CreateJsonSession>,
+    Json(source): Json<CreateSessionDto>,
 ) -> Result<impl IntoResponse, ApiError> {
     let credentials = source.parse()?;
 
@@ -93,7 +93,7 @@ pub async fn log_in<M: ModulesExt>(
         .session_usecase()
         .create(SessionEntity::from(&user))
         .await?
-        .conv::<JsonUserSession>()
+        .conv::<SessionDto>()
         .pipe(Json)
         .into_response()
         .with_status(StatusCode::OK)
