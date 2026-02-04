@@ -61,15 +61,6 @@ impl ApiError {
     }
 }
 
-// impl From<DomainError> for ApiError {
-//     fn from(error: DomainError) -> Self {
-//         use DomainError as DE;
-//         match error {
-//             DE::Validation(err) => Self::Validation(err),
-//         }
-//     }
-// }
-
 impl ApiError {
     fn log(&self) {
         match self {
