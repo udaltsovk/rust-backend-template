@@ -49,18 +49,14 @@ impl UserUseCase for UseCase<User> {
             .user_repository()
             .find_by_email(&source.email)
             .await
-            .map_err(UserUseCaseError::Infrastructure)?
-            .ok_or(UserUseCaseError::NotFoundByEmail {
-                email: source.email,
-                from_auth: true,
-            })?;
+            .map_err(UserUseCaseError::Infrastructure)?;
 
         self.services
             .password_hasher_service()
-            .verify(&source.password, &user.password_hash)
+            .verify(&source.password, user.as_ref().map(|u| &u.password_hash))
             .map_err(|_| UserUseCaseError::InvalidPassword)?;
 
-        Ok(user)
+        Ok(user.expect("we can't match nonexistent user password successfully so user should be Some at this point"))
     }
 
     async fn find_by_id(

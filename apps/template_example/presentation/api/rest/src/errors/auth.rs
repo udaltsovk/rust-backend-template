@@ -1,5 +1,4 @@
 use axum::http::StatusCode;
-use lib::presentation::api::rest::errors::InternalErrorStringExt as _;
 use serde_json::Value;
 
 use crate::ApiError;
@@ -8,22 +7,6 @@ use crate::ApiError;
 pub enum AuthError {
     #[error("Invalid token")]
     InvalidToken,
-}
-
-impl ApiError {
-    pub fn invalid_credentials<T>(
-        error: T,
-    ) -> (StatusCode, &'static str, String, Value)
-    where
-        T: ToString,
-    {
-        (
-            StatusCode::UNAUTHORIZED,
-            "invalid_credentials",
-            error.to_internal_error_string("Invalid credentials"),
-            Value::Null,
-        )
-    }
 }
 
 impl From<AuthError> for ApiError {

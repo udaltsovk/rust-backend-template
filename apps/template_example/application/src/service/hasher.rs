@@ -7,6 +7,6 @@ pub trait HasherService {
     fn verify(
         &self,
         data: &Password,
-        original_hash: &PasswordHash,
+        original_hash: Option<&PasswordHash>,
     ) -> Result<()>;
 }

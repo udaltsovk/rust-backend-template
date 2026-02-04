@@ -1,6 +1,6 @@
 use application::usecase::user::error::UserUseCaseError;
 use axum::http::StatusCode;
-use serde_json::json;
+use serde_json::{Value, json};
 
 use crate::ApiError;
 
@@ -21,15 +21,13 @@ impl From<UserUseCaseError> for ApiError {
                     }),
                 ),
 
-                E::InvalidPassword => Self::invalid_credentials(error),
-
-                E::NotFoundByEmail {
-                    from_auth, ..
-                } if from_auth => Self::invalid_credentials(error),
-
-                E::NotFoundByEmail {
-                    ref email, ..
-                } => (
+                E::InvalidPassword => (
+                    StatusCode::UNAUTHORIZED,
+                    "invalid_credentials",
+                    "Invalid credentials".into(),
+                    Value::Null,
+                ),
+                E::NotFoundByEmail(ref email) => (
                     C::NOT_FOUND,
                     "NOT_FOUND",
                     error.to_string(),

@@ -1,3 +1,5 @@
+use std::sync::OnceLock;
+
 use anyhow::{Context as _, Result};
 use application::service::hasher::{HasherService, Password, PasswordHash};
 use argon2::{
@@ -30,14 +32,25 @@ impl HasherService for Argon2Service {
     fn verify(
         &self,
         data: &Password,
-        original_hash: &PasswordHash,
+        original_hash: Option<&PasswordHash>,
     ) -> Result<()> {
+        static DUMMY_HASH: OnceLock<String> = OnceLock::new();
+
         self.hasher
             .verify_password(
                 data.as_ref().expose_secret().as_bytes(),
                 &original_hash
-                    .0
-                    .expose_secret()
+                    .map_or_else(
+                        || {
+                            DUMMY_HASH.get_or_init(|| {
+                                self.hasher
+                                    .hash_password(&[], &Self::gen_salt())
+                                    .expect("hashing to be successful")
+                                    .to_string()
+                            })
+                        },
+                        |hash| hash.0.expose_secret(),
+                    )
                     .pipe(|hash| argon2::PasswordHash::new(hash))?,
             )
             .context("while verifying password with argon")

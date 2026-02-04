@@ -10,7 +10,7 @@ pub enum UserUseCaseError {
     EmailAlreadyUsed(Email),
 
     #[error("user with the specified email does not exist")]
-    NotFoundByEmail { email: Email, from_auth: bool },
+    NotFoundByEmail(Email),
 
     #[error("user with the specified id does not exist")]
     NotFoundById(Id<User>),
