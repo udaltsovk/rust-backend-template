@@ -3,6 +3,13 @@
     reason = "we'll add more crates and more features"
 )]
 
+#[cfg(any(
+    feature = "application",
+    feature = "bootstrap",
+    feature = "infrastructure-persistence",
+    feature = "infrastructure-services",
+))]
+pub use anyhow;
 #[cfg(feature = "application")]
 pub use application;
 #[cfg(any(
@@ -41,6 +48,13 @@ pub use mobc_sqlx;
 pub use model_mapper;
 #[cfg(feature = "presentation")]
 pub use presentation;
+#[cfg(any(
+    feature = "application",
+    feature = "domain",
+    feature = "infrastructure-services",
+    feature = "presentation",
+))]
+pub use redact;
 #[cfg(any(
     feature = "application",
     feature = "infrastructure-persistence",

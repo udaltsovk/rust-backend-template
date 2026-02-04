@@ -1,4 +1,3 @@
-use anyhow::Result;
 use application::repository::user::UserRepository;
 use domain::{
     email::Email,
@@ -6,6 +5,7 @@ use domain::{
     user::{CreateUser, User},
 };
 use lib::{
+    anyhow::Result,
     async_trait,
     domain::{DomainType, Id},
     instrument_all,

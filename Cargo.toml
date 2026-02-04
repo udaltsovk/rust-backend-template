@@ -9,7 +9,6 @@ edition = "2024"
 [workspace.dependencies]
 lib = { path = "./packages/lib-backend" }
 
-anyhow = "1.0"
 axum = "0.8"
 bon = "3.7"
 chrono = "0.4"
@@ -22,7 +21,6 @@ mobc-sqlx = "2.0"
 model-mapper = "0.6"
 opentelemetry = "0.30"
 pastey = "0.2"
-redact = "0.1"
 rstest = "0.26"
 serde = "1.0"
 serde_json = "1.0"

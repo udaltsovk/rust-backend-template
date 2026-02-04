@@ -4,7 +4,7 @@ use lib::{application::application_result, domain::Id};
 #[derive(thiserror::Error, Debug)]
 pub enum UserUseCaseError {
     #[error(transparent)]
-    Infrastructure(#[from] anyhow::Error),
+    Infrastructure(#[from] lib::anyhow::Error),
 
     #[error("user with the specified email already exists")]
     EmailAlreadyUsed(Email),

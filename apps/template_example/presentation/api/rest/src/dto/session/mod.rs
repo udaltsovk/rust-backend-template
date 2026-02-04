@@ -1,10 +1,14 @@
 use derive_more::From;
 use domain::session::CreateSession;
-use lib::presentation::api::rest::{
-    into_validators,
-    validation::{UserInput, parseable::Parseable, validator::ValidatorResult},
+use lib::{
+    presentation::api::rest::{
+        into_validators,
+        validation::{
+            UserInput, parseable::Parseable, validator::ValidatorResult,
+        },
+    },
+    redact::{Secret, expose_secret},
 };
-use redact::{Secret, expose_secret};
 use serde::{Deserialize, Serialize};
 use utoipa::{ToResponse, ToSchema};
 

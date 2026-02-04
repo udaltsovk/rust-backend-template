@@ -1,10 +1,9 @@
-use anyhow::Result;
 use domain::{
     email::Email,
     password::PasswordHash,
     user::{CreateUser, User},
 };
-use lib::{async_trait, domain::Id};
+use lib::{anyhow::Result, async_trait, domain::Id};
 
 #[async_trait]
 pub trait UserRepository {

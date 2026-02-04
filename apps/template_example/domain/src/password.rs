@@ -9,9 +9,9 @@ use lib::{
             error::{ValidationErrors, ValidationResult},
         },
     },
+    redact::Secret,
     tap::Pipe as _,
 };
-use redact::Secret;
 
 use crate::constraints::PASSWORD_CONSTRAINTS;
 

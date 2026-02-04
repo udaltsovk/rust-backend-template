@@ -7,7 +7,6 @@ edition.workspace = true
 [dependencies]
 lib = { workspace = true, features = ["domain", "macros-proc"] }
 
-redact.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 

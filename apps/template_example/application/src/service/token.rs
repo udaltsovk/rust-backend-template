@@ -1,6 +1,5 @@
-use anyhow::Result;
 use domain::session::Session;
-use redact::Secret;
+use lib::{anyhow::Result, redact::Secret};
 
 pub trait TokenService {
     fn generate(&self, session: Session) -> Result<Secret<String>>;

@@ -1,5 +1,5 @@
-use anyhow::Result;
 pub use domain::password::{Password, PasswordHash};
+use lib::anyhow::Result;
 
 pub trait HasherService {
     fn hash(&self, data: &Password) -> Result<PasswordHash>;

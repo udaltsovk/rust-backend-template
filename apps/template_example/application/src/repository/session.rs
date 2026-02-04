@@ -1,6 +1,5 @@
-use anyhow::Result;
 use domain::session::{Session, entity::SessionEntity};
-use lib::async_trait;
+use lib::{anyhow::Result, async_trait};
 
 #[async_trait]
 pub trait SessionRepository {

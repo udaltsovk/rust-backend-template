@@ -1,11 +1,10 @@
 use std::{str::FromStr as _, sync::LazyLock};
 
-use anyhow::Result;
 use application::repository::session::SessionRepository;
 use domain::session::{Session, entity::SessionEntity};
 use lib::{
-    async_trait, infrastructure::persistence::redis::Namespace, instrument_all,
-    tap::Pipe as _, uuid::Uuid,
+    anyhow::Result, async_trait, infrastructure::persistence::redis::Namespace,
+    instrument_all, tap::Pipe as _, uuid::Uuid,
 };
 use redis::AsyncTypedCommands as _;
 

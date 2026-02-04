@@ -1,6 +1,5 @@
 use domain::session::{Session, entity::SessionEntity};
-use lib::{async_trait, instrument_all};
-use redact::Secret;
+use lib::{async_trait, instrument_all, redact::Secret};
 
 use crate::usecase::{
     UseCase,

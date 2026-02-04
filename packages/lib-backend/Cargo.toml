@@ -5,9 +5,23 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
-application = ["dep:application", "dep:async-trait", "dep:tap"]
+application = [
+  "dep:anyhow",
+  "dep:application",
+  "dep:async-trait",
+  "dep:redact",
+  "dep:tap",
+]
 
-bootstrap = ["dep:bootstrap", "dep:async-trait", "dep:tower", "dep:tower-http"]
+bootstrap = [
+  "dep:anyhow",
+  "dep:async-trait",
+  "dep:bootstrap",
+  "dep:redact",
+  "redact/serde",
+  "dep:tower",
+  "dep:tower-http",
+]
 
 bootstrap-openapi = ["bootstrap", "bootstrap/openapi"]
 
@@ -43,12 +57,13 @@ bootstrap-instrumentation-stdout = [
   "bootstrap/instrumentation-stdout",
 ]
 
-domain = ["dep:domain", "dep:uuid"]
+domain = ["dep:domain", "dep:redact", "dep:uuid"]
 
 infrastructure = ["dep:infrastructure"]
 
 infrastructure-persistence = [
   "infrastructure/persistence",
+  "dep:anyhow",
   "dep:async-trait",
   "dep:model-mapper",
   "dep:tap",
@@ -64,9 +79,12 @@ infrastructure-persistence-redis = [
 ]
 
 infrastructure-services = [
+  "dep:anyhow",
   "dep:async-trait",
   "dep:chrono",
   "dep:model-mapper",
+  "dep:redact",
+  "redact/serde",
   "dep:tap",
   "dep:uuid",
 ]
@@ -74,7 +92,7 @@ infrastructure-services = [
 macros = ["dep:macros"]
 macros-proc = ["macros", "macros/proc"]
 
-presentation = ["dep:presentation", "dep:tap"]
+presentation = ["dep:presentation", "dep:redact", "redact/serde", "dep:tap"]
 
 presentation-api = [
   "presentation",
@@ -105,7 +123,6 @@ domain = { path = "./domain", package = "lib-domain", optional = true }
 macros = { path = "./macros", package = "lib-macros", optional = true }
 presentation = { path = "./presentation", package = "lib-presentation", optional = true }
 
-anyhow = { workspace = true, optional = true }
 axum = { workspace = true, optional = true }
 mobc-redis = { workspace = true, optional = true }
 mobc-sqlx = { workspace = true, optional = true }
@@ -115,10 +132,12 @@ tower = { workspace = true, optional = true }
 tower-http = { workspace = true, optional = true, features = ["cors"] }
 uuid = { workspace = true, optional = true, features = ["v7"] }
 
+anyhow = { version = "1.0", optional = true }
 async-trait = { version = "0.1", optional = true }
 axum-otel-metrics = { version = "0.12", optional = true }
 chrono = { version = "0.4", optional = true }
 model-mapper = { workspace = true, optional = true }
+redact = { version = "0.1", optional = true }
 utoipa-axum = { version = "0.2", optional = true }
 
 [lints]

@@ -1,14 +1,17 @@
 use std::sync::OnceLock;
 
-use anyhow::{Context as _, Result};
 use application::service::hasher::{HasherService, Password, PasswordHash};
 use argon2::{
     Algorithm, Argon2, Params, ParamsBuilder, PasswordHasher as _,
     PasswordVerifier as _, Version,
     password_hash::{SaltString, rand_core::OsRng},
 };
-use lib::{instrument_all, tap::Pipe as _};
-use redact::Secret;
+use lib::{
+    anyhow::{Context as _, Result},
+    instrument_all,
+    redact::Secret,
+    tap::Pipe as _,
+};
 
 #[derive(Clone)]
 pub struct Argon2Service {

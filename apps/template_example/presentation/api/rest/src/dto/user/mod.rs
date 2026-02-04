@@ -7,8 +7,8 @@ use lib::{
             UserInput, parseable::Parseable, validator::ValidatorResult,
         },
     },
+    redact::Secret,
 };
-use redact::Secret;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 

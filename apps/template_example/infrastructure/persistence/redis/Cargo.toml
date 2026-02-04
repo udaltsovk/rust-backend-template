@@ -9,7 +9,6 @@ lib = { workspace = true, features = ["infrastructure-persistence-redis"] }
 domain = { path = "../../../domain", package = "template_example-domain" }
 application = { path = "../../../application", package = "template_example-application" }
 
-anyhow.workspace = true
 derive-where.workspace = true
 mobc-redis.workspace = true
 thiserror.workspace = true

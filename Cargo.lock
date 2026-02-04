@@ -1390,6 +1390,7 @@ dependencies = [
  "mobc-redis",
  "mobc-sqlx",
  "model-mapper",
+ "redact",
  "tap",
  "thiserror 2.0.17",
  "tower",
@@ -1505,7 +1506,6 @@ dependencies = [
 name = "lib-infrastructure-persistence-redis"
 version = "0.1.0"
 dependencies = [
- "mobc-redis",
  "rstest 0.26.1",
 ]
 
@@ -3330,10 +3330,8 @@ dependencies = [
 name = "template_example-application"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "derive-where",
  "lib",
- "redact",
  "template_example-domain",
  "thiserror 2.0.17",
  "tracing",
@@ -3344,7 +3342,6 @@ name = "template_example-domain"
 version = "0.1.0"
 dependencies = [
  "lib",
- "redact",
  "rust_iso3166",
  "serde",
  "thiserror 2.0.17",
@@ -3371,7 +3368,6 @@ dependencies = [
 name = "template_example-infrastructure-persistence-postgres"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "derive-where",
  "lib",
  "mobc-sqlx",
@@ -3386,7 +3382,6 @@ dependencies = [
 name = "template_example-infrastructure-persistence-redis"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "derive-where",
  "lib",
  "mobc-redis",
@@ -3416,10 +3411,8 @@ dependencies = [
 name = "template_example-infrastructure-services-hasher-argon2"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "argon2",
  "lib",
- "redact",
  "template_example-application",
  "thiserror 2.0.17",
  "tracing",
@@ -3436,10 +3429,8 @@ dependencies = [
 name = "template_example-infrastructure-services-token-jwt"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "jsonwebtoken",
  "lib",
- "redact",
  "serde",
  "template_example-application",
  "template_example-domain",
@@ -3470,7 +3461,6 @@ dependencies = [
  "axum-extra",
  "derive_more",
  "lib",
- "redact",
  "serde",
  "serde_json",
  "template_example-application",

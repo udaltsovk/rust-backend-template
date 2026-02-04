@@ -10,8 +10,7 @@ use domain::{
     session::{Session, entity::SessionEntity},
     user::User,
 };
-use lib::{domain::Id, tap::Pipe as _};
-use redact::Secret;
+use lib::{domain::Id, redact::Secret, tap::Pipe as _};
 
 use crate::{ApiError, ModulesExt, errors::AuthError};
 
