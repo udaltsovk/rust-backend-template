@@ -56,7 +56,9 @@ impl UserUseCase for UseCase<User> {
             .verify(&source.password, user.as_ref().map(|u| &u.password_hash))
             .map_err(|_| UserUseCaseError::InvalidPassword)?;
 
-        Ok(user.expect("we can't match nonexistent user password successfully so user should be Some at this point"))
+        let user = user.expect("we can't match nonexistent user password successfully so user should be Some at this point");
+
+        Ok(user)
     }
 
     async fn find_by_id(
