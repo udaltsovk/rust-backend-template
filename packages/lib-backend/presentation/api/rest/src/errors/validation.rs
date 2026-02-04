@@ -3,7 +3,7 @@ use std::{error::Error, fmt, sync::Arc};
 use axum::http::StatusCode;
 use domain::validation::{
     ValidationConfirmation,
-    error::{ValidationError, ValidationErrors},
+    error::{ValidationError, ValidationErrors, ValidationErrorsWithFields},
 };
 use serde::Serialize;
 use serde_json::Value;
@@ -52,6 +52,25 @@ impl FieldError {
             rejected_value: serde_json::to_value(rejected_value)
                 .unwrap_or_default(),
         }
+    }
+}
+
+impl From<FieldError> for (Arc<str>, ValidationError) {
+    fn from(
+        FieldError {
+            field,
+            issue,
+            rejected_value,
+        }: FieldError,
+    ) -> Self {
+        (
+            field,
+            ValidationError {
+                issue,
+                rejected_value: serde_value::to_value(rejected_value)
+                    .unwrap_or(serde_value::Value::Option(None)),
+            },
+        )
     }
 }
 
@@ -177,6 +196,24 @@ impl FromIterator<Self> for FieldErrors {
 impl FromIterator<FieldError> for FieldErrors {
     fn from_iter<T: IntoIterator<Item = FieldError>>(iter: T) -> Self {
         Self(iter.into_iter().collect())
+    }
+}
+
+impl From<ValidationErrorsWithFields> for FieldErrors {
+    fn from(errors: ValidationErrorsWithFields) -> Self {
+        errors
+            .into_inner()
+            .into_iter()
+            .map(|(field, error)| {
+                FieldError::from_validation_error(&field, error)
+            })
+            .collect()
+    }
+}
+
+impl From<FieldErrors> for ValidationErrorsWithFields {
+    fn from(errors: FieldErrors) -> Self {
+        errors.0.into_iter().map(FieldError::into).collect()
     }
 }
 

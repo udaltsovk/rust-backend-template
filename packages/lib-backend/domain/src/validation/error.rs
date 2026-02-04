@@ -1,4 +1,4 @@
-use std::{convert::Infallible, error::Error, fmt};
+use std::{convert::Infallible, error::Error, fmt, sync::Arc};
 
 use serde::Serialize;
 use serde_value::Value;
@@ -127,5 +127,49 @@ impl FromIterator<Self> for ValidationErrors {
 impl From<Infallible> for ValidationErrors {
     fn from(_: Infallible) -> Self {
         Self::new()
+    }
+}
+
+#[derive(Clone, Debug)]
+#[must_use]
+pub struct ValidationErrorsWithFields(Vec<(Arc<str>, ValidationError)>);
+
+pub type ValidationResultWithFields<T> = Result<T, ValidationErrorsWithFields>;
+
+impl ValidationErrorsWithFields {
+    #[must_use]
+    pub fn into_inner(self) -> Vec<(Arc<str>, ValidationError)> {
+        self.0
+    }
+
+    pub const fn inner_mut(&mut self) -> &mut Vec<(Arc<str>, ValidationError)> {
+        &mut self.0
+    }
+
+    pub fn inner(&self) -> &[(Arc<str>, ValidationError)] {
+        &self.0
+    }
+}
+
+impl fmt::Display for ValidationErrorsWithFields {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let errors = self
+            .0
+            .iter()
+            .map(|(field, error)| format!("field: {field}, error: {error}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        write!(f, "Validation errors: [\n{errors}\n]")
+    }
+}
+
+impl Error for ValidationErrorsWithFields {}
+
+impl FromIterator<(Arc<str>, ValidationError)> for ValidationErrorsWithFields {
+    fn from_iter<T: IntoIterator<Item = (Arc<str>, ValidationError)>>(
+        iter: T,
+    ) -> Self {
+        Self(iter.into_iter().collect())
     }
 }
