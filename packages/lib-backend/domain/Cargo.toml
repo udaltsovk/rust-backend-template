@@ -12,7 +12,6 @@ uuid = { workspace = true, features = ["v7", "serde"] }
 
 num-traits = "0.2"
 regex = "1.12"
-result-like = "0.5"
 validator-rs = "0.1"
 
 

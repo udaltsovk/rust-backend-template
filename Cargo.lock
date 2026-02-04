@@ -1432,7 +1432,6 @@ dependencies = [
  "num-traits",
  "pastey",
  "regex",
- "result-like",
  "rstest 0.26.1",
  "serde",
  "serde-value",
@@ -2288,17 +2287,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 
 [[package]]
-name = "pmutil"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52a40bc70c2c58040d2d8b167ba9a5ff59fc9dab7ad44771cfde3dcfde7a09c6"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "portable-atomic"
 version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2670,27 +2658,6 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
-]
-
-[[package]]
-name = "result-like"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bffa194499266bd8a1ac7da6ac7355aa0f81ffa1a5db2baaf20dd13854fd6f4e"
-dependencies = [
- "result-like-derive",
-]
-
-[[package]]
-name = "result-like-derive"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01d3b03471c9700a3a6bd166550daaa6124cb4a146ea139fb028e4edaa8f4277"
-dependencies = [
- "pmutil",
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
