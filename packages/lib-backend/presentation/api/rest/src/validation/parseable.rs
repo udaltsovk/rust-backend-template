@@ -19,7 +19,7 @@ pub trait Parseable<T> {
                 .into_inner()
                 .into_iter()
                 .map(|mut err| {
-                    let sep = if field != "" && err.field != "".into() {
+                    let sep = if !field.is_empty() && err.field != "".into() {
                         "."
                     } else {
                         Default::default()
