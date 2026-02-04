@@ -3,7 +3,7 @@ macro_rules! repository_impl_struct {
     ($name: ident, $manager: ty) => {
         $crate::pastey::paste! {
             #[$crate::derive_where(Clone)]
-            #[expect(dead_code, reason = "generated struct fields might not be used in all contexts")]
+            #[expect(dead_code, reason = "generated struct fields may not be used in all contexts")]
             pub struct [< $name RepositoryImpl >]<T>
             where
                 T: Send + Sync,

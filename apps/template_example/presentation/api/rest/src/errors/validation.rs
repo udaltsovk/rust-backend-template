@@ -1,6 +1,6 @@
-use lib::{
-    domain::validation::error::ValidationErrors,
-    presentation::api::rest::validation_error_response_openapi as validation_error_response,
+use lib::presentation::api::rest::{
+    errors::validation::FieldErrors,
+    fields_error_response_openapi as validation_error_response,
 };
 
 validation_error_response!(
@@ -10,8 +10,8 @@ validation_error_response!(
     status_code = UNPROCESSABLE_ENTITY,
 );
 
-impl From<ValidationErrors> for ValidationFailedResponse {
-    fn from(errors: ValidationErrors) -> Self {
+impl From<FieldErrors> for ValidationFailedResponse {
+    fn from(errors: FieldErrors) -> Self {
         Self::new("Some fields haven't passed validation", errors)
     }
 }

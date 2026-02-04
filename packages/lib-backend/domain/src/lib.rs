@@ -79,10 +79,8 @@ where
     }
 
     #[must_use]
-    fn it_should_be_safe_to_unwrap<E>(
-        field: &'static str,
-    ) -> impl FnOnce(E) -> T {
-        move |_| panic!("We've validated {field} value, so it should be safe")
+    fn it_should_be_safe_to_unwrap<E>() -> impl FnOnce(E) -> T {
+        move |_| panic!("We've validated field value, so it should be safe")
     }
 }
 
@@ -226,8 +224,7 @@ mod tests {
         expected = "We've validated test_field value, so it should be safe"
     )]
     fn domain_type_safe_unwrap_panics() {
-        let unwrap_fn =
-            TestDomainValue::it_should_be_safe_to_unwrap::<()>("test_field");
+        let unwrap_fn = TestDomainValue::it_should_be_safe_to_unwrap::<()>();
         unwrap_fn(());
     }
 

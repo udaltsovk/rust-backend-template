@@ -16,9 +16,8 @@ use crate::constraints::URL_CONSTRAINTS;
 #[derive(DomainType, Debug)]
 pub struct UserAvatarUrl(String);
 
-static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
-    Constraints::builder_with("avatar_url", &URL_CONSTRAINTS).build()
-});
+static CONSTRAINTS: LazyLock<Constraints<String>> =
+    LazyLock::new(|| Constraints::builder_with(&URL_CONSTRAINTS).build());
 
 impl TryFrom<String> for UserAvatarUrl {
     type Error = ValidationErrors;
@@ -28,8 +27,4 @@ impl TryFrom<String> for UserAvatarUrl {
     }
 }
 
-impl_try_from_external_input!(
-    domain_type = UserAvatarUrl,
-    input_type = String,
-    constraints = CONSTRAINTS
-);
+impl_try_from_external_input!(domain_type = UserAvatarUrl, input_type = String,);

@@ -34,7 +34,7 @@ impl UserTargetSettingsAge {
             + 'static,
         T::FromStrRadixErr: Debug,
     {
-        Constraints::builder("age")
+        Constraints::builder()
             .add_constraint(constraints::range::Min(T::zero()))
             .add_constraint(constraints::range::Max(
                 T::from_str_radix("100", 10).expect("a valid number"),
@@ -55,7 +55,7 @@ macro_rules! numeric_constraints {
                 fn try_from(value: $type) -> ValidationResult<Self> {
                     [<CONSTRAINTS_ $type:upper>].check(&value).into_result(|_| {
                         Self(value.try_into().unwrap_or_else(
-                            Self::it_should_be_safe_to_unwrap([<CONSTRAINTS_ $type:upper>].name()),
+                            Self::it_should_be_safe_to_unwrap(),
                         ))
                     })
                 }
@@ -76,5 +76,4 @@ numeric_constraints!(i64);
 impl_try_from_external_input!(
     domain_type = UserTargetSettingsAge,
     input_type = i64,
-    constraints = CONSTRAINTS_I64
 );

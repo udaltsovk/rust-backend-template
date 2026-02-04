@@ -57,7 +57,7 @@ pub struct JsonErrorStruct {
 impl JsonErrorStruct {
     #[expect(
         clippy::needless_pass_by_value,
-        reason = "we might pass &str here and then &M won't work"
+        reason = "we may pass &str here and then &M won't work"
     )]
     pub fn new<S, M>(
         status_code: S,

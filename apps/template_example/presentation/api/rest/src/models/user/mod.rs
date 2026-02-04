@@ -1,9 +1,11 @@
 use domain::user::{CreateUser, User};
 use lib::{
-    domain::{into_validators, validation::error::ValidationResult},
     model_mapper::Mapper,
     presentation::api::rest::{
-        UserInput, into_nested_validators, model::Parseable,
+        into_validators,
+        validation::{
+            UserInput, parseable::Parseable, validator::ValidatorResult,
+        },
     },
 };
 use redact::Secret;
@@ -14,7 +16,7 @@ use crate::models::user::target_settings::JsonUserTargetSettings;
 
 pub mod target_settings;
 
-#[derive(Mapper, Serialize, ToSchema)]
+#[derive(Mapper, Serialize, ToSchema, Default)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[mapper(ty = User, from, ignore_extra)]
 pub struct JsonUser {
@@ -103,26 +105,24 @@ pub struct CreateJsonUser {
     avatar_url: UserInput<String>,
 
     ///
-    #[schema(required)]
-    other: JsonUserTargetSettings,
+    #[schema(required, value_type = JsonUserTargetSettings)]
+    #[serde(default)]
+    other: UserInput<JsonUserTargetSettings>,
 }
 
 impl Parseable<CreateUser> for CreateJsonUser {
-    const FIELD: &str = "user";
-
-    fn parse(self) -> ValidationResult<CreateUser> {
-        let (mut errors, (name, surname, email, password, avatar_url)) = into_validators!(
-            self.name,
-            self.surname,
-            self.email,
-            self.password,
-            self.avatar_url
+    fn parse(self) -> ValidatorResult<CreateUser> {
+        let (
+            errors,
+            (name, surname, email, password, avatar_url, target_settings),
+        ) = into_validators!(
+            field!(self.name, required, "name"),
+            field!(self.surname, required, "surname"),
+            field!(self.email, required, "email"),
+            field!(self.password, required, "password"),
+            field!(self.avatar_url, optional, "avatar_url"),
+            field!(self.other, nested, "other")
         );
-
-        let (nested_errors, target_settings) =
-            into_nested_validators!(self.other);
-
-        errors.extend(nested_errors);
 
         errors.into_result(|ok| CreateUser {
             name: name.validated(ok),

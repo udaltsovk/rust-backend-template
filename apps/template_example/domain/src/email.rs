@@ -16,9 +16,8 @@ use crate::constraints::EMAIL_CONSTRAINTS;
 #[derive(DomainType, Debug)]
 pub struct Email(String);
 
-static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
-    Constraints::builder_with("email", &EMAIL_CONSTRAINTS).build()
-});
+static CONSTRAINTS: LazyLock<Constraints<String>> =
+    LazyLock::new(|| Constraints::builder_with(&EMAIL_CONSTRAINTS).build());
 
 impl TryFrom<String> for Email {
     type Error = ValidationErrors;
@@ -30,11 +29,7 @@ impl TryFrom<String> for Email {
     }
 }
 
-impl_try_from_external_input!(
-    domain_type = Email,
-    input_type = String,
-    constraints = CONSTRAINTS
-);
+impl_try_from_external_input!(domain_type = Email, input_type = String,);
 
 impl fmt::Display for Email {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

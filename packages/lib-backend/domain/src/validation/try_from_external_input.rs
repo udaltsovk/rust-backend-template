@@ -34,13 +34,23 @@ macro_rules! impl_try_from_external_input {
 
     (
         domain_type = $domain_type: ident,
-        input_type = $input_type: path,
-        constraints = $constraints: ident $(,)*
+        input_type = $input_type: path $(,)?
     ) => {
         $crate::impl_try_from_external_input!(
             domain_type = $domain_type,
             input_type = $input_type,
-            field = $constraints.name(),
+            type_mismatch_fn = impl_try_from_external_input!(@default_type_mismatch_fn),
+            none_msg = impl_try_from_external_input!(@default_none_msg),
+            missing_msg = impl_try_from_external_input!(@default_missing_msg),
+        );
+    };
+    (
+        domain_type = $domain_type: ident,
+        input_type = $input_type: path $(,)?
+    ) => {
+        $crate::impl_try_from_external_input!(
+            domain_type = $domain_type,
+            input_type = $input_type,
             type_mismatch_fn = impl_try_from_external_input!(@default_type_mismatch_fn),
             none_msg = impl_try_from_external_input!(@default_none_msg),
             missing_msg = impl_try_from_external_input!(@default_missing_msg),
@@ -49,27 +59,11 @@ macro_rules! impl_try_from_external_input {
     (
         domain_type = $domain_type: ident,
         input_type = $input_type: path,
-        field = $field: expr $(,)*
+        type_mismatch_fn = $type_mismatch_fn: expr $(,)?
     ) => {
         $crate::impl_try_from_external_input!(
             domain_type = $domain_type,
             input_type = $input_type,
-            field = $field,
-            type_mismatch_fn = impl_try_from_external_input!(@default_type_mismatch_fn),
-            none_msg = impl_try_from_external_input!(@default_none_msg),
-            missing_msg = impl_try_from_external_input!(@default_missing_msg),
-        );
-    };
-    (
-        domain_type = $domain_type: ident,
-        input_type = $input_type: path,
-        field = $field: expr,
-        type_mismatch_fn = $type_mismatch_fn: expr $(,)*
-    ) => {
-        $crate::impl_try_from_external_input!(
-            domain_type = $domain_type,
-            input_type = $input_type,
-            field = $field,
             type_mismatch_fn = $type_mismatch_fn,
             none_msg = impl_try_from_external_input!(@default_none_msg),
             missing_msg = impl_try_from_external_input!(@default_missing_msg),
@@ -78,13 +72,11 @@ macro_rules! impl_try_from_external_input {
     (
         domain_type = $domain_type: ident,
         input_type = $input_type: path,
-        field = $field: expr,
-        none_msg = $none_msg: expr $(,)*
+        none_msg = $none_msg: expr $(,)?
     ) => {
         $crate::impl_try_from_external_input!(
             domain_type = $domain_type,
             input_type = $input_type,
-            field = $field,
             type_mismatch_fn = impl_try_from_external_input!(@default_type_mismatch_fn),
             none_msg = $none_msg,
             missing_msg = impl_try_from_external_input!(@default_missing_msg),
@@ -93,13 +85,11 @@ macro_rules! impl_try_from_external_input {
     (
         domain_type = $domain_type: ident,
         input_type = $input_type: path,
-        field = $field: expr,
-        missing_msg = $missing_msg: expr $(,)*
+        missing_msg = $missing_msg: expr $(,)?
     ) => {
         $crate::impl_try_from_external_input!(
             domain_type = $domain_type,
             input_type = $input_type,
-            field = $field,
             type_mismatch_fn = impl_try_from_external_input!(@default_type_mismatch_fn),
             none_msg = impl_try_from_external_input!(@default_none_msg),
             missing_msg = $missing_msg,
@@ -108,14 +98,12 @@ macro_rules! impl_try_from_external_input {
     (
         domain_type = $domain_type: ident,
         input_type = $input_type: path,
-        field = $field: expr,
         none_msg = $none_msg: expr,
-        missing_msg = $missing_msg: expr $(,)*
+        missing_msg = $missing_msg: expr $(,)?
     ) => {
         $crate::impl_try_from_external_input!(
             domain_type = $domain_type,
             input_type = $input_type,
-            field = $field,
             type_mismatch_fn = impl_try_from_external_input!(@default_type_mismatch_fn),
             none_msg = $none_msg,
             missing_msg = $missing_msg,
@@ -124,14 +112,12 @@ macro_rules! impl_try_from_external_input {
     (
         domain_type = $domain_type: ident,
         input_type = $input_type: path,
-        field = $field: expr,
         type_mismatch_fn = $type_mismatch_fn: expr,
-        missing_msg = $missing_msg: expr $(,)*
+        missing_msg = $missing_msg: expr $(,)?
     ) => {
         $crate::impl_try_from_external_input!(
             domain_type = $domain_type,
             input_type = $input_type,
-            field = $field,
             type_mismatch_fn = $type_mismatch_fn,
             none_msg = impl_try_from_external_input!(@default_none_msg),
             missing_msg = $missing_msg,
@@ -140,14 +126,12 @@ macro_rules! impl_try_from_external_input {
     (
         domain_type = $domain_type: ident,
         input_type = $input_type: path,
-        field = $field: expr,
         type_mismatch_fn = $type_mismatch_fn: expr,
-        none_msg = $none_msg: expr $(,)*
+        none_msg = $none_msg: expr $(,)?
     ) => {
         $crate::impl_try_from_external_input!(
             domain_type = $domain_type,
             input_type = $input_type,
-            field = $field,
             type_mismatch_fn = $type_mismatch_fn,
             none_msg = $none_msg,
             missing_msg = impl_try_from_external_input!(@default_missing_msg),
@@ -156,10 +140,9 @@ macro_rules! impl_try_from_external_input {
     (
         domain_type = $domain_type: ident,
         input_type = $input_type: path,
-        field = $field: expr,
         type_mismatch_fn = $type_mismatch_fn: expr,
         none_msg = $none_msg: expr,
-        missing_msg = $missing_msg: expr $(,)*
+        missing_msg = $missing_msg: expr $(,)?
     ) => {
         impl TryFrom<$crate::validation::ExternalInput<$input_type>>
             for $domain_type
@@ -174,18 +157,15 @@ macro_rules! impl_try_from_external_input {
                     |value| {
                         let expected_type = $crate::validation::get_type_name::<$input_type>();
                         Err($crate::validation::error::ValidationErrors::with_error(
-                            $field,
                             ($type_mismatch_fn)(expected_type),
                             value,
                         ))
                     },
                     || Err($crate::validation::error::ValidationErrors::with_error(
-                        $field,
                         $none_msg,
                         None::<()>
                     )),
                     || Err($crate::validation::error::ValidationErrors::with_error(
-                        $field,
                         $missing_msg,
                         None::<()>
                     )),

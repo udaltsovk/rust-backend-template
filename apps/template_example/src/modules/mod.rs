@@ -15,9 +15,9 @@ mod services;
 
 #[derive(Clone)]
 pub struct Modules {
-    #[expect(dead_code, reason = "We might need that in the future")]
+    #[expect(dead_code, reason = "We may need that in the future")]
     repositories_module: RepositoriesModule,
-    #[expect(dead_code, reason = "We might need that in the future")]
+    #[expect(dead_code, reason = "We may need that in the future")]
     services_module: ServicesModule,
     user_usecase: UseCase<User>,
     session_usecase: UseCase<Session>,

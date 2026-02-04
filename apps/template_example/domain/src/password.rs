@@ -18,9 +18,8 @@ use crate::constraints::PASSWORD_CONSTRAINTS;
 #[derive(DomainType, Debug)]
 pub struct Password(Secret<String>);
 
-static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
-    Constraints::builder_with("password", &PASSWORD_CONSTRAINTS).build()
-});
+static CONSTRAINTS: LazyLock<Constraints<String>> =
+    LazyLock::new(|| Constraints::builder_with(&PASSWORD_CONSTRAINTS).build());
 
 impl TryFrom<Secret<String>> for Password {
     type Error = ValidationErrors;
@@ -35,7 +34,6 @@ impl TryFrom<Secret<String>> for Password {
 impl_try_from_external_input!(
     domain_type = Password,
     input_type = Secret<String>,
-    constraints = CONSTRAINTS
 );
 
 #[derive(Debug)]

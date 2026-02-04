@@ -1,14 +1,18 @@
 use domain::user::target_settings::UserTargetSettings;
 use lib::{
-    domain::{into_validators, validation::error::ValidationResult},
     model_mapper::Mapper,
-    presentation::api::rest::{UserInput, model::Parseable},
+    presentation::api::rest::{
+        into_validators,
+        validation::{
+            UserInput, parseable::Parseable, validator::ValidatorResult,
+        },
+    },
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 /// Таргет настройки пользователя
-#[derive(Mapper, Deserialize, Serialize, ToSchema)]
+#[derive(Mapper, Deserialize, Serialize, ToSchema, Default)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[mapper(ty = UserTargetSettings, from)]
 pub struct JsonUserTargetSettings {
@@ -40,10 +44,11 @@ pub struct JsonUserTargetSettings {
 }
 
 impl Parseable<UserTargetSettings> for JsonUserTargetSettings {
-    const FIELD: &str = "target";
-
-    fn parse(self) -> ValidationResult<UserTargetSettings> {
-        let (errors, (age, country)) = into_validators!(self.age, self.country);
+    fn parse(self) -> ValidatorResult<UserTargetSettings> {
+        let (errors, (age, country)) = into_validators!(
+            field!(self.age, required, "age"),
+            field!(self.country, required, "contry")
+        );
 
         errors.into_result(|ok| UserTargetSettings {
             age: age.validated(ok),

@@ -17,7 +17,7 @@ use crate::user::constraints::NAME_SURNAME_CONSTRAINTS;
 pub struct UserName(String);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
-    Constraints::builder_with("name", &NAME_SURNAME_CONSTRAINTS).build()
+    Constraints::builder_with(&NAME_SURNAME_CONSTRAINTS).build()
 });
 
 impl TryFrom<String> for UserName {
@@ -28,8 +28,4 @@ impl TryFrom<String> for UserName {
     }
 }
 
-impl_try_from_external_input!(
-    domain_type = UserName,
-    input_type = String,
-    constraints = CONSTRAINTS
-);
+impl_try_from_external_input!(domain_type = UserName, input_type = String,);

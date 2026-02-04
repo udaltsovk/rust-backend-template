@@ -1,8 +1,8 @@
 use derive_more::From;
 use domain::session::CreateSession;
-use lib::{
-    domain::{into_validators, validation::error::ValidationResult},
-    presentation::api::rest::{UserInput, model::Parseable},
+use lib::presentation::api::rest::{
+    into_validators,
+    validation::{UserInput, parseable::Parseable, validator::ValidatorResult},
 };
 use redact::{Secret, expose_secret};
 use serde::{Deserialize, Serialize};
@@ -22,7 +22,7 @@ pub struct JsonUserSession {
     token: Secret<String>,
 }
 
-#[derive(Deserialize, ToSchema)]
+#[derive(Deserialize, ToSchema, Default)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 pub struct CreateJsonSession {
     ///
@@ -56,11 +56,11 @@ pub struct CreateJsonSession {
 }
 
 impl Parseable<CreateSession> for CreateJsonSession {
-    const FIELD: &str = "credentials";
-
-    fn parse(self) -> ValidationResult<CreateSession> {
-        let (errors, (email, password)) =
-            into_validators!(self.email, self.password);
+    fn parse(self) -> ValidatorResult<CreateSession> {
+        let (errors, (email, password)) = into_validators!(
+            field!(self.email, required, "email"),
+            field!(self.password, required, "password")
+        );
 
         errors.into_result(|ok| CreateSession {
             email: email.validated(ok),

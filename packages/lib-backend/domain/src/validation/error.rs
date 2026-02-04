@@ -8,27 +8,16 @@ use crate::validation::ValidationConfirmation;
 #[derive(Clone, Debug)]
 #[must_use]
 pub struct ValidationError {
-    pub path: String,
     pub issue: String,
     pub rejected_value: Value,
-}
-
-impl ValidationError {
-    pub fn prepend_path<P>(mut self, path: P) -> Self
-    where
-        P: fmt::Display,
-    {
-        self.path = format!("{path}.{}", self.path);
-        self
-    }
 }
 
 impl fmt::Display for ValidationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Path: {}, Issue: {}, Rejected value: {:?}",
-            self.path, self.issue, self.rejected_value
+            "Issue: {}, Rejected value: {:?}",
+            self.issue, self.rejected_value
         )
     }
 }
@@ -61,14 +50,13 @@ impl ValidationErrors {
         self.0.append(&mut other.0);
     }
 
-    pub fn with_error<P, M, V>(path: P, issue: M, rejected_value: V) -> Self
+    pub fn with_error<M, V>(issue: M, rejected_value: V) -> Self
     where
-        P: ToString,
         M: ToString,
         V: Serialize,
     {
         let mut this = Self::new();
-        this.push(path, issue, rejected_value);
+        this.push(issue, rejected_value);
         this
     }
 
@@ -76,14 +64,12 @@ impl ValidationErrors {
         clippy::needless_pass_by_value,
         reason = "clippy doesn't know that we want &str here too"
     )]
-    pub fn push<P, M, V>(&mut self, path: P, issue: M, rejected_value: V)
+    pub fn push<M, V>(&mut self, issue: M, rejected_value: V)
     where
-        P: ToString,
         M: ToString,
         V: Serialize,
     {
         let error = ValidationError {
-            path: path.to_string(),
             issue: issue.to_string(),
             rejected_value: serde_value::to_value(rejected_value)
                 .unwrap_or(Value::Option(None)),
@@ -115,7 +101,7 @@ impl fmt::Display for ValidationErrors {
             .collect::<Vec<_>>()
             .join("\n");
 
-        format!("Validation errors: [\n{errors}\n]").fmt(f)
+        write!(f, "Validation errors: [\n{errors}\n]")
     }
 }
 
@@ -123,17 +109,12 @@ impl Error for ValidationErrors {}
 
 impl From<Vec<Self>> for ValidationErrors {
     fn from(errors: Vec<Self>) -> Self {
-        errors.into_iter().enumerate().fold(
-            Self::default(),
-            |mut acc, (i, e)| {
-                let error_vec =
-                    e.0.into_iter()
-                        .map(|error| error.prepend_path(i))
-                        .collect();
-                acc.extend(Self(error_vec));
-                acc
-            },
-        )
+        errors
+            .into_iter()
+            .fold(Self::default(), |mut accumulator, error| {
+                accumulator.extend(Self(error.0));
+                accumulator
+            })
     }
 }
 

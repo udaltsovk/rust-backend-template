@@ -57,7 +57,6 @@ static DEFAULT_TYPE_MISMATCH_FN: TypeMismatchFn =
     |expected| format!("must be {expected}");
 
 pub struct ConstraintsBuilder<T> {
-    name: &'static str,
     constraints: ConstraintVec<T>,
     type_mismatch_fn: Option<TypeMismatchFn>,
     none_msg: Option<&'static str>,
@@ -66,17 +65,13 @@ pub struct ConstraintsBuilder<T> {
 
 impl<T> ConstraintsBuilder<T> {
     #[must_use]
-    pub const fn new(name: &'static str) -> Self {
-        Self::new_with_constraints(name, ConstraintVec::new())
+    pub const fn new() -> Self {
+        Self::new_with_constraints(ConstraintVec::new())
     }
 
     #[must_use]
-    pub const fn new_with_constraints(
-        name: &'static str,
-        constraints: ConstraintVec<T>,
-    ) -> Self {
+    pub const fn new_with_constraints(constraints: ConstraintVec<T>) -> Self {
         Self {
-            name,
             constraints,
             type_mismatch_fn: None,
             none_msg: None,
@@ -117,7 +112,6 @@ impl<T> ConstraintsBuilder<T> {
     #[must_use]
     pub fn build(self) -> Constraints<T> {
         Constraints {
-            name: self.name,
             inner: self.constraints,
             type_mismatch_fn: self
                 .type_mismatch_fn
@@ -128,8 +122,13 @@ impl<T> ConstraintsBuilder<T> {
     }
 }
 
+impl<T> Default for ConstraintsBuilder<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 pub struct Constraints<T> {
-    name: &'static str,
     inner: ConstraintVec<T>,
     type_mismatch_fn: TypeMismatchFn,
     none_msg: &'static str,
@@ -141,27 +140,20 @@ where
     T: Serialize + Debug + Clone + Send + Sync + 'static,
 {
     #[must_use]
-    pub const fn builder(name: &'static str) -> ConstraintsBuilder<T> {
-        ConstraintsBuilder::new(name)
+    pub const fn builder() -> ConstraintsBuilder<T> {
+        ConstraintsBuilder::new()
     }
 
     #[must_use]
     pub fn builder_with(
-        name: &'static str,
         constraints: &ConstraintVec<T>,
     ) -> ConstraintsBuilder<T> {
-        ConstraintsBuilder::new_with_constraints(name, constraints.clone())
+        ConstraintsBuilder::new_with_constraints(constraints.clone())
     }
 
     #[must_use]
-    pub const fn name(&self) -> &'static str {
-        self.name
-    }
-
-    #[must_use]
-    pub fn derived(name: &'static str, source: &Self) -> Self {
+    pub fn derived(source: &Self) -> Self {
         Self {
-            name,
             inner: source.inner.clone(),
             type_mismatch_fn: source.type_mismatch_fn,
             none_msg: source.none_msg,
@@ -175,7 +167,7 @@ where
         for constraint in &self.inner.0 {
             if !constraint.check(value) {
                 let message = constraint.error_msg();
-                errors.push(self.name, message, value.clone());
+                errors.push(message, value.clone());
             }
         }
 

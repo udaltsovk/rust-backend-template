@@ -16,7 +16,7 @@ use lib::{
 pub struct UserTargetSettingsCountry(String);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> = LazyLock::new(|| {
-    Constraints::builder("country")
+    Constraints::builder()
         .add_constraint(IsIso3166Alpha2CountryCode)
         .build()
 });
@@ -32,7 +32,6 @@ impl TryFrom<String> for UserTargetSettingsCountry {
 impl_try_from_external_input!(
     domain_type = UserTargetSettingsCountry,
     input_type = String,
-    constraints = CONSTRAINTS
 );
 
 struct IsIso3166Alpha2CountryCode;

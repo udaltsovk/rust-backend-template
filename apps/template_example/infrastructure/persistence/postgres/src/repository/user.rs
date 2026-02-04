@@ -34,8 +34,7 @@ impl UserRepository for PostgresRepositoryImpl<User> {
         let surname = source.surname.into_inner();
         let email = source.email.into_inner();
         let password_hash = password_hash.0.expose_secret();
-        let avatar_url =
-            source.avatar_url.flatten().map(DomainType::into_inner);
+        let avatar_url = source.avatar_url.map(DomainType::into_inner);
         let target_settings: StoredUserTargetSettings =
             source.target_settings.into();
 
