@@ -18,7 +18,7 @@ use crate::errors::{JsonError, JsonErrorStruct};
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct FieldError {
-    #[schema(value_type = String)]
+    #[cfg_attr(feature = "openapi", schema(value_type = String))]
     pub field: Arc<str>,
 
     pub issue: String,
