@@ -1,3 +1,6 @@
+set dotenv-load := true
+set dotenv-required := true
+
 export RUSTFLAGS := "-Z macro-backtrace --cfg tokio_unstable"
 database_url := "DATABASE_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DATABASE"
 dev_compose_file := "./dev.compose.yml"
@@ -9,8 +12,7 @@ dev-compose-down:
 dev-compose-up:
     docker compose -f {{ dev_compose_file }} up -d
 
-dev-compose-restart:
-    just dev-compose-down dev-compose-up
+dev-compose-restart: dev-compose-down dev-compose-up
 
 udeps *args="--all":
     cargo udeps {{ args }}
@@ -37,15 +39,9 @@ coverage *args="--skip-clean --workspace --all-targets -o Xml -o Html":
 build crate=(default_app_name + "-monolyth") *args:
     cargo build --bin {{ crate }} {{ args }}
 
-style:
-    just fmt
-    just lint
+style: fmt lint
 
-check:
-    just udeps
-    just audit
-    just style
-    just coverage
+check: udeps audit style coverage
 
 run crate=(default_app_name + "-monolyth") *args:
     cargo run --bin {{ crate }} {{ args }}
