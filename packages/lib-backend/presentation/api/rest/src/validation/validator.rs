@@ -39,18 +39,23 @@ impl<T> Validator<T> {
         }
     }
 
-    pub fn required<F>(
+    pub fn required<F, I>(
         field: &'static str,
-        input: UserInput<F>,
+        input: I,
         errors: &mut FieldErrors,
     ) -> Self
     where
+        I: Into<UserInput<F>>,
         T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
     {
         Self::from_result(
-            input.pipe(ExternalInput::from).try_into().map_err(|err| {
-                FieldErrors::from_validation_errors(&field.into(), err)
-            }),
+            input
+                .into()
+                .pipe(ExternalInput::from)
+                .try_into()
+                .map_err(|err| {
+                    FieldErrors::from_validation_errors(&field.into(), err)
+                }),
             errors,
         )
     }
@@ -86,15 +91,16 @@ impl<T> From<Vec<Validator<T>>> for Validator<Vec<T>> {
 }
 
 impl<T> Validator<Option<T>> {
-    pub fn required_nullable<F>(
+    pub fn required_nullable<F, I>(
         field: &'static str,
-        input: UserInput<F>,
+        input: I,
         errors: &mut FieldErrors,
     ) -> Self
     where
+        I: Into<UserInput<F>>,
         T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
     {
-        match input {
+        match input.into() {
             UserInput::Null => Self {
                 inner: Ok(None),
             },
@@ -110,15 +116,16 @@ impl<T> Validator<Option<T>> {
         }
     }
 
-    pub fn optional<F>(
+    pub fn optional<F, I>(
         field: &'static str,
-        input: UserInput<F>,
+        input: I,
         errors: &mut FieldErrors,
     ) -> Self
     where
+        I: Into<UserInput<F>>,
         T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
     {
-        match input {
+        match input.into() {
             UserInput::Missing => Self {
                 inner: Ok(None),
             },
@@ -136,15 +143,16 @@ impl<T> Validator<Option<T>> {
 }
 
 impl<T> Validator<Option<Option<T>>> {
-    pub fn optional_nullable<F>(
+    pub fn optional_nullable<F, I>(
         field: &'static str,
-        input: UserInput<F>,
+        input: I,
         errors: &mut FieldErrors,
     ) -> Self
     where
+        I: Into<UserInput<F>>,
         T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
     {
-        match input {
+        match input.into() {
             UserInput::Missing => Self {
                 inner: Ok(None),
             },

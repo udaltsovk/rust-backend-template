@@ -83,6 +83,12 @@ where
 #[cfg_attr(debug_assertions, derive(Debug))]
 pub struct LossyUserInput<T>(pub UserInput<T>);
 
+impl<T> From<LossyUserInput<T>> for UserInput<T> {
+    fn from(input: LossyUserInput<T>) -> Self {
+        input.0
+    }
+}
+
 impl<T> LossyUserInput<T> {
     pub fn from_domain<D, I>(domain_value: D) -> Self
     where
