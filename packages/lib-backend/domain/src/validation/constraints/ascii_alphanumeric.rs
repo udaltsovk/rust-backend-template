@@ -1,8 +1,18 @@
+use bon::Builder;
+
 use crate::validation::constraints::Constraint;
 
-pub struct IsAsciiAlphanumeric;
+#[derive(Builder)]
+#[builder(derive(Clone), start_fn = with_err)]
+pub struct IsAsciiAlphanumeric<T>
+where
+    T: ToString,
+{
+    #[builder(start_fn)]
+    err_fn: fn(&T) -> String,
+}
 
-impl<T> Constraint<T> for IsAsciiAlphanumeric
+impl<T> Constraint<T> for IsAsciiAlphanumeric<T>
 where
     T: ToString,
 {
@@ -10,8 +20,8 @@ where
         value.to_string().chars().all(|c| c.is_ascii_alphanumeric())
     }
 
-    fn error_msg(&self) -> String {
-        "must contain only ascii alphanumeric characters".to_string()
+    fn error_msg(&self, rejected_value: &T) -> String {
+        (self.err_fn)(rejected_value)
     }
 }
 
@@ -20,11 +30,15 @@ mod tests {
     use rstest::{fixture, rstest};
 
     use super::IsAsciiAlphanumeric;
-    use crate::validation::constraints::Constraint;
+    use crate::validation::constraints::Constraint as _;
+
+    fn err(_: &String) -> String {
+        "must contain only ascii alphanumeric characters".to_string()
+    }
 
     #[fixture]
-    fn constraint() -> IsAsciiAlphanumeric {
-        IsAsciiAlphanumeric
+    fn constraint() -> IsAsciiAlphanumeric<String> {
+        IsAsciiAlphanumeric::with_err(err).build()
     }
 
     #[rstest]
@@ -110,7 +124,7 @@ mod tests {
     #[case("test.file", false)] // dot separator
     #[case("password!123", false)] // exclamation mark
     fn is_ascii_alphanumeric_constraint(
-        constraint: IsAsciiAlphanumeric,
+        constraint: IsAsciiAlphanumeric<String>,
         #[case] input: &str,
         #[case] expected: bool,
     ) {
@@ -118,17 +132,17 @@ mod tests {
     }
 
     #[rstest]
-    fn is_ascii_alphanumeric_error_message(constraint: IsAsciiAlphanumeric) {
-        assert_eq!(
-            <IsAsciiAlphanumeric as Constraint<String>>::error_msg(&constraint),
-            "must contain only ascii alphanumeric characters"
-        );
+    fn is_ascii_alphanumeric_error_message(
+        constraint: IsAsciiAlphanumeric<String>,
+    ) {
+        let value = "🦀".into();
+        assert_eq!(constraint.error_msg(&value), err(&value));
     }
 
     #[rstest]
-    fn is_ascii_alphanumeric_boundary_values() {
-        let constraint = IsAsciiAlphanumeric;
-
+    fn is_ascii_alphanumeric_boundary_values(
+        constraint: IsAsciiAlphanumeric<String>,
+    ) {
         // Test ASCII boundary characters
         // '0' (48) and '9' (57) - ASCII digits
         assert!(constraint.check(&"0".to_string()));
@@ -152,9 +166,9 @@ mod tests {
     }
 
     #[rstest]
-    fn is_ascii_alphanumeric_empty_and_whitespace() {
-        let constraint = IsAsciiAlphanumeric;
-
+    fn is_ascii_alphanumeric_empty_and_whitespace(
+        constraint: IsAsciiAlphanumeric<String>,
+    ) {
         // Empty string should pass (vacuously true)
         assert!(constraint.check(&String::new()));
 

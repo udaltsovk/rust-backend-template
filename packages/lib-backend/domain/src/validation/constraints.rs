@@ -23,7 +23,7 @@ pub use regex_constraint::Matches;
 pub trait Constraint<T> {
     fn check(&self, value: &T) -> bool;
 
-    fn error_msg(&self) -> String;
+    fn error_msg(&self, rejected_value: &T) -> String;
 }
 
 #[derive_where(Clone)]
@@ -166,7 +166,7 @@ where
 
         for constraint in &self.inner.0 {
             if !constraint.check(value) {
-                let message = constraint.error_msg();
+                let message = constraint.error_msg(value);
                 errors.push(message, value.clone());
             }
         }

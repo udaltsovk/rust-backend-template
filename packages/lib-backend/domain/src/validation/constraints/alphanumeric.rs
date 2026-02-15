@@ -1,8 +1,18 @@
+use bon::Builder;
+
 use crate::validation::constraints::Constraint;
 
-pub struct IsAlphanumeric;
+#[derive(Builder)]
+#[builder(derive(Clone), start_fn = with_err)]
+pub struct IsAlphanumeric<T>
+where
+    T: ToString,
+{
+    #[builder(start_fn)]
+    err_fn: fn(&T) -> String,
+}
 
-impl<T> Constraint<T> for IsAlphanumeric
+impl<T> Constraint<T> for IsAlphanumeric<T>
 where
     T: ToString,
 {
@@ -10,8 +20,8 @@ where
         value.to_string().chars().all(char::is_alphanumeric)
     }
 
-    fn error_msg(&self) -> String {
-        "must contain only alphanumeric characters".to_string()
+    fn error_msg(&self, rejected_value: &T) -> String {
+        (self.err_fn)(rejected_value)
     }
 }
 
@@ -22,13 +32,14 @@ mod tests {
     use super::IsAlphanumeric;
     use crate::validation::constraints::Constraint;
 
+    fn err(_: &String) -> String {
+        "must contain only alphanumeric characters".to_string()
+    }
+
     #[fixture]
     #[default(impl Constraint<String>)]
-    fn constraint<T>() -> impl Constraint<T>
-    where
-        T: ToString,
-    {
-        IsAlphanumeric
+    fn constraint() -> impl Constraint<String> {
+        IsAlphanumeric::with_err(err).build()
     }
 
     #[rstest]
@@ -87,9 +98,7 @@ mod tests {
 
     #[rstest]
     fn is_alphanumeric_error_message(constraint: impl Constraint<String>) {
-        assert_eq!(
-            constraint.error_msg(),
-            "must contain only alphanumeric characters"
-        );
+        let value = "**".into();
+        assert_eq!(constraint.error_msg(&value), err(&value));
     }
 }

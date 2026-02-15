@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+bon.workspace = true
 derive-where.workspace = true
 pastey.workspace = true
 serde.workspace = true

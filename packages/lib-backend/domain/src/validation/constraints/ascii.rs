@@ -1,8 +1,18 @@
+use bon::Builder;
+
 use crate::validation::constraints::Constraint;
 
-pub struct IsAscii;
+#[derive(Builder)]
+#[builder(derive(Clone), start_fn = with_err)]
+pub struct IsAscii<T>
+where
+    T: ToString,
+{
+    #[builder(start_fn)]
+    err_fn: fn(&T) -> String,
+}
 
-impl<T> Constraint<T> for IsAscii
+impl<T> Constraint<T> for IsAscii<T>
 where
     T: ToString,
 {
@@ -10,8 +20,8 @@ where
         value.to_string().is_ascii()
     }
 
-    fn error_msg(&self) -> String {
-        "must contain only ascii characters".to_string()
+    fn error_msg(&self, rejected_value: &T) -> String {
+        (self.err_fn)(rejected_value)
     }
 }
 
@@ -20,11 +30,15 @@ mod tests {
     use rstest::{fixture, rstest};
 
     use super::IsAscii;
-    use crate::validation::constraints::Constraint;
+    use crate::validation::constraints::Constraint as _;
+
+    fn err(_: &String) -> String {
+        "must contain only ascii characters".to_string()
+    }
 
     #[fixture]
-    fn constraint() -> IsAscii {
-        IsAscii
+    fn constraint() -> IsAscii<String> {
+        IsAscii::with_err(err).build()
     }
 
     #[rstest]
@@ -111,7 +125,7 @@ mod tests {
     #[case("price: 10€", false)] // with currency symbol
     #[case("naïve approach", false)] // with accented character
     fn is_ascii_constraint(
-        constraint: IsAscii,
+        constraint: IsAscii<String>,
         #[case] input: &str,
         #[case] expected: bool,
     ) {
@@ -119,17 +133,13 @@ mod tests {
     }
 
     #[rstest]
-    fn is_ascii_error_message(constraint: IsAscii) {
-        assert_eq!(
-            <IsAscii as Constraint<String>>::error_msg(&constraint),
-            "must contain only ascii characters"
-        );
+    fn is_ascii_error_message(constraint: IsAscii<String>) {
+        let value = "🦀".into();
+        assert_eq!(constraint.error_msg(&value), err(&value));
     }
 
     #[rstest]
-    fn is_ascii_boundary_values() {
-        let constraint = IsAscii;
-
+    fn is_ascii_boundary_values(constraint: IsAscii<String>) {
         // ASCII range is 0-127 (0x00-0x7F)
         let ascii_boundary = String::from("\u{007F}"); // DEL character (127)
         let non_ascii_start = String::from("\u{0080}"); // First non-ASCII character (128)
