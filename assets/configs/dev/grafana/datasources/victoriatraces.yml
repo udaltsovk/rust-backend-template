@@ -1,0 +1,7 @@
+apiVersion: 1
+datasources:
+  - name: VictoriaTraces
+    type: jaeger
+    uid: victoriatraces
+    url: http://victoria-traces:10428/select/jaeger
+    jsonData: {}

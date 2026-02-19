@@ -12,32 +12,28 @@ processors:
           - set(attributes["service_namespace"], resource.attributes["service.namespace"])
           - set(attributes["service_name"], resource.attributes["service.name"])
 exporters:
-  otlphttp/loki:
-    endpoint: http://loki:3100/otlp
-    tls:
-      insecure: true
-  otlphttp/tempo:
-    endpoint: http://tempo:4319
-    tls:
-      insecure: true
-  otlphttp/mimir:
-    endpoint: http://mimir:9009/otlp
+  otlphttp/victoriametrics:
+    metrics_endpoint: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    logs_endpoint: http://victoria-logs:9428/insert/opentelemetry/v1/logs
+    traces_endpoint: http://victoria-traces:10428/insert/opentelemetry/v1/traces
+    compression: gzip
+    encoding: proto
     tls:
       insecure: true
 service:
   pipelines:
-    traces:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [otlphttp/tempo]
-    logs:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [otlphttp/loki]
     metrics:
       receivers: [otlp]
       processors: [transform, batch]
-      exporters: [otlphttp/mimir]
+      exporters: [otlphttp/victoriametrics]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/victoriametrics]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/victoriametrics]
   telemetry:
     metrics:
       level: detailed

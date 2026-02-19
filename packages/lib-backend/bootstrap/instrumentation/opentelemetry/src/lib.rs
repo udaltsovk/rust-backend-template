@@ -32,7 +32,8 @@ pub struct Otel {
 }
 
 impl Otel {
-    fn protocol() -> Protocol {
+    #[inline]
+    const fn protocol() -> Protocol {
         if cfg!(feature = "grpc-tonic") {
             Protocol::Grpc
         } else if cfg!(feature = "http-proto") {

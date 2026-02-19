@@ -19,69 +19,42 @@ services:
       - redis-data:/data
     ports:
       - "6379:6379"
-  s3:
-    image: minio/minio:latest
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-      MINIO_PROMETHEUS_AUTH_TYPE: public
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest
     volumes:
-      - s3-data:/data
-    command: server /data --console-address ":9001"
-  init-buckets:
-    image: minio/mc:latest
-    depends_on:
-      - s3
-    entrypoint: >
-      sh -c "until mc alias set myminio http://s3:9000 minioadmin minioadmin; do sleep 1; done &&
-        mc mb myminio/tempo &&
-        mc mb myminio/mimir &&
-        mc mb myminio/images &&
-        mc policy set public myminio/loki"
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - prometheus-data:/prometheus
-      - ./assets/configs/dev/prometheus.yml:/etc/prometheus/prometheus.yml
+      - victoria-metrics-data:/victoria-metrics-data
+      - ./assets/configs/dev/promscrape.victoriametrics.yml:/scrape.yml
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--enable-feature=native-histograms"
+      - "-enableMetadata"
+      - "-httpListenAddr=:8428"
+      - "-opentelemetry.convertMetricNamesToPrometheus=true"
+      - "-opentelemetry.usePrometheusNaming=true"
+      - "-promscrape.config=/scrape.yml"
+      - "-retentionPeriod=1d"
+      - "-storageDataPath=/victoria-metrics-data"
     ports:
-      - "9091:9090"
-  loki:
-    image: grafana/loki:latest
-    restart: always
-    ports:
-      - "3100:3100"
+      - "8428:8428"
+  victoria-logs:
+    image: victoriametrics/victoria-logs:latest
     volumes:
-      - ./assets/configs/dev/loki.yml:/etc/loki/local-config.yaml
-    command: -config.file=/etc/loki/local-config.yaml
-    depends_on:
-      - s3
-  tempo:
-    image: grafana/tempo:latest
-    restart: always
+      - victoria-logs-data:/victoria-logs-data
+    command:
+      - "-futureRetention=1h"
+      - "-httpListenAddr=:9428"
+      - "-retentionPeriod=1d"
+      - "-storageDataPath=/victoria-logs-data"
     ports:
-      - "3200:3200"
+      - "9428:9428"
+  victoria-traces:
+    image: victoriametrics/victoria-traces:latest
     volumes:
-      - ./assets/configs/dev/tempo.yml:/etc/tempo/tempo-config.yaml
-      - tempo-data:/var/tempo
-    command: -config.file=/etc/tempo/tempo-config.yaml
-    depends_on:
-      - s3
-  mimir:
-    image: grafana/mimir:latest
-    restart: always
+      - victoria-traces-data:/victoria-traces-data
+    command:
+      - "-httpListenAddr=:10428"
+      - "-retentionPeriod=1d"
+      - "-storageDataPath=/victoria-traces-data"
     ports:
-      - "9009:9009"
-    volumes:
-      - ./assets/configs/dev/mimir.yml:/etc/mimir/mimir.yaml
-    command: --config.file=/etc/mimir/mimir.yaml
-    depends_on:
-      - s3
+      - "10428:10428"
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
@@ -93,6 +66,8 @@ services:
     image: grafana/grafana:latest
     ports:
       - "3001:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=victoriametrics-metrics-datasource,victoriametrics-logs-datasource
     volumes:
       - ./assets/configs/dev/grafana/datasources/:/etc/grafana/provisioning/datasources
       - ./assets/configs/dev/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -101,7 +76,7 @@ services:
 volumes:
   postgres-data:
   redis-data:
-  s3-data:
-  prometheus-data:
-  tempo-data:
+  victoria-metrics-data:
+  victoria-logs-data:
+  victoria-traces-data:
   grafana-data:
