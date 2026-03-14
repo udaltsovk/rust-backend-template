@@ -44,7 +44,7 @@ impl<T> UserInput<T> {
 
 impl<'de, T> Deserialize<'de> for UserInput<T>
 where
-    T: Deserialize<'de> + Debug,
+    T: Deserialize<'de>,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

@@ -13,8 +13,7 @@ use utoipa::ToSchema;
 
 use crate::errors::{JsonError, JsonErrorStruct};
 
-#[derive(Serialize, Clone)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Serialize, Clone, Debug)]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct FieldError {
@@ -74,8 +73,8 @@ impl From<FieldError> for (Arc<str>, ValidationError) {
     }
 }
 
-#[derive(Clone, Debug)]
 #[must_use]
+#[derive(Clone, Debug)]
 pub struct FieldErrors(Vec<FieldError>);
 
 impl FieldErrors {
