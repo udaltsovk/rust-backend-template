@@ -10,8 +10,7 @@ mod into_validators;
 pub mod parseable;
 pub mod validator;
 
-#[derive(Mapper, Default, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Mapper, Default, PartialEq, Eq, Debug)]
 #[mapper(ty = ExternalInput, into)]
 pub enum UserInput<T> {
     Ok(T),

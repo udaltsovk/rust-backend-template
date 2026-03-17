@@ -691,6 +691,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c34f04666d835ff5d62e058c3995147c06f42fe86ff053337632bca83e42702d"
 
 [[package]]
+name = "entrait"
+version = "0.7.1"
+source = "git+https://github.com/NikSneMC/entrait?branch=fix%2Fclippy#b54a0faff0d80f9fd902d9e889a068e70a05ab52"
+dependencies = [
+ "entrait_macros",
+ "implementation",
+]
+
+[[package]]
+name = "entrait_macros"
+version = "0.7.1"
+source = "git+https://github.com/NikSneMC/entrait?branch=fix%2Fclippy#b54a0faff0d80f9fd902d9e889a068e70a05ab52"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1290,6 +1309,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "implementation"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4402f07e7cd89c62e506dc24c7ba9dc075a06f074febf9b576e9f248b4dfd4d"
+
+[[package]]
 name = "indexmap"
 version = "2.11.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1439,8 +1464,10 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "dotenvy",
+ "entrait",
  "fromenv",
  "lib-infrastructure-instrumentation",
+ "pastey",
  "quote",
  "rstest 0.26.1",
  "serde_json",
@@ -1519,8 +1546,10 @@ name = "lib-infrastructure-persistence"
 version = "0.1.0"
 dependencies = [
  "derive-where",
+ "entrait",
  "lib-domain",
  "lib-infrastructure-persistence-redis",
+ "mobc",
  "mobc-sqlx",
  "pastey",
  "rstest 0.26.1",
@@ -3351,6 +3380,7 @@ checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
 name = "template_example"
 version = "0.1.0"
 dependencies = [
+ "entrait",
  "fromenv",
  "lib",
  "template_example-application",
@@ -3367,6 +3397,7 @@ name = "template_example-application"
 version = "0.1.0"
 dependencies = [
  "derive-where",
+ "entrait",
  "lib",
  "template_example-domain",
  "thiserror 2.0.17",
@@ -3406,6 +3437,7 @@ name = "template_example-infrastructure-persistence-postgres"
 version = "0.1.0"
 dependencies = [
  "derive-where",
+ "entrait",
  "lib",
  "mobc-sqlx",
  "sqlx",
@@ -3420,6 +3452,7 @@ name = "template_example-infrastructure-persistence-redis"
 version = "0.1.0"
 dependencies = [
  "derive-where",
+ "entrait",
  "lib",
  "mobc-redis",
  "redis",
@@ -3449,6 +3482,7 @@ name = "template_example-infrastructure-services-hasher-argon2"
 version = "0.1.0"
 dependencies = [
  "argon2",
+ "entrait",
  "lib",
  "template_example-application",
  "thiserror 2.0.17",
@@ -3466,6 +3500,7 @@ dependencies = [
 name = "template_example-infrastructure-services-token-jwt"
 version = "0.1.0"
 dependencies = [
+ "entrait",
  "jsonwebtoken",
  "lib",
  "serde",

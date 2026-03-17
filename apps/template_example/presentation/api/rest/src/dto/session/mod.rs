@@ -26,8 +26,7 @@ pub struct SessionDto {
     token: Secret<String>,
 }
 
-#[derive(Deserialize, ToSchema, Default)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Deserialize, ToSchema, Default, Debug)]
 pub struct CreateSessionDto {
     ///
     #[schema(

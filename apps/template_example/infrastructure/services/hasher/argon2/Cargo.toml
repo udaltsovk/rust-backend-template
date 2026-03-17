@@ -8,6 +8,7 @@ edition.workspace = true
 lib = { workspace = true }
 application = { path = "../../../../application", package = "template_example-application" }
 
+entrait.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 

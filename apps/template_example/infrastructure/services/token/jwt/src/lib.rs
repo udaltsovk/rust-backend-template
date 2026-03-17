@@ -1,5 +1,6 @@
-use application::service::token::TokenService;
+use application::service::token::TokenServiceImpl;
 use domain::session::Session;
+use entrait::entrait;
 use jsonwebtoken::{Algorithm, Header, Validation, decode, encode};
 pub use jsonwebtoken::{DecodingKey, EncodingKey};
 use lib::{
@@ -19,22 +20,37 @@ pub struct JwtService {
     decoding_key: DecodingKey,
 }
 
+#[entrait(pub HasJwtService)]
+fn jwt_service(service: &JwtService) -> &JwtService {
+    service
+}
+
+#[entrait(ref)]
 #[instrument_all]
-impl TokenService for JwtService {
-    fn generate(&self, session: Session) -> Result<Secret<String>> {
+impl TokenServiceImpl for JwtService {
+    fn generate_token<App>(
+        app: &App,
+        session: Session,
+    ) -> Result<Secret<String>>
+    where
+        App: HasJwtService,
+    {
         encode(
             &Header::new(Algorithm::HS256),
             &Claims::from(session),
-            &self.encoding_key,
+            &app.jwt_service().encoding_key,
         )
         .map(Secret::new)
         .context("while encoding jwt")
     }
 
-    fn parse(&self, token: Secret<&str>) -> Result<Session> {
+    fn parse_token<App>(app: &App, token: Secret<&str>) -> Result<Session>
+    where
+        App: HasJwtService,
+    {
         decode::<Claims>(
             token.expose_secret(),
-            &self.decoding_key,
+            &app.jwt_service().decoding_key,
             &Validation::default(),
         )
         .context("while decoding jwt")?

@@ -1,10 +1,12 @@
 use application::service::{
-    ServicesModuleExt, hasher::HasherService, token::TokenService,
+    secret_hasher::SecretHasherServiceImpl, token::TokenServiceImpl,
 };
 use infrastructure::services::{
-    hasher::argon2::Argon2Service, token::jwt::JwtService,
+    hasher::argon2::{Argon2Service, HasArgon2Service},
+    token::jwt::{HasJwtService, JwtService},
 };
 
+use crate::Modules;
 pub use crate::modules::services::config::ServicesConfig;
 
 mod config;
@@ -24,12 +26,26 @@ impl ServicesModule {
     }
 }
 
-impl ServicesModuleExt for ServicesModule {
-    fn password_hasher_service(&self) -> &dyn HasherService {
-        &self.password_hasher_service
+impl HasArgon2Service for Modules {
+    fn argon2_service(&self) -> &Argon2Service {
+        &self.services.password_hasher_service
     }
+}
 
-    fn token_service(&self) -> &dyn TokenService {
-        &self.token_service
+impl AsRef<dyn SecretHasherServiceImpl<Self>> for Modules {
+    fn as_ref(&self) -> &dyn SecretHasherServiceImpl<Self> {
+        &self.services.password_hasher_service
+    }
+}
+
+impl HasJwtService for Modules {
+    fn jwt_service(&self) -> &JwtService {
+        &self.services.token_service
+    }
+}
+
+impl AsRef<dyn TokenServiceImpl<Self>> for Modules {
+    fn as_ref(&self) -> &dyn TokenServiceImpl<Self> {
+        &self.services.token_service
     }
 }

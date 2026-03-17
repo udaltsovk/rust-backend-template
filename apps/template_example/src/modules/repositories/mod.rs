@@ -1,13 +1,12 @@
 use application::repository::{
-    RepositoriesModuleExt, session::SessionRepository, user::UserRepository,
+    session::SessionRepositoryImpl, user::UserRepositoryImpl,
 };
-use domain::{session::Session, user::User};
 use infrastructure::persistence::{
     postgres::{POSTGRES_MIGRATOR, repository::PostgresRepositoryImpl},
     redis::repository::RedisRepositoryImpl,
 };
 use lib::{
-    infrastructure::persistence::mobc_sqlx::MigratorExt as _,
+    infrastructure::persistence::{HasPool, mobc_sqlx::MigratorExt as _},
     mobc_redis::{RedisConnectionManager, redis},
     mobc_sqlx::{
         SqlxConnectionManager,
@@ -17,30 +16,24 @@ use lib::{
     tap::Pipe as _,
 };
 
-use crate::modules::repositories::config::RedisConfig;
 pub use crate::modules::repositories::config::{
     PostgresConfig, RepositoriesConfig,
 };
+use crate::{Modules, modules::repositories::config::RedisConfig};
 
 mod config;
 
 #[derive(Clone)]
 pub struct RepositoriesModule {
-    user_repository: PostgresRepositoryImpl<User>,
-    session_repository: RedisRepositoryImpl<Session>,
+    postgres: Pool<SqlxConnectionManager<Postgres>>,
+    redis: Pool<RedisConnectionManager>,
 }
 
 impl RepositoriesModule {
     pub(crate) async fn new(config: &RepositoriesConfig) -> Self {
-        let postgres = Self::setup_postgres(&config.postgres).await;
-        let redis = Self::setup_redis(&config.redis);
-
-        let user_repository = PostgresRepositoryImpl::new(&postgres);
-        let session_repository = RedisRepositoryImpl::new(&redis);
-
         Self {
-            user_repository,
-            session_repository,
+            postgres: Self::setup_postgres(&config.postgres).await,
+            redis: Self::setup_redis(&config.redis),
         }
     }
 
@@ -63,12 +56,26 @@ impl RepositoriesModule {
     }
 }
 
-impl RepositoriesModuleExt for RepositoriesModule {
-    fn user_repository(&self) -> &dyn UserRepository {
-        &self.user_repository
+impl HasPool<SqlxConnectionManager<Postgres>> for Modules {
+    fn pool(&self) -> &Pool<SqlxConnectionManager<Postgres>> {
+        &self.repositories.postgres
     }
+}
 
-    fn session_repository(&self) -> &dyn SessionRepository {
-        &self.session_repository
+impl HasPool<RedisConnectionManager> for Modules {
+    fn pool(&self) -> &Pool<RedisConnectionManager> {
+        &self.repositories.redis
+    }
+}
+
+impl AsRef<dyn UserRepositoryImpl<Self> + Sync> for Modules {
+    fn as_ref(&self) -> &(dyn UserRepositoryImpl<Self> + Sync) {
+        &PostgresRepositoryImpl
+    }
+}
+
+impl AsRef<dyn SessionRepositoryImpl<Self> + Sync> for Modules {
+    fn as_ref(&self) -> &(dyn SessionRepositoryImpl<Self> + Sync) {
+        &RedisRepositoryImpl
     }
 }

@@ -1,15 +1,17 @@
+use application::Application;
 use lib::utoipa_axum::{router::OpenApiRouter, routes};
-
-use crate::ModulesExt;
 
 pub mod auth;
 pub mod profile;
 
 pub const B2C_TAG: &str = "B2C";
 
-pub fn router<M: ModulesExt>() -> OpenApiRouter<M> {
+pub fn router<App>() -> OpenApiRouter<App>
+where
+    App: Application,
+{
     OpenApiRouter::new()
-        .routes(routes!(auth::sign_up::<M>))
-        .routes(routes!(auth::log_in::<M>))
-        .routes(routes!(profile::get_profile::<M>))
+        .routes(routes!(auth::sign_up::<App>))
+        .routes(routes!(auth::log_in::<App>))
+        .routes(routes!(profile::get_profile::<App>))
 }

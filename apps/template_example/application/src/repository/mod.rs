@@ -3,8 +3,6 @@ use crate::repository::{session::SessionRepository, user::UserRepository};
 pub mod session;
 pub mod user;
 
-pub trait RepositoriesModuleExt: Send + Sync {
-    fn user_repository(&self) -> &dyn UserRepository;
+pub trait Repositories: UserRepository + SessionRepository {}
 
-    fn session_repository(&self) -> &dyn SessionRepository;
-}
+impl<T> Repositories for T where T: UserRepository + SessionRepository {}

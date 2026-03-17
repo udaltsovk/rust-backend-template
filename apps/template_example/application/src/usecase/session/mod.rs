@@ -1,20 +1,6 @@
-use domain::session::{Session, entity::SessionEntity};
-use lib::{async_trait, redact::Secret};
-
-use crate::usecase::session::error::SessionUseCaseResult;
-
+mod create;
 pub mod error;
-pub mod implementation;
+mod get_from_token;
 
-#[async_trait]
-pub trait SessionUseCase {
-    async fn create(
-        &self,
-        entity: SessionEntity,
-    ) -> SessionUseCaseResult<Secret<String>>;
-
-    async fn get_from_token(
-        &self,
-        token: Secret<&str>,
-    ) -> SessionUseCaseResult<Session>;
-}
+pub use create::CreateSessionUsecase;
+pub use get_from_token::GetSessionFromTokenUsecase;

@@ -13,6 +13,7 @@ axum = "0.8"
 bon = "3.7"
 chrono = "0.4"
 derive-where = "1.6"
+entrait = "0.7"
 fromenv = "0.1"
 metrics = "0.24"
 mobc = "0.9"
@@ -39,10 +40,10 @@ uuid = "1.18"
 
 
 [patch.crates-io]
+entrait = { git = "https://github.com/NikSneMC/entrait", branch = "fix/clippy" }
 fromenv = { git = "https://github.com/NikSneMC/fromenv", branch = "main" }
 mobc = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
 mobc-redis = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
-# TODO: use utoipa from crates.io when https://github.com/juhaku/utoipa/pull/1329 and https://github.com/juhaku/utoipa/pull/1423 merged
 utoipa = { git = "https://github.com/NikSneMC/utoipa" }
 utoipa-axum = { git = "https://github.com/NikSneMC/utoipa" }
 
@@ -54,6 +55,8 @@ opt-level = 3
 panic = "unwind"
 codegen-units = 1
 
+# [profile.dev]
+# debug-assertions = false
 
 [workspace.lints.rust]
 # unknown_lints = "allow"

@@ -1,5 +1,6 @@
 use std::net::SocketAddr;
 
+use entrait::Impl;
 use lib::{
     async_trait,
     axum::http::{HeaderValue, Method, header},
@@ -19,7 +20,7 @@ mod config;
 impl BootstrapperExt for RestApi {
     type Config = RestApiConfig;
 
-    async fn bootstrap(config: &Self::Config, modules: Modules) {
+    async fn bootstrap(config: &Self::Config, deps: Impl<Modules>) {
         let metric_layer = HttpMetricsLayerBuilder::new()
             .with_skipper(PathSkipper::new(Self::is_openapi_route))
             .build();
@@ -50,7 +51,7 @@ impl BootstrapperExt for RestApi {
             .layer(ServiceBuilder::new().layer(metric_layer).layer(cors_layer))
             .split_for_parts();
 
-        Self::builder(router, modules)
+        Self::builder(router, deps)
             .with_openapi(openapi)
             .build()
             .run(SocketAddr::from(config))

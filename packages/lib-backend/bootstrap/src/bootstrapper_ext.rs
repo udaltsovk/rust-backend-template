@@ -5,7 +5,10 @@ macro_rules! bootstrapper_ext_trait {
         pub trait BootstrapperExt {
             type Config: fromenv::__private::FromEnv;
 
-            async fn bootstrap(config: &Self::Config, modules: $modules_ty);
+            async fn bootstrap(
+                config: &Self::Config,
+                deps: ::entrait::Impl<$modules_ty>,
+            );
         }
     };
 }

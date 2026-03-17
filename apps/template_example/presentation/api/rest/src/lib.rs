@@ -7,5 +7,4 @@ mod openapi;
 pub mod routes;
 
 use errors::ApiError;
-pub use modules::ModulesExt;
 pub use openapi::ApiDoc;
