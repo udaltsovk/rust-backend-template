@@ -2,7 +2,7 @@ use std::net::{IpAddr, SocketAddr};
 
 use fromenv::FromEnv;
 
-#[derive(FromEnv)]
+#[derive(FromEnv, Clone)]
 #[env(prefix = "SERVER_")]
 pub struct RestApiConfig {
     #[env(default = "::")]

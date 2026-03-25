@@ -5,6 +5,7 @@ use jsonwebtoken::{Algorithm, Header, Validation, decode, encode};
 pub use jsonwebtoken::{DecodingKey, EncodingKey};
 use lib::{
     anyhow::{Context as _, Result},
+    application::di::Has,
     instrument_all,
     redact::Secret,
     tap::{Conv as _, Pipe as _},
@@ -20,11 +21,6 @@ pub struct JwtService {
     decoding_key: DecodingKey,
 }
 
-#[entrait(pub HasJwtService)]
-fn jwt_service(service: &JwtService) -> &JwtService {
-    service
-}
-
 #[entrait(ref)]
 #[instrument_all]
 impl TokenServiceImpl for JwtService {
@@ -33,12 +29,12 @@ impl TokenServiceImpl for JwtService {
         session: Session,
     ) -> Result<Secret<String>>
     where
-        App: HasJwtService,
+        App: Has<Self>,
     {
         encode(
             &Header::new(Algorithm::HS256),
             &Claims::from(session),
-            &app.jwt_service().encoding_key,
+            &app.get_dependency().encoding_key,
         )
         .map(Secret::new)
         .context("while encoding jwt")
@@ -46,11 +42,11 @@ impl TokenServiceImpl for JwtService {
 
     fn parse_token<App>(app: &App, token: Secret<&str>) -> Result<Session>
     where
-        App: HasJwtService,
+        App: Has<Self>,
     {
         decode::<Claims>(
             token.expose_secret(),
-            &app.jwt_service().decoding_key,
+            &app.get_dependency().decoding_key,
             &Validation::default(),
         )
         .context("while decoding jwt")?

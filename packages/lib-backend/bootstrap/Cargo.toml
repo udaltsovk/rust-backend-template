@@ -29,10 +29,12 @@ instrumentation-stdout = ["instrumentation", "instrumentation/stdout"]
 openapi = ["dep:serde_json", "dep:utoipa"]
 
 [dependencies]
+infrastructure-persistence = { path = "../infrastructure/persistence", package = "lib-infrastructure-persistence" }
 instrumentation = { path = "./instrumentation", package = "lib-infrastructure-instrumentation", optional = true }
 
 entrait.workspace = true
 fromenv.workspace = true
+mobc.workspace = true
 pastey.workspace = true
 serde_json = { workspace = true, optional = true }
 thiserror.workspace = true

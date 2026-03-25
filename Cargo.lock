@@ -1454,6 +1454,7 @@ name = "lib-application"
 version = "0.1.0"
 dependencies = [
  "derive-where",
+ "entrait",
  "pastey",
  "rstest 0.26.1",
 ]
@@ -1467,6 +1468,8 @@ dependencies = [
  "entrait",
  "fromenv",
  "lib-infrastructure-instrumentation",
+ "lib-infrastructure-persistence",
+ "mobc",
  "pastey",
  "quote",
  "rstest 0.26.1",

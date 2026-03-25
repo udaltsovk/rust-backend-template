@@ -12,6 +12,7 @@ lib = { path = "./packages/lib-backend" }
 axum = "0.8"
 bon = "3.7"
 chrono = "0.4"
+derive_more = "2.1"
 derive-where = "1.6"
 entrait = "0.7"
 fromenv = "0.1"

@@ -3,13 +3,13 @@ use infrastructure::services::token::jwt::{
     DecodingKey, EncodingKey, JwtService,
 };
 
-#[derive(FromEnv)]
+#[derive(FromEnv, Clone)]
 pub struct ServicesConfig {
     #[env(nested)]
     pub jwt: JwtConfig,
 }
 
-#[derive(FromEnv)]
+#[derive(FromEnv, Clone)]
 #[env(prefix = "JWT_")]
 pub struct JwtConfig {
     pub secret: String,

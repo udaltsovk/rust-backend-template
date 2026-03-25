@@ -7,13 +7,13 @@ use domain::{
 use entrait::entrait;
 use lib::{
     anyhow::Result,
+    application::di::Has,
     async_trait,
     domain::{DomainType, Id},
-    infrastructure::persistence::HasPool,
     instrument_all,
     tap::{Conv as _, Pipe as _},
 };
-use mobc_sqlx::SqlxConnectionManager;
+use mobc_sqlx::{SqlxConnectionManager, mobc::Pool};
 use sqlx::{Postgres, query_file_as};
 
 use crate::{
@@ -32,9 +32,9 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
         password_hash: PasswordHash,
     ) -> Result<User>
     where
-        App: HasPool<SqlxConnectionManager<Postgres>>,
+        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
     {
-        let mut connection = app.pool().get().await?;
+        let mut connection = app.get_dependency().get().await?;
 
         let id = id.value;
         let name = source.name.into_inner();
@@ -68,9 +68,9 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
         id: Id<User>,
     ) -> Result<Option<User>>
     where
-        App: HasPool<SqlxConnectionManager<Postgres>>,
+        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
     {
-        let mut connection = app.pool().get().await?;
+        let mut connection = app.get_dependency().get().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_id.sql", id.value)
             .fetch_optional(&mut *connection)
@@ -84,9 +84,9 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
         email: &Email,
     ) -> Result<Option<User>>
     where
-        App: HasPool<SqlxConnectionManager<Postgres>>,
+        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
     {
-        let mut connection = app.pool().get().await?;
+        let mut connection = app.get_dependency().get().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_email.sql", email.as_ref())
             .fetch_optional(&mut *connection)

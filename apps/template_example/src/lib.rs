@@ -7,7 +7,7 @@ pub use modules::Modules;
 
 use crate::{bootstrappers::rest_api::RestApiConfig, modules::ModulesConfig};
 
-#[derive(FromEnv)]
+#[derive(FromEnv, Clone)]
 pub struct AppConfig {
     #[env(nested)]
     pub server: RestApiConfig,

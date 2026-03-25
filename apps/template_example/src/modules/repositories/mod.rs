@@ -6,7 +6,9 @@ use infrastructure::persistence::{
     redis::repository::RedisRepositoryImpl,
 };
 use lib::{
-    infrastructure::persistence::{HasPool, mobc_sqlx::MigratorExt as _},
+    application::impl_Has,
+    bootstrap::impl_repositories,
+    infrastructure::persistence::mobc_sqlx::MigratorExt as _,
     mobc_redis::{RedisConnectionManager, redis},
     mobc_sqlx::{
         SqlxConnectionManager,
@@ -25,6 +27,8 @@ mod config;
 
 #[derive(Clone)]
 pub struct RepositoriesModule {
+    #[expect(dead_code, reason = "we may use config in the future")]
+    config: RepositoriesConfig,
     postgres: Pool<SqlxConnectionManager<Postgres>>,
     redis: Pool<RedisConnectionManager>,
 }
@@ -32,6 +36,7 @@ pub struct RepositoriesModule {
 impl RepositoriesModule {
     pub(crate) async fn new(config: &RepositoriesConfig) -> Self {
         Self {
+            config: config.clone(),
             postgres: Self::setup_postgres(&config.postgres).await,
             redis: Self::setup_redis(&config.redis),
         }
@@ -56,26 +61,14 @@ impl RepositoriesModule {
     }
 }
 
-impl HasPool<SqlxConnectionManager<Postgres>> for Modules {
-    fn pool(&self) -> &Pool<SqlxConnectionManager<Postgres>> {
-        &self.repositories.postgres
-    }
+impl_Has! {
+    struct: Modules,
+    Pool<SqlxConnectionManager<Postgres>>: |s| &s.repositories.postgres,
+    Pool<RedisConnectionManager>: |s| &s.repositories.redis,
 }
 
-impl HasPool<RedisConnectionManager> for Modules {
-    fn pool(&self) -> &Pool<RedisConnectionManager> {
-        &self.repositories.redis
-    }
-}
-
-impl AsRef<dyn UserRepositoryImpl<Self> + Sync> for Modules {
-    fn as_ref(&self) -> &(dyn UserRepositoryImpl<Self> + Sync) {
-        &PostgresRepositoryImpl
-    }
-}
-
-impl AsRef<dyn SessionRepositoryImpl<Self> + Sync> for Modules {
-    fn as_ref(&self) -> &(dyn SessionRepositoryImpl<Self> + Sync) {
-        &RedisRepositoryImpl
-    }
+impl_repositories! {
+    struct: Modules,
+    UserRepositoryImpl: |_s| &PostgresRepositoryImpl,
+    SessionRepositoryImpl: |_s| &RedisRepositoryImpl,
 }

@@ -4,14 +4,11 @@ use application::repository::session::SessionRepositoryImpl;
 use domain::session::{Session, entity::SessionEntity};
 use entrait::entrait;
 use lib::{
-    anyhow::Result,
-    async_trait,
-    infrastructure::persistence::{HasPool, redis::Namespace},
-    instrument_all,
-    tap::Pipe as _,
-    uuid::Uuid,
+    anyhow::Result, application::di::Has, async_trait,
+    infrastructure::persistence::redis::Namespace, instrument_all,
+    tap::Pipe as _, uuid::Uuid,
 };
-use mobc_redis::RedisConnectionManager;
+use mobc_redis::{RedisConnectionManager, mobc::Pool};
 use redis::AsyncTypedCommands as _;
 
 use crate::repository::{META_NAMESPACE, RedisRepositoryImpl};
@@ -25,9 +22,9 @@ static NAMESPACE: LazyLock<Namespace> =
 impl SessionRepositoryImpl for RedisRepositoryImpl {
     async fn save_session<App>(app: &App, source: Session) -> Result<Session>
     where
-        App: HasPool<RedisConnectionManager>,
+        App: Has<Pool<RedisConnectionManager>>,
     {
-        let mut connection = app.pool().get().await?;
+        let mut connection = app.get_dependency().get().await?;
 
         let (entity_type, entity_id) = source.entity.as_tuple();
 
@@ -49,9 +46,9 @@ impl SessionRepositoryImpl for RedisRepositoryImpl {
         entity: SessionEntity,
     ) -> Result<Option<Session>>
     where
-        App: HasPool<RedisConnectionManager>,
+        App: Has<Pool<RedisConnectionManager>>,
     {
-        let mut connection = app.pool().get().await?;
+        let mut connection = app.get_dependency().get().await?;
 
         let (entity_type, entity_id) = entity.as_tuple();
 

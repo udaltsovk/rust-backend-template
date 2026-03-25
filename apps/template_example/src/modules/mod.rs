@@ -9,6 +9,8 @@ mod services;
 
 #[derive(Clone)]
 pub struct Modules {
+    #[expect(dead_code, reason = "we may use config in the future")]
+    config: ModulesConfig,
     repositories: RepositoriesModule,
     services: ServicesModule,
 }
@@ -16,6 +18,7 @@ pub struct Modules {
 impl Modules {
     pub async fn init(config: &ModulesConfig) -> Self {
         Self {
+            config: config.clone(),
             repositories: RepositoriesModule::new(&config.repositories).await,
             services: ServicesModule::new(&config.services),
         }
