@@ -3,6 +3,4 @@ use crate::repository::{session::SessionRepository, user::UserRepository};
 pub mod session;
 pub mod user;
 
-pub trait Repositories: UserRepository + SessionRepository {}
-
-impl<T> Repositories for T where T: UserRepository + SessionRepository {}
+pub trait Repositories = UserRepository + SessionRepository;
