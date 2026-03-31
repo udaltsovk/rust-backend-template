@@ -4,7 +4,7 @@ use application::service::{
 use infrastructure::services::{
     hasher::argon2::Argon2Service, token::jwt::JwtService,
 };
-use lib::{application::impl_Has, bootstrap::impl_services};
+use lib::{application::impl_has, bootstrap::impl_services};
 
 use crate::Modules;
 pub use crate::modules::services::config::ServicesConfig;
@@ -29,7 +29,7 @@ impl ServicesModule {
     }
 }
 
-impl_Has! {
+impl_has! {
     struct: Modules,
     Argon2Service: |s| &s.services.password_hasher_service,
     JwtService: |s| &s.services.token_service,

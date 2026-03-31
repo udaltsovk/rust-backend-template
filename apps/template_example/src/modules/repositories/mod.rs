@@ -6,7 +6,7 @@ use infrastructure::persistence::{
     redis::repository::RedisRepositoryImpl,
 };
 use lib::{
-    application::impl_Has,
+    application::impl_has,
     bootstrap::impl_repositories,
     infrastructure::persistence::mobc_sqlx::MigratorExt as _,
     mobc_redis::{RedisConnectionManager, redis},
@@ -61,7 +61,7 @@ impl RepositoriesModule {
     }
 }
 
-impl_Has! {
+impl_has! {
     struct: Modules,
     Pool<SqlxConnectionManager<Postgres>>: |s| &s.repositories.postgres,
     Pool<RedisConnectionManager>: |s| &s.repositories.redis,

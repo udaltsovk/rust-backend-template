@@ -25,7 +25,7 @@ fn get_dependency<D>(dependency: &DependencyContainer<D>) -> &D {
 }
 
 #[macro_export]
-macro_rules! impl_Has {
+macro_rules! impl_has {
     (
         struct: $struct: ident,
         $($dependency: ty: |$s: ident| $body: expr),* $(,)?

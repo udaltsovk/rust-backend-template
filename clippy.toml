@@ -1,0 +1,5 @@
+standard-macro-braces = [
+  { name = "impl_has", brace = "{" },
+  { name = "impl_repositories", brace = "{" },
+  { name = "impl_services", brace = "{" },
+]
