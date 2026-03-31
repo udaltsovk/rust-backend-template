@@ -17,10 +17,7 @@ async fn authorize_user<App>(
 where
     App: UserRepository + SecretHasherService,
 {
-    let user = app
-        .find_user_by_email(&source.email)
-        .await
-        .map_err(UserUseCaseError::Infrastructure)?;
+    let user = app.find_user_by_email(&source.email).await?;
 
     app.verify_secret(
         &source.password,
@@ -28,7 +25,5 @@ where
     )
     .map_err(|_| UserUseCaseError::InvalidPassword)?;
 
-    let user = user.expect("we can't match nonexistent user password successfully so user should be Some at this point");
-
-    Ok(user)
+    user.ok_or(UserUseCaseError::InvalidPassword)
 }

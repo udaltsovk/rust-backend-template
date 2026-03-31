@@ -3,7 +3,6 @@ use application::usecase::{
     user::{AuthorizeUserUsecase, CreateUserUsecase},
 };
 use axum::{extract::State, http::StatusCode, response::IntoResponse};
-use domain::session::entity::SessionEntity;
 use lib::{
     presentation::api::rest::{
         errors::JsonError, response::ResponseExt as _,
@@ -59,7 +58,7 @@ where
 
     let user = app.create_user(user).await?;
 
-    app.create_session(SessionEntity::from(&user))
+    app.create_session(user.into())
         .await?
         .conv::<SessionDto>()
         .pipe(Json)
@@ -97,7 +96,7 @@ where
 
     let user = app.authorize_user(credentials).await?;
 
-    app.create_session(SessionEntity::from(&user))
+    app.create_session(user.into())
         .await?
         .conv::<SessionDto>()
         .pipe(Json)

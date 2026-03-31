@@ -18,20 +18,13 @@ async fn create_user<App>(
 where
     App: UserRepository + SecretHasherService,
 {
-    if app
-        .find_user_by_email(&source.email)
-        .await
-        .map_err(UserUseCaseError::Infrastructure)?
-        .is_some()
-    {
+    if app.find_user_by_email(&source.email).await?.is_some() {
         return UserUseCaseError::EmailAlreadyUsed(source.email).pipe(Err);
     }
 
-    let password_hash = app
-        .hash_secret(&source.password)
-        .map_err(UserUseCaseError::Infrastructure)?;
+    let password_hash = app.hash_secret(&source.password)?;
 
     app.create_user(Id::generate(), source, password_hash)
-        .await
-        .map_err(UserUseCaseError::Infrastructure)
+        .await?
+        .pipe(Ok)
 }

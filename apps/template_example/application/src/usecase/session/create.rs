@@ -1,12 +1,11 @@
 use domain::session::{Session, entity::SessionEntity};
 use entrait::entrait;
-use lib::redact::Secret;
+use lib::{redact::Secret, tap::Pipe as _};
 use tracing::instrument;
 
 use crate::{
-    repository::session::SessionRepository,
-    service::token::TokenService,
-    usecase::session::error::{SessionUseCaseError, SessionUseCaseResult},
+    repository::session::SessionRepository, service::token::TokenService,
+    usecase::session::error::SessionUseCaseResult,
 };
 
 #[entrait(pub CreateSessionUsecase)]
@@ -25,11 +24,7 @@ where
         }
     };
 
-    let session = app
-        .save_session(session)
-        .await
-        .map_err(SessionUseCaseError::Infrastructure)?;
+    let session = app.save_session(session).await?;
 
-    app.generate_token(session)
-        .map_err(SessionUseCaseError::Infrastructure)
+    app.generate_token(session)?.pipe(Ok)
 }

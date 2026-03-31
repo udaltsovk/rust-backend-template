@@ -18,13 +18,10 @@ async fn get_session_from_token<App>(
 where
     App: SessionRepository + TokenService,
 {
-    let session = app
-        .parse_token(token)
-        .map_err(SessionUseCaseError::Infrastructure)?;
+    let session = app.parse_token(token)?;
 
     app.find_session_by_entity(session.entity)
-        .await
-        .map_err(SessionUseCaseError::Infrastructure)?
+        .await?
         .is_some_and(|ses| session == ses)
         .ok_or(SessionUseCaseError::NotFound(session.id))?;
 

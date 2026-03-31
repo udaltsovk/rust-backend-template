@@ -4,8 +4,7 @@ use lib::{domain::Id, tap::Pipe as _};
 use tracing::instrument;
 
 use crate::{
-    repository::user::UserRepository,
-    usecase::user::error::{UserUseCaseError, UserUseCaseResult},
+    repository::user::UserRepository, usecase::user::error::UserUseCaseResult,
 };
 
 #[entrait(pub FindUserByIdUsecase)]
@@ -17,8 +16,5 @@ async fn find_user_by_id<App>(
 where
     App: UserRepository,
 {
-    app.find_user_by_id(id)
-        .await
-        .map_err(UserUseCaseError::Infrastructure)?
-        .pipe(Ok)
+    app.find_user_by_id(id).await?.pipe(Ok)
 }

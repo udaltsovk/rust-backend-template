@@ -21,7 +21,6 @@ use crate::{
         ("user" = []),
     ),
     responses(
-
         (status = OK, body = UserDto),
         (status = UNAUTHORIZED, body = JsonError),
     ),

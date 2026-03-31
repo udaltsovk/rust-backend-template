@@ -16,8 +16,8 @@ impl From<SessionEntity> for Uuid {
     }
 }
 
-impl From<&User> for SessionEntity {
-    fn from(user: &User) -> Self {
+impl From<User> for SessionEntity {
+    fn from(user: User) -> Self {
         Self::User(user.id)
     }
 }
