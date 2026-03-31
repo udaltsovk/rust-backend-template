@@ -19,15 +19,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
   "links": [],
   "panels": [
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
-      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -39,7 +37,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               }
             ]
           },
@@ -71,15 +70,16 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\"}) by(service_name)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) by(service_namespace, service_name)",
+          "format": "time_series",
           "instant": false,
           "legendFormat": "{{label_name}}",
           "range": true,
@@ -87,13 +87,13 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\"}) by(service_name)",
-          "hide": false,
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) by(service_namespace, service_name)",
+          "format": "time_series",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -122,8 +122,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -135,7 +135,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               }
             ]
           },
@@ -167,20 +168,19 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "disableTextWrap": false,
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"^2.*\", http_route=~\"$route\"}) by(http_response_status_code)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"^2.*\", http_route=~\"$route\"}) by(http_response_status_code)",
           "format": "time_series",
           "fullMetaSearch": false,
-          "hide": false,
           "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "Http Status 2XX",
@@ -190,14 +190,13 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"^3.*\", http_route=~\"$route\"}) by(http_response_status_code)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"^3.*\", http_route=~\"$route\"}) by(http_response_status_code)",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "legendFormat": "Http Status 3XX",
           "range": true,
@@ -205,14 +204,13 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"^4.*\", http_route=~\"$route\"}) by(http_response_status_code)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"^4.*\", http_route=~\"$route\"}) by(http_response_status_code)",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "legendFormat": "Http Status 4XX",
           "range": true,
@@ -220,14 +218,13 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"^5.*\", http_route=~\"$route\"}) by(http_response_status_code)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"^5.*\", http_route=~\"$route\"}) by(http_response_status_code)",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "legendFormat": "Http Status 5XX",
           "range": true,
@@ -235,14 +232,13 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"^2.*\", http_route=~\"$route\"}) by(http_response_status_code)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"^2.*\", http_route=~\"$route\"}) by(http_response_status_code)",
           "format": "time_series",
-          "hide": false,
           "instant": true,
           "legendFormat": "Http Status 2XX",
           "range": false,
@@ -250,14 +246,13 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"^3.*\", http_route=~\"$route\"}) by(http_response_status_code)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"^3.*\", http_route=~\"$route\"}) by(http_response_status_code)",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "legendFormat": "Http Status 3XX",
           "range": true,
@@ -265,14 +260,13 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"^4.*\", http_route=~\"$route\"}) by(http_response_status_code)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"^4.*\", http_route=~\"$route\"}) by(http_response_status_code)",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "legendFormat": "Http Status 4XX",
           "range": true,
@@ -280,14 +274,13 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"^5.*\", http_route=~\"$route\"}) by(http_response_status_code)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"^5.*\", http_route=~\"$route\"}) by(http_response_status_code)",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "legendFormat": "Http Status 5XX",
           "range": true,
@@ -325,8 +318,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "description": "request amount distribution",
       "fieldConfig": {
@@ -373,21 +366,23 @@
           "fields": "",
           "values": false
         },
+        "sort": "desc",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\"}) by(http_request_method, http_route)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) by(http_request_method, http_route)",
+          "format": "time_series",
           "instant": false,
           "legendFormat": "{{http_request_method}} {{http_route}}",
           "range": true,
@@ -399,8 +394,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "description": "cumulative latency distribution",
       "fieldConfig": {
@@ -447,22 +442,24 @@
           "fields": "",
           "values": false
         },
+        "sort": "desc",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_sum{service_name=\"$app\", http_route=~\"$route\"}) by(http_request_method, http_route)",
+          "expr": "sum(http_server_request_duration_seconds_sum{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) by(http_request_method, http_route)",
+          "format": "time_series",
           "instant": true,
           "legendFormat": "{{http_request_method}} {{http_route}}",
           "range": false,
@@ -474,8 +471,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "description": "overall request rate per minute over last 3 minutes",
       "fieldConfig": {
@@ -488,7 +485,8 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               }
             ]
           },
@@ -518,16 +516,16 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\"}[3m])*60)",
-          "hide": false,
+          "expr": "sum(rate(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])*60)",
+          "format": "time_series",
           "instant": false,
           "range": true,
           "refId": "B"
@@ -538,8 +536,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "description": "percentage of HTTP status 5xx in all requests",
       "fieldConfig": {
@@ -552,7 +550,8 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -586,15 +585,16 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code=~\"5.*|\", http_route=~\"$route\"})/sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\"}) or vector(0)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"5.*|\", http_route=~\"$route\"})/sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) or vector(0)",
+          "format": "time_series",
           "instant": false,
           "range": true,
           "refId": "A"
@@ -605,8 +605,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "description": "request rate per minute over last 3 minutes",
       "fieldConfig": {
@@ -638,6 +638,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -652,7 +653,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -684,16 +686,16 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\"}[3m])*60)  by(http_request_method, http_route)",
-          "hide": false,
+          "expr": "sum(rate(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])*60)  by(http_request_method, http_route)",
+          "format": "time_series",
           "instant": false,
           "legendFormat": "{{http_request_method}} {{http_route}}",
           "range": true,
@@ -705,8 +707,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "description": "PR95 latency over last 3 minutes",
       "fieldConfig": {
@@ -738,6 +740,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -752,7 +755,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -784,15 +788,16 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"$app\", http_route=~\"$route\"}[3m])) by (le, http_request_method, http_route))",
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])) by (le, http_request_method, http_route))",
+          "format": "time_series",
           "instant": false,
           "legendFormat": "{{http_request_method}} {{http_route}}",
           "range": true,
@@ -804,8 +809,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "description": "by route and http status code",
       "fieldConfig": {
@@ -819,7 +824,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -862,16 +868,17 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sort_desc(http_server_request_duration_seconds_sum{service_name=\"$app\", http_response_status_code!=\"\", http_route=~\"$route\"} / http_server_request_duration_seconds_count{service_name=\"$app\", http_response_status_code!=\"\", http_route=~\"$route\"})",
+          "expr": "sort_desc(http_server_request_duration_seconds_sum{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code!=\"\", http_route=~\"$route\"} / http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code!=\"\", http_route=~\"$route\"})",
+          "format": "time_series",
           "instant": true,
           "legendFormat": "[{{http_response_status_code}}] {{http_request_method}} {{http_route}}",
           "range": false,
@@ -883,8 +890,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "mimir"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "victoriametrics"
       },
       "description": "Details of each API",
       "fieldConfig": {
@@ -897,6 +904,9 @@
             "cellOptions": {
               "type": "auto"
             },
+            "footer": {
+              "reducers": []
+            },
             "inspect": false
           },
           "mappings": [],
@@ -904,7 +914,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -999,56 +1010,46 @@
       "id": 10,
       "options": {
         "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
+        "enablePagination": true,
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "12.4.1",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\"}[3m])*60) by(service_name, http_request_method, http_route)",
+          "expr": "sum(rate(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])*60) by(service_namespace, service_name, http_request_method, http_route)",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "range": true,
           "refId": "Request Rate"
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"$app\", http_route=~\"$route\"}[3m])) by (le, service_name, http_request_method, http_route))",
-          "hide": false,
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])) by (le, service_namespace, service_name, http_request_method, http_route))",
+          "format": "time_series",
           "instant": false,
           "range": true,
           "refId": "PR95"
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "mimir"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\", http_response_status_code!~\"2.*|3.*\"}) by(service_name, http_request_method, http_route) / sum(http_server_request_duration_seconds_count{service_name=\"$app\", http_route=~\"$route\"}) by(service_name, http_request_method, http_route)",
+          "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\", http_response_status_code!~\"2.*|3.*\"}) by(service_namespace, service_name, http_request_method, http_route) / sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) by(service_namespace, service_name, http_request_method, http_route)",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "range": true,
           "refId": "Error Rate"
@@ -1072,15 +1073,13 @@
             },
             "includeByName": {},
             "indexByName": {
-              "Time": 0,
-              "Trend #PR95 Trend": 7,
-              "Trend #Request Rate Trend": 5,
-              "Value #PR95": 8,
-              "Value #Request Rate": 6,
-              "http_http_request_method": 3,
+              "Trend #Error Rate": 6,
+              "Trend #PR95": 5,
+              "Trend #Request Rate": 4,
+              "http_request_method": 3,
               "http_route": 2,
-              "http_status_code": 4,
-              "service_name": 1
+              "service_name": 1,
+              "service_namespace": 0
             },
             "renameByName": {
               "Trend": "Request Rate Trend",
@@ -1096,9 +1095,11 @@
               "Value #PR95": "PR95 Latency",
               "Value #Request Rate": "Request Rate",
               "http_http_request_method": "http_request_method",
+              "http_request_method": "Request Method",
               "http_route": "Route",
               "http_status_code": "Status Code",
-              "service_name": "Application"
+              "service_name": "Application",
+              "service_namespace": "Namespace"
             }
           }
         }
@@ -1117,8 +1118,8 @@
       "panels": [
         {
           "datasource": {
-            "type": "loki",
-            "uid": "loki"
+            "type": "victoriametrics-logs-datasource",
+            "uid": "victorialogs"
           },
           "description": "Logs of the service, filtered by `service.name`.\n\nTo explore the logs, open the menu clicking on the icon `⋮` of this panel and click on `Explore`.",
           "fieldConfig": {
@@ -1134,26 +1135,31 @@
           "id": 12,
           "options": {
             "dedupStrategy": "none",
+            "detailsMode": "inline",
             "enableInfiniteScrolling": true,
             "enableLogDetails": true,
+            "fontSize": "default",
             "prettifyLogMessage": false,
             "showCommonLabels": false,
+            "showControls": false,
             "showLabels": false,
             "showTime": true,
             "sortOrder": "Ascending",
+            "syntaxHighlighting": true,
+            "unwrappedColumns": false,
             "wrapLogMessage": false
           },
-          "pluginVersion": "12.0.0",
+          "pluginVersion": "12.4.1",
           "targets": [
             {
               "datasource": {
-                "type": "loki",
-                "uid": "loki"
+                "type": "victoriametrics-logs-datasource",
+                "uid": "victorialogs"
               },
-              "direction": "forward",
+              "direction": "asc",
               "editorMode": "code",
-              "expr": "{service_name=\"$app\"} | line_format `\u001b[1m{{if .level }}{{alignRight 5 .level}}{{else if .severity_text}}{{alignRight 5 .severity_text}}{{end}}\u001b[0m \u001b[90m[{{alignRight 10 .service_instance_id}}{{if .thread_name}}/{{alignRight 20 .thread_name}}{{else if eq \"java\" .telemetry_sdk_language }}                    {{end}}]\u001b[0m \u001b[36m{{if .scope_name }}{{alignRight 40 .scope_name}}{{end}}\u001b[0m {{__line__}} {{if .trace_id}} \u001b[37m\u001b[3m[trace_id={{.trace_id}}]{{end}}`",
-              "queryType": "range",
+              "expr": "{service.namespace=\"$namespace\", service.name=\"$service\"}",
+              "queryType": "instant",
               "refId": "A"
             }
           ],
@@ -1165,7 +1171,7 @@
       "type": "row"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1173,115 +1179,140 @@
         "y": 27
       },
       "id": 13,
-      "panels": [
-        {
-          "datasource": {
-            "type": "tempo",
-            "uid": "tempo"
-          },
-          "description": "Traces containing a span emitted by the service",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 10,
-            "w": 24,
-            "x": 0,
-            "y": 28
-          },
-          "id": 14,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true
-          },
-          "pluginVersion": "12.0.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "tempo",
-                "uid": "tempo"
-              },
-              "limit": 20,
-              "metricsQueryType": "range",
-              "query": "{resource.service.name=\"$app\"} | select(status)",
-              "queryType": "traceql",
-              "refId": "A",
-              "tableType": "traces"
-            }
-          ],
-          "title": "",
-          "type": "table"
-        }
-      ],
+      "panels": [],
       "title": "Traces",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "jaeger",
+        "uid": "victoriatraces"
+      },
+      "description": "Traces containing a span emitted by the service",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 14,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "jaeger",
+            "uid": "victoriatraces"
+          },
+          "queryType": "search",
+          "refId": "A",
+          "service": "$service"
+        }
+      ],
+      "title": "",
+      "type": "table"
     }
   ],
   "preload": false,
   "refresh": "30s",
-  "schemaVersion": 41,
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": [
       {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "mimir"
+        "current": {
+          "text": "template_example",
+          "value": "template_example"
         },
-        "definition": "label_values(service_name)",
-        "includeAll": false,
-        "label": "Service",
-        "name": "app",
+        "datasource": {
+          "type": "victoriametrics-metrics-datasource",
+          "uid": "victoriametrics"
+        },
+        "definition": "label_values(service_namespace)",
+        "label": "Service namespace",
+        "name": "namespace",
         "options": [],
         "query": {
-          "query": "label_values(service_name)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          "qryType": 1,
+          "query": "label_values(service_namespace)",
+          "refId": "VariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "type": "query"
       },
       {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "mimir"
+        "current": {
+          "text": "monolyth",
+          "value": "monolyth"
         },
-        "definition": "label_values({service_name=\"$app\"},http_route)",
+        "datasource": {
+          "type": "victoriametrics-metrics-datasource",
+          "uid": "victoriametrics"
+        },
+        "definition": "label_values({service_namespace=\"$namespace\"},service_name)",
+        "includeAll": false,
+        "label": "Service name",
+        "name": "service",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values({service_namespace=\"$namespace\"},service_name)",
+          "refId": "VariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "victoriametrics-metrics-datasource",
+          "uid": "victoriametrics"
+        },
+        "definition": "label_values({service_name=\"$service\"},http_route)",
         "includeAll": true,
         "label": "Route",
         "multi": true,
@@ -1289,22 +1320,34 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values({service_name=\"$app\"},http_route)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          "query": "label_values({service_name=\"$service\"},http_route)",
+          "refId": "VariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "type": "query"
+      },
+      {
+        "baseFilters": [],
+        "datasource": {
+          "type": "victoriametrics-logs-datasource",
+          "uid": "victorialogs"
+        },
+        "filters": [],
+        "name": "Filters",
+        "type": "adhoc"
       }
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
-  "timezone": "",
+  "timezone": "browser",
   "title": "OpenTelemetry APM",
   "uid": "opentelemetry-apm",
-  "version": 1
+  "version": 5,
+  "weekStart": ""
 }

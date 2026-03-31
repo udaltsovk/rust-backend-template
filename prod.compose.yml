@@ -14,94 +14,36 @@ services:
     restart: on-failure
     volumes:
       - redis-data:/data
-  s3:
-    image: minio/minio:latest
-    environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
-      MINIO_PROMETHEUS_AUTH_TYPE: public
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest
     volumes:
-      - s3-data:/data
-    command: server /data --console-address ":9001"
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-  init-buckets:
-    image: minio/mc:latest
-    depends_on:
-      - s3
-    environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
-    entrypoint: >
-      sh -c "until mc alias set myminio http://s3:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD; do sleep 1; done &&
-
-
-
-
-
-             mc mb myminio/loki &&
-             mc mb myminio/tempo &&
-             mc mb myminio/mimir &&
-             mc mb myminio/images &&
-             mc policy set public myminio/loki"
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - prometheus-data:/prometheus
-      - ./assets/configs/prod/prometheus.yml:/etc/prometheus/prometheus.yml
+      - victoria-metrics-data:/victoria-metrics-data
+      - ./assets/configs/prod/prometheus.yml:/scrape.yml
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--enable-feature=native-histograms"
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-  loki:
-    image: grafana/loki:latest
-    restart: always
+      - "-enableMetadata"
+      - "-httpListenAddr=:8428"
+      - "-opentelemetry.convertMetricNamesToPrometheus=true"
+      - "-opentelemetry.usePrometheusNaming=true"
+      - "-promscrape.config=/scrape.yml"
+      - "-retentionPeriod=14d"
+      - "-storageDataPath=/victoria-metrics-data"
+  victoria-logs:
+    image: victoriametrics/victoria-logs:latest
     volumes:
-      - ./assets/configs/prod/loki.yml:/etc/loki/local-config.yaml
+      - victoria-logs-data:/victoria-logs-data
     command:
-      - "--config.file=/etc/loki/local-config.yaml"
-      - "--config.expand-env=true"
-    environment:
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
-      S3_SECRET_KEY: ${S3_SECRET_KEY}
-    depends_on:
-      - s3
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-  tempo:
-    image: grafana/tempo:latest
-    restart: always
+      - "-futureRetention=1h"
+      - "-httpListenAddr=:9428"
+      - "-retentionPeriod=14d"
+      - "-storageDataPath=/victoria-logs-data"
+  victoria-traces:
+    image: victoriametrics/victoria-traces:latest
     volumes:
-      - ./assets/configs/prod/tempo.yml:/etc/tempo/tempo-config.yaml
-      - tempo-data:/var/tempo
+      - victoria-traces-data:/victoria-traces-data
     command:
-      - "--config.file=/etc/tempo/tempo-config.yaml"
-      - "--config.expand-env=true"
-    environment:
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
-      S3_SECRET_KEY: ${S3_SECRET_KEY}
-    depends_on:
-      - s3
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-  mimir:
-    image: grafana/mimir:latest
-    restart: always
-    volumes:
-      - ./assets/configs/prod/mimir.yml:/etc/mimir/mimir.yaml
-    command:
-      - "--config.file=/etc/mimir/mimir.yaml"
-      - "--config.expand-env=true"
-    environment:
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
-      S3_SECRET_KEY: ${S3_SECRET_KEY}
-    depends_on:
-      - s3
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
+      - "-httpListenAddr=:10428"
+      - "-retentionPeriod=14d"
+      - "-storageDataPath=/victoria-traces-data"
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
@@ -112,6 +54,7 @@ services:
     image: grafana/grafana:latest
     environment:
       - GF_SERVER_ROOT_URL=https://${DEPLOY_DOMAIN}/grafana
+      - GF_INSTALL_PLUGINS=victoriametrics-metrics-datasource,victoriametrics-logs-datasource
     volumes:
       - ./assets/configs/prod/grafana/datasources/:/etc/grafana/provisioning/datasources
       - ./assets/configs/prod/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -124,7 +67,6 @@ services:
     restart: on-failure
     depends_on:
       - postgres
-      - s3
       - otel-collector
     environment:
       RUST_LOG: ${LOG_LEVEL}
@@ -142,15 +84,6 @@ services:
       DEPLOY_DOMAIN: localhost
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-  # frontend:
-  #   image: ghcr.io/udaltsovk/project-frontend:master
-  #   restart: on-failure
-  #   depends_on:
-  #     - api
-  #   environment:
-  #     PORT: 3000
-  #   labels:
-  #     - "com.centurylinklabs.watchtower.enable=true"
   proxy:
     image: haproxy:latest
     restart: unless-stopped
@@ -158,27 +91,15 @@ services:
       - ./assets/configs/prod/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     depends_on:
       - backend
-      # - frontend
       - grafana
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
     ports:
       - "3000:3000"
-      # watchtower:
-      #   image: containrrr/watchtower:latest
-      #   environment:
-      #     WATCHTOWER_POLL_INTERVAL: 60
-      #     WATCHTOWER_HTTP_API_METRICS: true
-      #     WATCHTOWER_HTTP_API_TOKEN: token
-      #   volumes:
-      #     - /run/user/1000/containers/auth.json:/config.json
-      #     - /var/run/docker.sock:/var/run/docker.sock
-      #   labels:
-      #     - "com.centurylinklabs.watchtower.enable=false"
 volumes:
   postgres-data:
   redis-data:
-  s3-data:
-  prometheus-data:
-  tempo-data:
+  victoria-metrics-data:
+  victoria-logs-data:
+  victoria-traces-data:
   grafana-data:
