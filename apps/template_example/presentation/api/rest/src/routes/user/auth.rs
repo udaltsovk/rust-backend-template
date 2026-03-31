@@ -1,5 +1,6 @@
 use application::usecase::{
-    session::SessionUseCase as _, user::UserUseCase as _,
+    session::CreateSessionUsecase,
+    user::{AuthorizeUserUsecase, CreateUserUsecase},
 };
 use axum::{extract::State, http::StatusCode, response::IntoResponse};
 use domain::session::entity::SessionEntity;
@@ -10,9 +11,10 @@ use lib::{
     },
     tap::{Conv as _, Pipe as _},
 };
+use tracing::instrument;
 
 use crate::{
-    ApiError, ModulesExt,
+    ApiError,
     dto::{
         session::{CreateSessionDto, SessionDto},
         user::CreateUserDto,
@@ -45,17 +47,19 @@ use crate::{
         BadRequestResponse
     ),
 )]
-pub async fn sign_up<M: ModulesExt>(
-    modules: State<M>,
+#[instrument(skip(app))]
+pub async fn sign_up<App>(
+    app: State<App>,
     Json(source): Json<CreateUserDto>,
-) -> Result<impl IntoResponse, ApiError> {
+) -> Result<impl IntoResponse, ApiError>
+where
+    App: CreateUserUsecase + CreateSessionUsecase,
+{
     let user = source.parse()?;
 
-    let user = modules.user_usecase().create(user).await?;
+    let user = app.create_user(user).await?;
 
-    modules
-        .session_usecase()
-        .create(SessionEntity::from(&user))
+    app.create_session(SessionEntity::from(&user))
         .await?
         .conv::<SessionDto>()
         .pipe(Json)
@@ -81,17 +85,19 @@ pub async fn sign_up<M: ModulesExt>(
         BadRequestResponse
     ),
 )]
-pub async fn log_in<M: ModulesExt>(
-    modules: State<M>,
+#[instrument(skip(app))]
+pub async fn log_in<App>(
+    app: State<App>,
     Json(source): Json<CreateSessionDto>,
-) -> Result<impl IntoResponse, ApiError> {
+) -> Result<impl IntoResponse, ApiError>
+where
+    App: AuthorizeUserUsecase + CreateSessionUsecase,
+{
     let credentials = source.parse()?;
 
-    let user = modules.user_usecase().authorize(credentials).await?;
+    let user = app.authorize_user(credentials).await?;
 
-    modules
-        .session_usecase()
-        .create(SessionEntity::from(&user))
+    app.create_session(SessionEntity::from(&user))
         .await?
         .conv::<SessionDto>()
         .pipe(Json)

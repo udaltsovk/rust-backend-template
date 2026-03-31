@@ -1,13 +1,17 @@
 use std::sync::OnceLock;
 
-use application::service::hasher::{HasherService, Password, PasswordHash};
+use application::service::secret_hasher::{
+    Password, PasswordHash, SecretHasherServiceImpl,
+};
 use argon2::{
     Algorithm, Argon2, Params, ParamsBuilder, PasswordHasher as _,
     PasswordVerifier as _, Version,
     password_hash::{SaltString, rand_core::OsRng},
 };
+use entrait::entrait;
 use lib::{
     anyhow::{Context as _, Result},
+    application::di::Has,
     instrument_all,
     redact::Secret,
     tap::Pipe as _,
@@ -18,10 +22,15 @@ pub struct Argon2Service {
     hasher: Argon2<'static>,
 }
 
+#[entrait(ref)]
 #[instrument_all]
-impl HasherService for Argon2Service {
-    fn hash(&self, data: &Password) -> Result<PasswordHash> {
-        self.hasher
+impl SecretHasherServiceImpl for Argon2Service {
+    fn hash_secret<App>(app: &App, data: &Password) -> Result<PasswordHash>
+    where
+        App: Has<Self>,
+    {
+        app.get_dependency()
+            .hasher
             .hash_password(
                 data.as_ref().expose_secret().as_bytes(),
                 &Self::gen_salt(),
@@ -32,21 +41,25 @@ impl HasherService for Argon2Service {
             .context("while hashing password with argon")
     }
 
-    fn verify(
-        &self,
+    fn verify_secret<App>(
+        app: &App,
         data: &Password,
         original_hash: Option<&PasswordHash>,
-    ) -> Result<()> {
+    ) -> Result<()>
+    where
+        App: Has<Self>,
+    {
         static DUMMY_HASH: OnceLock<String> = OnceLock::new();
+        let hasher = &app.get_dependency().hasher;
 
-        self.hasher
+        hasher
             .verify_password(
                 data.as_ref().expose_secret().as_bytes(),
                 &original_hash
                     .map_or_else(
                         || {
                             DUMMY_HASH.get_or_init(|| {
-                                self.hasher
+                                hasher
                                     .hash_password(&[], &Self::gen_salt())
                                     .expect("hashing to be successful")
                                     .to_string()

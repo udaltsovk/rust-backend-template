@@ -33,6 +33,7 @@ presentation = { path = "./presentation", package = "template_example-presentati
   "api-rest",
 ] }
 
+entrait.workspace = true
 fromenv.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

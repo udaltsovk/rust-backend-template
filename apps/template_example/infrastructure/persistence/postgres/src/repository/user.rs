@@ -1,33 +1,40 @@
-use application::repository::user::UserRepository;
+use application::repository::user::UserRepositoryImpl;
 use domain::{
     email::Email,
     password::PasswordHash,
     user::{CreateUser, User},
 };
+use entrait::entrait;
 use lib::{
     anyhow::Result,
+    application::di::Has,
     async_trait,
     domain::{DomainType, Id},
     instrument_all,
     tap::{Conv as _, Pipe as _},
 };
-use sqlx::query_file_as;
+use mobc_sqlx::{SqlxConnectionManager, mobc::Pool};
+use sqlx::{Postgres, query_file_as};
 
 use crate::{
     entity::user::{StoredUser, target_settings::StoredUserTargetSettings},
     repository::PostgresRepositoryImpl,
 };
 
+#[entrait(ref)]
 #[async_trait]
 #[instrument_all]
-impl UserRepository for PostgresRepositoryImpl<User> {
-    async fn create(
-        &self,
+impl UserRepositoryImpl for PostgresRepositoryImpl {
+    async fn create_user<App>(
+        app: &App,
         id: Id<User>,
         source: CreateUser,
         password_hash: PasswordHash,
-    ) -> Result<User> {
-        let mut connection = self.pool.get().await?;
+    ) -> Result<User>
+    where
+        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
+    {
+        let mut connection = app.get_dependency().get().await?;
 
         let id = id.value;
         let name = source.name.into_inner();
@@ -56,8 +63,14 @@ impl UserRepository for PostgresRepositoryImpl<User> {
         Ok(user)
     }
 
-    async fn find_by_id(&self, id: Id<User>) -> Result<Option<User>> {
-        let mut connection = self.pool.get().await?;
+    async fn find_user_by_id<App>(
+        app: &App,
+        id: Id<User>,
+    ) -> Result<Option<User>>
+    where
+        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
+    {
+        let mut connection = app.get_dependency().get().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_id.sql", id.value)
             .fetch_optional(&mut *connection)
@@ -66,8 +79,14 @@ impl UserRepository for PostgresRepositoryImpl<User> {
             .pipe(Ok)
     }
 
-    async fn find_by_email(&self, email: &Email) -> Result<Option<User>> {
-        let mut connection = self.pool.get().await?;
+    async fn find_user_by_email<App>(
+        app: &App,
+        email: &Email,
+    ) -> Result<Option<User>>
+    where
+        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
+    {
+        let mut connection = app.get_dependency().get().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_email.sql", email.as_ref())
             .fetch_optional(&mut *connection)

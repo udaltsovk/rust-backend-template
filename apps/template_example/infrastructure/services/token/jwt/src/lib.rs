@@ -1,9 +1,11 @@
-use application::service::token::TokenService;
+use application::service::token::TokenServiceImpl;
 use domain::session::Session;
+use entrait::entrait;
 use jsonwebtoken::{Algorithm, Header, Validation, decode, encode};
 pub use jsonwebtoken::{DecodingKey, EncodingKey};
 use lib::{
     anyhow::{Context as _, Result},
+    application::di::Has,
     instrument_all,
     redact::Secret,
     tap::{Conv as _, Pipe as _},
@@ -19,22 +21,32 @@ pub struct JwtService {
     decoding_key: DecodingKey,
 }
 
+#[entrait(ref)]
 #[instrument_all]
-impl TokenService for JwtService {
-    fn generate(&self, session: Session) -> Result<Secret<String>> {
+impl TokenServiceImpl for JwtService {
+    fn generate_token<App>(
+        app: &App,
+        session: Session,
+    ) -> Result<Secret<String>>
+    where
+        App: Has<Self>,
+    {
         encode(
             &Header::new(Algorithm::HS256),
             &Claims::from(session),
-            &self.encoding_key,
+            &app.get_dependency().encoding_key,
         )
         .map(Secret::new)
         .context("while encoding jwt")
     }
 
-    fn parse(&self, token: Secret<&str>) -> Result<Session> {
+    fn parse_token<App>(app: &App, token: Secret<&str>) -> Result<Session>
+    where
+        App: Has<Self>,
+    {
         decode::<Claims>(
             token.expose_secret(),
-            &self.decoding_key,
+            &app.get_dependency().decoding_key,
             &Validation::default(),
         )
         .context("while decoding jwt")?

@@ -1,4 +1,4 @@
-use application::usecase::session::SessionUseCase as _;
+use application::usecase::session::GetSessionFromTokenUsecase;
 use axum::{
     RequestPartsExt as _, extract::FromRequestParts, http::request::Parts,
 };
@@ -12,22 +12,23 @@ use domain::{
 };
 use lib::{domain::Id, redact::Secret, tap::Pipe as _};
 
-use crate::{ApiError, ModulesExt, errors::AuthError};
+use crate::{ApiError, errors::AuthError};
 
+#[derive(Debug)]
 pub struct UserSession {
     pub id: Id<Session>,
     pub user_id: Id<User>,
 }
 
-impl<M> FromRequestParts<M> for UserSession
+impl<App> FromRequestParts<App> for UserSession
 where
-    M: ModulesExt,
+    App: Sync + GetSessionFromTokenUsecase,
 {
     type Rejection = ApiError;
 
     async fn from_request_parts(
         parts: &mut Parts,
-        state: &M,
+        state: &App,
     ) -> Result<Self, Self::Rejection> {
         let TypedHeader(Authorization(bearer)) = parts
             .extract::<TypedHeader<Authorization<Bearer>>>()
@@ -35,8 +36,7 @@ where
             .map_err(|_| AuthError::InvalidToken)?;
 
         let session = state
-            .session_usecase()
-            .get_from_token(Secret::new(bearer.token()))
+            .get_session_from_token(Secret::new(bearer.token()))
             .await?;
 
         #[expect(

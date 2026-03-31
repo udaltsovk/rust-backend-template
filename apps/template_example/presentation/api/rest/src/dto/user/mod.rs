@@ -16,8 +16,7 @@ use crate::dto::user::target_settings::UserTargetSettingsDto;
 
 pub mod target_settings;
 
-#[derive(Mapper, Serialize, ToSchema, Default)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Mapper, Serialize, ToSchema, Default, Debug)]
 #[mapper(ty = User, from, ignore_extra)]
 pub struct UserDto {
     ///
@@ -39,8 +38,7 @@ pub struct UserDto {
     other: UserTargetSettingsDto,
 }
 
-#[derive(Deserialize, ToSchema)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Deserialize, ToSchema, Debug)]
 pub struct CreateUserDto {
     #[schema(
         required,

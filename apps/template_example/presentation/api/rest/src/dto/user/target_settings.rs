@@ -12,8 +12,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 /// Таргет настройки пользователя
-#[derive(Mapper, Deserialize, Serialize, ToSchema, Default)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Mapper, Deserialize, Serialize, ToSchema, Default, Debug)]
 #[mapper(ty = UserTargetSettings, from)]
 pub struct UserTargetSettingsDto {
     /// Возраст пользователя

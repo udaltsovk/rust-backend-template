@@ -4,7 +4,7 @@ use crate::modules::{
     repositories::RepositoriesConfig, services::ServicesConfig,
 };
 
-#[derive(FromEnv)]
+#[derive(FromEnv, Clone)]
 pub struct ModulesConfig {
     #[env(nested)]
     pub repositories: RepositoriesConfig,

@@ -3,7 +3,7 @@ use std::fmt::{self, Write as _};
 use fromenv::FromEnv;
 use lib::{mobc_redis::redis, mobc_sqlx::sqlx::postgres::PgConnectOptions};
 
-#[derive(FromEnv)]
+#[derive(FromEnv, Clone)]
 pub struct RepositoriesConfig {
     #[env(nested)]
     pub postgres: PostgresConfig,
@@ -11,7 +11,7 @@ pub struct RepositoriesConfig {
     pub redis: RedisConfig,
 }
 
-#[derive(FromEnv)]
+#[derive(FromEnv, Clone)]
 #[env(prefix = "POSTGRES_")]
 pub struct PostgresConfig {
     pub user: String,
@@ -33,7 +33,7 @@ impl From<&PostgresConfig> for PgConnectOptions {
     }
 }
 
-#[derive(FromEnv)]
+#[derive(FromEnv, Clone)]
 #[env(prefix = "REDIS_")]
 pub struct RedisConfig {
     pub host: String,
