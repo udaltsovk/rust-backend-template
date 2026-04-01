@@ -1,13 +1,9 @@
 use domain::user::target_settings::UserTargetSettings;
-use lib::{
-    model_mapper::Mapper,
-    presentation::api::rest::{
-        into_validators,
-        validation::{
-            UserInput, parseable::Parseable, validator::ValidatorResult,
-        },
-    },
+use lib::presentation::api::rest::{
+    into_validators,
+    validation::{UserInput, parseable::Parseable, validator::ValidatorResult},
 };
+use model_mapper::Mapper;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 

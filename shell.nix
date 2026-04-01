@@ -34,5 +34,4 @@ in
 
       DIRENV_LOG_FORMAT = "";
       LD_LIBRARY_PATH = "${lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH";
-      CFLAGS = "-DJEMALLOC_STRERROR_R_RETURNS_CHAR_WITH_GNU_SOURCE";
     }

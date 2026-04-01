@@ -11,7 +11,7 @@ pub mod parseable;
 pub mod validator;
 
 #[derive(Mapper, Default, PartialEq, Eq, Debug)]
-#[mapper(ty = ExternalInput, into)]
+#[mapper(ty = "ExternalInput<T>", into)]
 pub enum UserInput<T> {
     Ok(T),
     WrongType(Value),

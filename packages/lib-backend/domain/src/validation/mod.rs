@@ -318,12 +318,6 @@ macro_rules! input_impls {
             }
         }
 
-        impl<T> From<T> for $input<T> {
-            fn from(value: T) -> Self {
-                Self::$ok(value)
-            }
-        }
-
         impl<T> From<Option<Option<T>>> for $input<T> {
             fn from(double_option: Option<Option<T>>) -> Self {
                 double_option.map_or(Self::$missing, |option| {

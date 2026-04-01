@@ -12,6 +12,7 @@ application = { path = "../../../application", package = "template_example-appli
 derive-where.workspace = true
 entrait.workspace = true
 mobc-sqlx = { workspace = true, features = ["postgres", "uuid"] }
+model-mapper.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 

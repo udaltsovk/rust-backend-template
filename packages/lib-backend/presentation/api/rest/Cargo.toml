@@ -30,7 +30,7 @@ tracing-subscriber.workspace = true
 utoipa = { workspace = true, optional = true }
 uuid.workspace = true
 
-tracing-otel-extra = { version = "0.30", features = [
+tracing-otel-extra = { version = "0.31", features = [
   "context",
   "fields",
   "macros",

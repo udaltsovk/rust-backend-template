@@ -2,6 +2,7 @@ set dotenv-load := true
 set dotenv-required := true
 
 export RUSTFLAGS := "-Z macro-backtrace --cfg tokio_unstable"
+export CFLAGS := "-O3"
 database_url := "DATABASE_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DATABASE"
 dev_compose_file := "./dev.compose.yml"
 default_app_name := "template_example"

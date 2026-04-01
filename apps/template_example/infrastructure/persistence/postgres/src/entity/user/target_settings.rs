@@ -2,8 +2,8 @@ use domain::user::target_settings::UserTargetSettings;
 use lib::{
     domain::DomainType as _,
     infrastructure::persistence::entity::DomainTypeFromDb,
-    model_mapper::Mapper,
 };
+use model_mapper::Mapper;
 use sqlx::{FromRow, Type};
 
 #[derive(Mapper, FromRow, Type)]

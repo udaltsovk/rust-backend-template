@@ -40,12 +40,6 @@ pub use macros::*;
 pub use mobc_redis;
 #[cfg(feature = "bootstrap-sqlx")]
 pub use mobc_sqlx;
-#[cfg(any(
-    feature = "infrastructure-persistence",
-    feature = "infrastructure-services",
-    feature = "presentation-api",
-))]
-pub use model_mapper;
 #[cfg(feature = "presentation")]
 pub use presentation;
 #[cfg(any(

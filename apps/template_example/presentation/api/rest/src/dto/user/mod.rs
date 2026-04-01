@@ -1,6 +1,5 @@
 use domain::user::{CreateUser, User};
 use lib::{
-    model_mapper::Mapper,
     presentation::api::rest::{
         into_validators,
         validation::{
@@ -9,6 +8,7 @@ use lib::{
     },
     redact::Secret,
 };
+use model_mapper::Mapper;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 

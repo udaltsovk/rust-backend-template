@@ -1,8 +1,6 @@
 use domain::user::User;
-use lib::{
-    infrastructure::persistence::entity::DomainTypeFromDb,
-    model_mapper::Mapper, uuid::Uuid,
-};
+use lib::{infrastructure::persistence::entity::DomainTypeFromDb, uuid::Uuid};
+use model_mapper::Mapper;
 use sqlx::FromRow;
 
 use crate::entity::user::target_settings::StoredUserTargetSettings;
