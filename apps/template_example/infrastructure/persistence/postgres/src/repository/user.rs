@@ -10,6 +10,7 @@ use lib::{
     application::di::Has,
     async_trait,
     domain::{DomainType, Id},
+    infrastructure::persistence::HasPoolExt as _,
     instrument_all,
     tap::{Conv as _, Pipe as _},
 };
@@ -34,7 +35,7 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
     where
         App: Has<Pool<SqlxConnectionManager<Postgres>>>,
     {
-        let mut connection = app.get_dependency().get().await?;
+        let mut connection = app.get_connection().await?;
 
         let id = id.value;
         let name = source.name.into_inner();
@@ -70,7 +71,7 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
     where
         App: Has<Pool<SqlxConnectionManager<Postgres>>>,
     {
-        let mut connection = app.get_dependency().get().await?;
+        let mut connection = app.get_connection().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_id.sql", id.value)
             .fetch_optional(&mut *connection)
@@ -86,7 +87,7 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
     where
         App: Has<Pool<SqlxConnectionManager<Postgres>>>,
     {
-        let mut connection = app.get_dependency().get().await?;
+        let mut connection = app.get_connection().await?;
 
         query_file_as!(StoredUser, "sql/user/find_by_email.sql", email.as_ref())
             .fetch_optional(&mut *connection)

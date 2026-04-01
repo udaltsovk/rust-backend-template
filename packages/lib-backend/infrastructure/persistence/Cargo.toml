@@ -11,6 +11,7 @@ redis = ["dep:redis"]
 
 [dependencies]
 domain = { path = "../../domain", package = "lib-domain" }
+application = { path = "../../application", package = "lib-application" }
 # postgres = { path = "./postgres", package = "lib-infrastructure-persistence-postgres", optional = true }
 redis = { path = "./redis", package = "lib-infrastructure-persistence-redis", optional = true }
 
