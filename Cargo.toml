@@ -348,7 +348,6 @@ clone_on_ref_ptr = "warn"
 naive_bytecount = "warn"
 
 # Function and method conventions
-renamed_function_params = "warn"
 same_name_method = "warn"
 
 # Lint attributes and configuration

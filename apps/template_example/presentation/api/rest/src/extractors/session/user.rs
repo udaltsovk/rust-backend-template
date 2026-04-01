@@ -28,14 +28,14 @@ where
 
     async fn from_request_parts(
         parts: &mut Parts,
-        state: &App,
+        app: &App,
     ) -> Result<Self, Self::Rejection> {
         let TypedHeader(Authorization(bearer)) = parts
             .extract::<TypedHeader<Authorization<Bearer>>>()
             .await
             .map_err(|_| AuthError::InvalidToken)?;
 
-        let session = state
+        let session = app
             .get_session_from_token(Secret::new(bearer.token()))
             .await?;
 
