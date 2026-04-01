@@ -1,4 +1,4 @@
-use application::usecase::user::error::UserUseCaseError;
+use application::usecase::user::UserUseCaseError;
 use axum::http::StatusCode;
 use serde_json::{Value, json};
 

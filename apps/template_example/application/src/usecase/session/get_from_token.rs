@@ -6,21 +6,21 @@ use tracing::instrument;
 use crate::{
     repository::session::SessionRepository,
     service::token::TokenService,
-    usecase::session::error::{SessionUseCaseError, SessionUseCaseResult},
+    usecase::session::{SessionUseCaseError, SessionUseCaseResult},
 };
 
 #[entrait(pub GetSessionFromTokenUsecase)]
-#[instrument(skip(app))]
-async fn get_session_from_token<App>(
-    app: &App,
+#[instrument(skip(deps))]
+async fn get_session_from_token<Deps>(
+    deps: &Deps,
     token: Secret<&str>,
 ) -> SessionUseCaseResult<Session>
 where
-    App: SessionRepository + TokenService,
+    Deps: SessionRepository + TokenService,
 {
-    let session = app.parse_token(token)?;
+    let session = TokenService::parse_token(deps, token)?;
 
-    app.find_session_by_entity(session.entity)
+    SessionRepository::find_session_by_entity(deps, session.entity)
         .await?
         .is_some_and(|ses| session == ses)
         .ok_or(SessionUseCaseError::NotFound(session.id))?;

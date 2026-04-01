@@ -5,21 +5,22 @@ use tracing::instrument;
 use crate::{
     repository::user::UserRepository,
     service::secret_hasher::SecretHasherService,
-    usecase::user::error::{UserUseCaseError, UserUseCaseResult},
+    usecase::user::{UserUseCaseError, UserUseCaseResult},
 };
 
 #[entrait(pub AuthorizeUserUsecase)]
-#[instrument(skip(app))]
-async fn authorize_user<App>(
-    app: &App,
+#[instrument(skip(deps))]
+async fn authorize_user<Deps>(
+    deps: &Deps,
     source: CreateSession,
 ) -> UserUseCaseResult<User>
 where
-    App: UserRepository + SecretHasherService,
+    Deps: UserRepository + SecretHasherService,
 {
-    let user = app.find_user_by_email(&source.email).await?;
+    let user = UserRepository::find_user_by_email(deps, &source.email).await?;
 
-    app.verify_secret(
+    SecretHasherService::verify_secret(
+        deps,
         &source.password,
         user.as_ref().map(|u| &u.password_hash),
     )

@@ -1,4 +1,4 @@
-use application::usecase::session::error::SessionUseCaseError;
+use application::usecase::session::SessionUseCaseError;
 use axum::http::StatusCode;
 use serde_json::json;
 

@@ -4,17 +4,17 @@ use lib::{domain::Id, tap::Pipe as _};
 use tracing::instrument;
 
 use crate::{
-    repository::user::UserRepository, usecase::user::error::UserUseCaseResult,
+    repository::user::UserRepository, usecase::user::UserUseCaseResult,
 };
 
 #[entrait(pub FindUserByIdUsecase)]
-#[instrument(skip(app))]
-async fn find_user_by_id<App>(
-    app: &App,
+#[instrument(skip(deps))]
+async fn find_user_by_id<Deps>(
+    deps: &Deps,
     id: Id<User>,
 ) -> UserUseCaseResult<Option<User>>
 where
-    App: UserRepository,
+    Deps: UserRepository,
 {
-    app.find_user_by_id(id).await?.pipe(Ok)
+    UserRepository::find_user_by_id(deps, id).await?.pipe(Ok)
 }

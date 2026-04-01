@@ -5,17 +5,17 @@ use tracing::instrument;
 
 use crate::{
     repository::session::SessionRepository, service::token::TokenService,
-    usecase::session::error::SessionUseCaseResult,
+    usecase::session::SessionUseCaseResult,
 };
 
 #[entrait(pub CreateSessionUsecase)]
-#[instrument(skip(app))]
-async fn create_session<App>(
-    app: &App,
+#[instrument(skip(deps))]
+async fn create_session<Deps>(
+    deps: &Deps,
     entity: SessionEntity,
 ) -> SessionUseCaseResult<Secret<String>>
 where
-    App: SessionRepository + TokenService,
+    Deps: SessionRepository + TokenService,
 {
     let session = {
         use SessionEntity as SE;
@@ -24,7 +24,7 @@ where
         }
     };
 
-    let session = app.save_session(session).await?;
+    let session = SessionRepository::save_session(deps, session).await?;
 
-    app.generate_token(session)?.pipe(Ok)
+    TokenService::generate_token(deps, session)?.pipe(Ok)
 }
