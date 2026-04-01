@@ -21,6 +21,12 @@ pub enum UserInput<T> {
     Missing,
 }
 
+impl<T> From<T> for UserInput<T> {
+    fn from(input: T) -> Self {
+        Self::Ok(input)
+    }
+}
+
 input_impls!(
     input = UserInput,
     ok = Ok,
