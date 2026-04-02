@@ -68,9 +68,9 @@ infrastructure-persistence = [
   "dep:tap",
   "dep:uuid",
 ]
-infrastructure-persistence-postgres = [
+infrastructure-persistence-sqlx = [
   "infrastructure-persistence",
-  "infrastructure/persistence-postgres",
+  "infrastructure/persistence-sqlx",
 ]
 infrastructure-persistence-redis = [
   "infrastructure-persistence",

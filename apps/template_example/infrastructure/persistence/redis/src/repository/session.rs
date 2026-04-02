@@ -1,20 +1,29 @@
-use std::{str::FromStr as _, sync::LazyLock};
+use std::{str::FromStr as _, sync::OnceLock};
 
 use application::repository::session::SessionRepositoryImpl;
 use domain::session::{Session, entity::SessionEntity};
 use entrait::entrait;
 use lib::{
-    anyhow::Result, application::di::Has, async_trait,
-    infrastructure::persistence::redis::Namespace, instrument_all,
-    tap::Pipe as _, uuid::Uuid,
+    anyhow::{Context as _, Result},
+    application::di::Has,
+    async_trait,
+    infrastructure::persistence::redis::{Namespace, RedisPool},
+    instrument_all,
+    tap::Pipe as _,
+    uuid::Uuid,
 };
-use mobc_redis::{RedisConnectionManager, mobc::Pool};
 use redis::AsyncTypedCommands as _;
 
-use crate::repository::{META_NAMESPACE, RedisRepositoryImpl};
+use crate::repository::RedisRepositoryImpl;
 
-static NAMESPACE: LazyLock<Namespace> =
-    LazyLock::new(|| META_NAMESPACE.nest("session"));
+#[entrait(HasSessionNamespace)]
+fn session_namespace<App>(app: &App) -> &Namespace
+where
+    App: Has<Namespace>,
+{
+    static NAMESPACE: OnceLock<Namespace> = OnceLock::new();
+    NAMESPACE.get_or_init(|| app.get_dependency().nest("session"))
+}
 
 #[entrait(ref)]
 #[async_trait]
@@ -22,7 +31,7 @@ static NAMESPACE: LazyLock<Namespace> =
 impl SessionRepositoryImpl for RedisRepositoryImpl {
     async fn save_session<App>(app: &App, source: Session) -> Result<Session>
     where
-        App: Has<Pool<RedisConnectionManager>>,
+        App: Has<RedisPool> + HasSessionNamespace,
     {
         let mut connection = app.get_dependency().get().await?;
 
@@ -30,11 +39,13 @@ impl SessionRepositoryImpl for RedisRepositoryImpl {
 
         connection
             .set_ex(
-                NAMESPACE.nest(entity_type).key(&entity_id.to_string()),
+                app.session_namespace()
+                    .nest(entity_type)
+                    .key(&entity_id.to_string()),
                 source.id.to_string(),
                 Session::LIFETIME
                     .try_into()
-                    .expect("lifetime convertion to not fail"),
+                    .context("while converting session lifetime")?,
             )
             .await?;
 
@@ -46,18 +57,22 @@ impl SessionRepositoryImpl for RedisRepositoryImpl {
         entity: SessionEntity,
     ) -> Result<Option<Session>>
     where
-        App: Has<Pool<RedisConnectionManager>>,
+        App: Has<RedisPool> + HasSessionNamespace,
     {
         let mut connection = app.get_dependency().get().await?;
 
         let (entity_type, entity_id) = entity.as_tuple();
 
         connection
-            .get(NAMESPACE.nest(entity_type).key(&entity_id.to_string()))
+            .get(
+                app.session_namespace()
+                    .nest(entity_type)
+                    .key(&entity_id.to_string()),
+            )
             .await?
             .map(|id| Uuid::from_str(&id))
             .transpose()
-            .expect("session ID from cache should be valid")
+            .context("while parsing session ID from cache")?
             .map(|id| Session {
                 id: id.into(),
                 entity,

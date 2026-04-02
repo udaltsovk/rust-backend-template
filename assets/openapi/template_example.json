@@ -31,7 +31,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateJsonUser"
+                "$ref": "#/components/schemas/CreateUserDto"
               }
             }
           },
@@ -43,7 +43,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JsonUserSession"
+                  "$ref": "#/components/schemas/SessionDto"
                 }
               }
             }
@@ -91,7 +91,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateJsonSession"
+                "$ref": "#/components/schemas/CreateSessionDto"
               }
             }
           },
@@ -103,7 +103,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JsonUserSession"
+                  "$ref": "#/components/schemas/SessionDto"
                 }
               }
             }
@@ -143,7 +143,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JsonUser"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -169,7 +169,7 @@
   },
   "components": {
     "schemas": {
-      "CreateJsonSession": {
+      "CreateSessionDto": {
         "type": "object",
         "required": [
           "email",
@@ -178,15 +178,28 @@
         "properties": {
           "email": {
             "type": "string",
-            "description": ""
+            "format": "idn-email",
+            "description": "",
+            "examples": [
+              "cu_fan@edu.hse.ru"
+            ],
+            "maxLength": 120,
+            "minLength": 8
           },
           "password": {
             "type": "string",
-            "description": ""
+            "format": "password",
+            "description": "",
+            "examples": [
+              "HardPa$$w0rd!iamthewinner"
+            ],
+            "maxLength": 60,
+            "minLength": 8,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%*?&])[A-Za-z\\\\d@$!%*?&]{8,}$"
           }
         }
       },
-      "CreateJsonUser": {
+      "CreateUserDto": {
         "type": "object",
         "required": [
           "name",
@@ -198,7 +211,6 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "",
             "examples": [
               "Мария"
             ],
@@ -236,10 +248,7 @@
             "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%*?&])[A-Za-z\\\\d@$!%*?&]{8,}$"
           },
           "avatar_url": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "format": "uri",
             "description": "Ссылка на фото пользователя",
             "examples": [
@@ -248,7 +257,7 @@
             "maxLength": 350
           },
           "other": {
-            "$ref": "#/components/schemas/JsonUserTargetSettings"
+            "$ref": "#/components/schemas/UserTargetSettingsDto"
           }
         }
       },
@@ -276,7 +285,7 @@
           {
             "type": "object",
             "properties": {
-              "context": {}
+              "details": {}
             }
           }
         ]
@@ -321,7 +330,22 @@
           }
         }
       },
-      "JsonUser": {
+      "SessionDto": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Токен доступа для авторизованных запросов. После успешной аутентификации СТАРЫЕ ТОКЕНЫ ПЕРЕСТАЮТ РАБОТАТЬ.",
+            "examples": [
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3Njg1ODE1MjMsImlhdCI6MTc2ODU3NzkyMywic3ViIjoiMDE5YmM2ZGEtM2Y0Yi03MTcwLTg4NDItMDMzY2MwZjA0ZTUwIiwicm9sZSI6IlVTRVIiLCJqdGkiOiIwMTliYzc3NS03ODI3LTc2NDEtODdmYy00YzlkYTc5ODlkZGEifQ.MCS_MLo8g4CciJ--qxXfBgPflVrhmmbdd4J9zqq69Sk"
+            ]
+          }
+        }
+      },
+      "UserDto": {
         "type": "object",
         "required": [
           "name",
@@ -350,26 +374,11 @@
             "description": ""
           },
           "other": {
-            "$ref": "#/components/schemas/JsonUserTargetSettings"
+            "$ref": "#/components/schemas/UserTargetSettingsDto"
           }
         }
       },
-      "JsonUserSession": {
-        "type": "object",
-        "required": [
-          "token"
-        ],
-        "properties": {
-          "token": {
-            "type": "string",
-            "description": "Токен доступа для авторизованных запросов. После успешной аутентификации СТАРЫЕ ТОКЕНЫ ПЕРЕСТАЮТ РАБОТАТЬ.",
-            "examples": [
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3Njg1ODE1MjMsImlhdCI6MTc2ODU3NzkyMywic3ViIjoiMDE5YmM2ZGEtM2Y0Yi03MTcwLTg4NDItMDMzY2MwZjA0ZTUwIiwicm9sZSI6IlVTRVIiLCJqdGkiOiIwMTliYzc3NS03ODI3LTc2NDEtODdmYy00YzlkYTc5ODlkZGEifQ.MCS_MLo8g4CciJ--qxXfBgPflVrhmmbdd4J9zqq69Sk"
-            ]
-          }
-        }
-      },
-      "JsonUserTargetSettings": {
+      "UserTargetSettingsDto": {
         "type": "object",
         "description": "Таргет настройки пользователя",
         "required": [

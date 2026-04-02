@@ -6,7 +6,7 @@ edition.workspace = true
 
 [features]
 persistence = ["dep:persistence"]
-persistence-postgres = ["persistence", "persistence/postgres"]
+persistence-sqlx = ["persistence", "persistence/sqlx"]
 persistence-redis = ["persistence", "persistence/redis"]
 
 [dependencies]

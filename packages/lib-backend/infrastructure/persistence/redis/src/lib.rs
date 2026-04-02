@@ -1,3 +1,5 @@
+use mobc_redis::{RedisConnectionManager, mobc::Pool};
+
 pub struct Namespace {
     path: String,
 }
@@ -19,6 +21,8 @@ impl Namespace {
 
     #[must_use]
     pub fn key(&self, name: &str) -> String {
-        format!("{}::{name}", self.path,)
+        format!("{}::{name}", self.path)
     }
 }
+
+pub type RedisPool = Pool<RedisConnectionManager>;

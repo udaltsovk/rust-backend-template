@@ -5,13 +5,12 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-lib = { workspace = true, features = ["infrastructure-persistence-postgres"] }
+lib = { workspace = true, features = ["infrastructure-persistence-sqlx"] }
 domain = { path = "../../../domain", package = "template_example-domain" }
 application = { path = "../../../application", package = "template_example-application" }
 
 derive-where.workspace = true
 entrait.workspace = true
-mobc-sqlx = { workspace = true, features = ["postgres", "uuid"] }
 model-mapper.workspace = true
 thiserror.workspace = true
 tracing.workspace = true

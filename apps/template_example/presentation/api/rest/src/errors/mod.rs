@@ -25,6 +25,7 @@ mod validation;
 pub enum ApiError {
     #[error(transparent)]
     Validation(#[from] FieldErrors),
+
     #[error(transparent)]
     JsonRejection(#[from] JsonRejection),
 

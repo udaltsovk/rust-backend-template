@@ -37,7 +37,8 @@ where
 
         let session = app
             .get_session_from_token(Secret::new(bearer.token()))
-            .await?;
+            .await
+            .map_err(|_| AuthError::InvalidToken)?;
 
         #[expect(
             unreachable_patterns,

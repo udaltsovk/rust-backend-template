@@ -1692,19 +1692,27 @@ dependencies = [
  "lib-application",
  "lib-domain",
  "lib-infrastructure-persistence-redis",
+ "lib-infrastructure-persistence-sqlx",
  "mobc",
  "mobc-sqlx",
  "pastey",
- "rstest",
- "sqlx",
- "tokio",
 ]
 
 [[package]]
 name = "lib-infrastructure-persistence-redis"
 version = "0.1.0"
 dependencies = [
+ "lib-application",
+ "mobc-redis",
  "rstest",
+]
+
+[[package]]
+name = "lib-infrastructure-persistence-sqlx"
+version = "0.1.0"
+dependencies = [
+ "lib-application",
+ "mobc-sqlx",
 ]
 
 [[package]]
@@ -3645,7 +3653,6 @@ dependencies = [
  "derive-where",
  "entrait",
  "lib",
- "mobc-sqlx",
  "model-mapper",
  "sqlx",
  "template_example-application",
@@ -3661,7 +3668,6 @@ dependencies = [
  "derive-where",
  "entrait",
  "lib",
- "mobc-redis",
  "redis",
  "template_example-application",
  "template_example-domain",

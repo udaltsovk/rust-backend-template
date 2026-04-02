@@ -10,11 +10,10 @@ use lib::{
     application::di::Has,
     async_trait,
     domain::{DomainType, Id},
-    infrastructure::persistence::HasPoolExt as _,
+    infrastructure::persistence::{HasPoolExt as _, sqlx::SqlxPool},
     instrument_all,
     tap::{Conv as _, Pipe as _},
 };
-use mobc_sqlx::{SqlxConnectionManager, mobc::Pool};
 use sqlx::{Postgres, query_file_as};
 
 use crate::{
@@ -33,7 +32,7 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
         password_hash: PasswordHash,
     ) -> Result<User>
     where
-        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
+        App: Has<SqlxPool<Postgres>>,
     {
         let mut connection = app.get_connection().await?;
 
@@ -69,7 +68,7 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
         id: Id<User>,
     ) -> Result<Option<User>>
     where
-        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
+        App: Has<SqlxPool<Postgres>>,
     {
         let mut connection = app.get_connection().await?;
 
@@ -85,7 +84,7 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
         email: &Email,
     ) -> Result<Option<User>>
     where
-        App: Has<Pool<SqlxConnectionManager<Postgres>>>,
+        App: Has<SqlxPool<Postgres>>,
     {
         let mut connection = app.get_connection().await?;
 

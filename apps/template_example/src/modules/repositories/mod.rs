@@ -1,3 +1,5 @@
+use std::sync::OnceLock;
+
 use application::repository::{
     session::SessionRepositoryImpl, user::UserRepositoryImpl,
 };
@@ -8,7 +10,11 @@ use infrastructure::persistence::{
 use lib::{
     application::impl_has,
     bootstrap::impl_repositories,
-    infrastructure::persistence::mobc_sqlx::MigratorExt as _,
+    infrastructure::persistence::{
+        mobc_sqlx::MigratorExt as _,
+        redis::{Namespace, RedisPool},
+        sqlx::SqlxPool,
+    },
     mobc_redis::{RedisConnectionManager, redis},
     mobc_sqlx::{
         SqlxConnectionManager,
@@ -29,8 +35,8 @@ mod config;
 pub struct RepositoriesModule {
     #[expect(dead_code, reason = "we may use config in the future")]
     config: RepositoriesConfig,
-    postgres: Pool<SqlxConnectionManager<Postgres>>,
-    redis: Pool<RedisConnectionManager>,
+    postgres: SqlxPool<Postgres>,
+    redis: RedisPool,
 }
 
 impl RepositoriesModule {
@@ -42,19 +48,19 @@ impl RepositoriesModule {
         }
     }
 
-    async fn setup_postgres(
-        config: &PostgresConfig,
-    ) -> Pool<SqlxConnectionManager<Postgres>> {
+    async fn setup_postgres(config: &PostgresConfig) -> SqlxPool<Postgres> {
         let postgres = PgConnectOptions::from(config)
             .pipe(SqlxConnectionManager::new)
             .pipe(Pool::new);
 
-        POSTGRES_MIGRATOR.migrate(&postgres).await;
+        if config.run_migrator {
+            POSTGRES_MIGRATOR.migrate(&postgres).await;
+        }
 
         postgres
     }
 
-    fn setup_redis(config: &RedisConfig) -> Pool<RedisConnectionManager> {
+    fn setup_redis(config: &RedisConfig) -> RedisPool {
         redis::Client::from(config)
             .pipe(RedisConnectionManager::new)
             .pipe(Pool::new)
@@ -63,8 +69,15 @@ impl RepositoriesModule {
 
 impl_has! {
     struct: Modules,
-    Pool<SqlxConnectionManager<Postgres>>: |s| &s.repositories.postgres,
-    Pool<RedisConnectionManager>: |s| &s.repositories.redis,
+    SqlxPool<Postgres>: |s| &s.repositories.postgres,
+    RedisPool: |s| &s.repositories.redis,
+    Namespace: |s| {
+        static NAMESPACE: OnceLock<Namespace> = OnceLock::new();
+        NAMESPACE.get_or_init(|| {
+            Namespace::new(&s.config.repositories.redis.service_namespace)
+                .nest(&s.config.repositories.redis.service_name)
+        })
+    }
 }
 
 impl_repositories! {

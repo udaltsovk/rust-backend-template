@@ -6,13 +6,13 @@ edition.workspace = true
 
 [features]
 mobc-sqlx = ["dep:mobc-sqlx"]
-postgres = ["mobc-sqlx"]
+sqlx = ["dep:sqlx", "mobc-sqlx"]
 redis = ["dep:redis"]
 
 [dependencies]
 domain = { path = "../../domain", package = "lib-domain" }
 application = { path = "../../application", package = "lib-application" }
-# postgres = { path = "./postgres", package = "lib-infrastructure-persistence-postgres", optional = true }
+sqlx = { path = "./sqlx", package = "lib-infrastructure-persistence-sqlx", optional = true }
 redis = { path = "./redis", package = "lib-infrastructure-persistence-redis", optional = true }
 
 derive-where.workspace = true
@@ -20,17 +20,6 @@ entrait.workspace = true
 mobc.workspace = true
 mobc-sqlx = { workspace = true, optional = true }
 pastey.workspace = true
-
-[dev-dependencies]
-mobc-sqlx.workspace = true
-rstest.workspace = true
-tokio = { workspace = true, features = ["macros"] }
-
-sqlx = { version = "0.8", default-features = false, features = [
-  "postgres",
-  "runtime-tokio",
-] }
-
 
 [lints]
 workspace = true

@@ -2,6 +2,8 @@ use application::di::Has;
 use mobc::{Connection, Manager, Pool};
 #[cfg(feature = "redis")]
 pub use redis;
+#[cfg(feature = "sqlx")]
+pub use sqlx;
 
 pub mod entity;
 pub mod repository;

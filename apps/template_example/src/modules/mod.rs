@@ -9,7 +9,6 @@ mod services;
 
 #[derive(Clone)]
 pub struct Modules {
-    #[expect(dead_code, reason = "we may use config in the future")]
     config: ModulesConfig,
     repositories: RepositoriesModule,
     services: ServicesModule,
