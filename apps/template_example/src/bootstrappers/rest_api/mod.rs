@@ -20,7 +20,7 @@ mod config;
 impl BootstrapperExt for RestApi {
     type Config = RestApiConfig;
 
-    async fn bootstrap(config: &Self::Config, deps: Impl<Modules>) {
+    async fn bootstrap(config: &Self::Config, deps: &Impl<Modules>) {
         let metric_layer = HttpMetricsLayerBuilder::new()
             .with_skipper(PathSkipper::new(Self::is_openapi_route))
             .build();

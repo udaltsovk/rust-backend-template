@@ -36,10 +36,10 @@ impl<M> RestApiBuilder<M>
 where
     M: Send + Sync + Clone + 'static,
 {
-    pub const fn new(router: Router<M>, modules: M) -> Self {
+    pub fn new(router: Router<M>, modules: &M) -> Self {
         Self {
             router,
-            modules,
+            modules: modules.clone(),
             #[cfg(feature = "openapi")]
             openapi: None,
         }
@@ -99,7 +99,7 @@ pub struct RestApi {
 }
 
 impl RestApi {
-    pub const fn builder<M>(router: Router<M>, modules: M) -> RestApiBuilder<M>
+    pub fn builder<M>(router: Router<M>, modules: &M) -> RestApiBuilder<M>
     where
         M: Send + Sync + Clone + 'static,
     {

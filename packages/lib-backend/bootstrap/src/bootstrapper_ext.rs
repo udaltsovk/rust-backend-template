@@ -7,7 +7,7 @@ macro_rules! bootstrapper_ext_trait {
 
             async fn bootstrap(
                 config: &Self::Config,
-                deps: ::entrait::Impl<$modules_ty>,
+                deps: &::entrait::Impl<$modules_ty>,
             );
         }
     };

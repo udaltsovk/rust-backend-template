@@ -3,7 +3,7 @@ macro_rules! bootstrap {
     ($_app_crate: ident, [], $_modules_fut: expr) => {
       const {
            panic!("`bootstrap!` can't be called with empty bootstrapper array!");
-       }
+      }
     };
     ($app_crate: ident, [$($bootstrapper: tt($config_field: expr)),*], $modules_fut: expr) => {
         async {
@@ -12,7 +12,7 @@ macro_rules! bootstrap {
 
             let modules = $crate::entrait::Impl::new($modules_fut.await);
             tokio::join!(
-                $($bootstrapper::bootstrap($config_field, modules.clone())),*
+                $($bootstrapper::bootstrap($config_field, &modules)),*
             );
         }
     };
@@ -33,7 +33,7 @@ mod tests {
 
     #[async_trait::async_trait]
     pub trait TestBootstrapperExt {
-        async fn bootstrap(config: &(), modules: Impl<TestModules>);
+        async fn bootstrap(config: &(), modules: &Impl<TestModules>);
     }
 
     #[derive(Clone)]
@@ -43,7 +43,7 @@ mod tests {
 
     #[async_trait::async_trait]
     pub trait MultiBootstrapperExt {
-        async fn bootstrap(config: &(), modules: Impl<MultiTestModules>);
+        async fn bootstrap(config: &(), modules: &Impl<MultiTestModules>);
     }
 
     #[derive(Clone)]
@@ -61,7 +61,7 @@ mod tests {
         reason = "Used in tests that are currently disabled due to compile-time panic"
     )]
     pub trait EmptyBootstrapperExt {
-        async fn bootstrap(config: &(), modules: Impl<EmptyModules>);
+        async fn bootstrap(config: &(), modules: &Impl<EmptyModules>);
     }
 
     #[derive(Clone)]
@@ -69,7 +69,7 @@ mod tests {
 
     #[async_trait::async_trait]
     pub trait ConfigBootstrapperExt {
-        async fn bootstrap(config: &(), modules: Impl<ConfigModules>);
+        async fn bootstrap(config: &(), modules: &Impl<ConfigModules>);
     }
 
     #[fixture]
@@ -88,7 +88,7 @@ mod tests {
 
         #[async_trait::async_trait]
         impl TestBootstrapperExt for TestBootstrapper {
-            async fn bootstrap(_config: &(), modules: Impl<TestModules>) {
+            async fn bootstrap(_config: &(), modules: &Impl<TestModules>) {
                 modules
                     .calls
                     .lock()
@@ -132,7 +132,7 @@ mod tests {
 
         #[async_trait::async_trait]
         impl MultiBootstrapperExt for BootstrapperA {
-            async fn bootstrap(_config: &(), modules: Impl<MultiTestModules>) {
+            async fn bootstrap(_config: &(), modules: &Impl<MultiTestModules>) {
                 modules
                     .calls
                     .lock()
@@ -143,7 +143,7 @@ mod tests {
 
         #[async_trait::async_trait]
         impl MultiBootstrapperExt for BootstrapperB {
-            async fn bootstrap(_config: &(), modules: Impl<MultiTestModules>) {
+            async fn bootstrap(_config: &(), modules: &Impl<MultiTestModules>) {
                 modules
                     .calls
                     .lock()
@@ -193,7 +193,7 @@ mod tests {
 
         #[async_trait::async_trait]
         impl ConfigBootstrapperExt for DummyBootstrapper {
-            async fn bootstrap(_config: &(), _modules: Impl<ConfigModules>) {
+            async fn bootstrap(_config: &(), _modules: &Impl<ConfigModules>) {
                 // Test implementation
             }
         }
