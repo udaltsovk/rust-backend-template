@@ -1,11 +1,13 @@
+#![feature(try_blocks)]
+
 use std::{sync::Arc, time::Duration};
 
 use metrics_tracing_context::MetricsLayer;
 use opentelemetry::KeyValue;
 use opentelemetry_otlp::{ExportConfig, Protocol};
 use opentelemetry_sdk::{
-    Resource, error::OTelSdkResult, logs::SdkLoggerProvider,
-    metrics::SdkMeterProvider, trace::SdkTracerProvider,
+    Resource, logs::SdkLoggerProvider, metrics::SdkMeterProvider,
+    trace::SdkTracerProvider,
 };
 use opentelemetry_semantic_conventions::attribute;
 use tracing_subscriber::{
@@ -113,15 +115,12 @@ impl Otel {
 
         tracing::info!("Shutting down OpenTelemetry stuff");
 
-        let result: OTelSdkResult = (|| {
+        try {
             otel.get_tracer_provider().shutdown()?;
             otel.get_meter_provider().shutdown()?;
             otel.get_logger_provider().shutdown()?;
-
-            Ok(())
-        })();
-
-        result.expect("Failed to shut down OpenTelemetry stuff");
+        }
+        .expect("Failed to shut down OpenTelemetry stuff");
     }
 }
 
