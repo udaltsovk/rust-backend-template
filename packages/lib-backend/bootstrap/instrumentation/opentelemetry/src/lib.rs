@@ -19,8 +19,7 @@ mod traces;
 
 pub use crate::config::OtelConfig;
 
-#[derive(Clone)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Clone, Debug)]
 pub struct Otel {
     endpoint: Option<String>,
     service_name: String,

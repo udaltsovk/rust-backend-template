@@ -84,8 +84,7 @@ where
     }
 }
 
-#[derive(Serialize, Clone, Default)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Serialize, Clone, Default, Debug)]
 pub struct LossyUserInput<T>(pub UserInput<T>);
 
 impl<T> From<LossyUserInput<T>> for UserInput<T> {

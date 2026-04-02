@@ -7,8 +7,7 @@ use crate::entity::user::target_settings::StoredUserTargetSettings;
 
 pub mod target_settings;
 
-#[derive(Mapper, FromRow)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Mapper, FromRow, Debug)]
 #[mapper(derive(ty = User, into))]
 pub struct StoredUser {
     pub id: Uuid,

@@ -12,8 +12,7 @@ use lib::{
 use serde::{Deserialize, Serialize};
 use utoipa::{ToResponse, ToSchema};
 
-#[derive(From, Serialize, ToSchema, ToResponse)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(From, Serialize, ToSchema, ToResponse, Debug)]
 pub struct SessionDto {
     /// Токен доступа для авторизованных запросов. После успешной аутентификации СТАРЫЕ ТОКЕНЫ ПЕРЕСТАЮТ РАБОТАТЬ.
     #[schema(

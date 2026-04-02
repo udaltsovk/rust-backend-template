@@ -216,8 +216,7 @@ impl From<FieldErrors> for ValidationErrorsWithFields {
     }
 }
 
-#[derive(Serialize)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Serialize, Debug)]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationJsonError {

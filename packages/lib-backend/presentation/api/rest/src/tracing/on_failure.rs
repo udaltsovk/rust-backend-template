@@ -2,8 +2,7 @@ use tower_http::{classify::ServerErrorsFailureClass, trace::OnFailure};
 use tracing::Level;
 use tracing_otel_extra::dyn_event;
 
-#[derive(Clone, Copy)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Clone, Copy, Debug)]
 pub struct AxumOtelOnFailure {
     level: Level,
 }

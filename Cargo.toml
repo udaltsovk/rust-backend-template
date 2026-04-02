@@ -56,9 +56,6 @@ opt-level = 3
 panic = "unwind"
 codegen-units = 1
 
-# [profile.dev]
-# debug-assertions = false
-
 [workspace.lints.rust]
 # unknown_lints = "allow"
 

@@ -18,14 +18,13 @@ use crate::errors::{
 pub mod generic;
 pub mod validation;
 
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Debug)]
 pub struct RequestMeta {
     pub http_route: Uri,
     pub request_id: Option<Uuid>,
 }
 
-#[derive(Serialize)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Serialize, Debug)]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(untagged, rename_all = "camelCase")]
 pub enum JsonError {
@@ -33,8 +32,7 @@ pub enum JsonError {
     Validation(ValidationJsonError),
 }
 
-#[derive(Serialize)]
-#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Serialize, Debug)]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct JsonErrorStruct {
