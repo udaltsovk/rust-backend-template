@@ -16,7 +16,7 @@ configure_jemalloc!();
 async fn main() {
     let config = AppConfig::load();
 
-    // Without opentelemetry
+    // // Without opentelemetry
     // stdout::wrap(bootstrap!(
     //     template_example,
     //     [RestApi(&config.server)],
