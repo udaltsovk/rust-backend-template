@@ -21,7 +21,7 @@ pub struct JwtService {
     decoding_key: DecodingKey,
 }
 
-#[entrait(ref)]
+#[entrait]
 #[instrument_all]
 impl TokenServiceImpl for JwtService {
     fn generate_token<App>(

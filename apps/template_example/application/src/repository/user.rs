@@ -6,7 +6,10 @@ use domain::{
 use entrait::entrait;
 use lib::{anyhow::Result, async_trait, domain::Id};
 
-#[entrait(UserRepositoryImpl, delegate_by=ref)]
+#[entrait(
+    UserRepositoryImpl,
+    delegate_by=DelegateUserRepository
+)]
 #[async_trait]
 pub trait UserRepository {
     async fn create_user(

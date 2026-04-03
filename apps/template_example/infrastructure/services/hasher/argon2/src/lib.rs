@@ -22,7 +22,7 @@ pub struct Argon2Service {
     hasher: Argon2<'static>,
 }
 
-#[entrait(ref)]
+#[entrait]
 #[instrument_all]
 impl SecretHasherServiceImpl for Argon2Service {
     fn hash_secret<App>(app: &App, data: &Password) -> Result<PasswordHash>

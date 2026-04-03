@@ -1,7 +1,7 @@
 use std::sync::OnceLock;
 
 use application::repository::{
-    session::SessionRepositoryImpl, user::UserRepositoryImpl,
+    session::DelegateSessionRepository, user::DelegateUserRepository,
 };
 use infrastructure::persistence::{
     postgres::{POSTGRES_MIGRATOR, repository::PostgresRepositoryImpl},
@@ -33,8 +33,6 @@ mod config;
 
 #[derive(Clone)]
 pub struct RepositoriesModule {
-    #[expect(dead_code, reason = "we may use config in the future")]
-    config: RepositoriesConfig,
     postgres: SqlxPool<Postgres>,
     redis: RedisPool,
 }
@@ -42,7 +40,6 @@ pub struct RepositoriesModule {
 impl RepositoriesModule {
     pub(crate) async fn new(config: &RepositoriesConfig) -> Self {
         Self {
-            config: config.clone(),
             postgres: Self::setup_postgres(&config.postgres).await,
             redis: Self::setup_redis(&config.redis),
         }
@@ -82,6 +79,6 @@ impl_has! {
 
 impl_repositories! {
     struct: Modules,
-    UserRepositoryImpl: |_s| &PostgresRepositoryImpl,
-    SessionRepositoryImpl: |_s| &RedisRepositoryImpl,
+    DelegateUserRepository: PostgresRepositoryImpl,
+    DelegateSessionRepository: RedisRepositoryImpl,
 }

@@ -21,7 +21,7 @@ use crate::{
     repository::PostgresRepositoryImpl,
 };
 
-#[entrait(ref)]
+#[entrait]
 #[async_trait]
 #[instrument_all]
 impl UserRepositoryImpl for PostgresRepositoryImpl {

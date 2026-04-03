@@ -25,7 +25,7 @@ where
     NAMESPACE.get_or_init(|| app.get_dependency().nest("session"))
 }
 
-#[entrait(ref)]
+#[entrait]
 #[async_trait]
 #[instrument_all]
 impl SessionRepositoryImpl for RedisRepositoryImpl {

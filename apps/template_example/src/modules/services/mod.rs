@@ -1,5 +1,5 @@
 use application::service::{
-    secret_hasher::SecretHasherServiceImpl, token::TokenServiceImpl,
+    secret_hasher::DelegateSecretHasherService, token::DelegateTokenService,
 };
 use infrastructure::services::{
     hasher::argon2::Argon2Service, token::jwt::JwtService,
@@ -13,8 +13,6 @@ mod config;
 
 #[derive(Clone)]
 pub struct ServicesModule {
-    #[expect(dead_code, reason = "we may use config in the future")]
-    config: ServicesConfig,
     password_hasher: Argon2Service,
     token: JwtService,
 }
@@ -22,7 +20,6 @@ pub struct ServicesModule {
 impl ServicesModule {
     pub(crate) fn new(config: &ServicesConfig) -> Self {
         Self {
-            config: config.clone(),
             password_hasher: Argon2Service::new(),
             token: JwtService::from(&config.jwt),
         }
@@ -37,6 +34,6 @@ impl_has! {
 
 impl_services! {
     struct: Modules,
-    SecretHasherServiceImpl: |s| &s.services.password_hasher,
-    TokenServiceImpl: |s| &s.services.token,
+    DelegateSecretHasherService: Argon2Service,
+    DelegateTokenService: JwtService,
 }
