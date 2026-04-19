@@ -10,7 +10,8 @@ impl<C> ConfigExt for C
 where
     C: FromEnv,
 {
-    type Target = <C::FromEnvBuilder as FromEnvBuilder>::Target;
+    type Target =
+        <C::FromEnvBuilder as FromEnvBuilder>::Target;
 
     fn load() -> Self::Target {
         #[cfg(debug_assertions)]

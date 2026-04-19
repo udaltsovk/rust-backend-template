@@ -11,8 +11,9 @@ use tracing_subscriber::registry::LookupSpan as _;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::errors::{
-    generic::GenericJsonError, validation::ValidationJsonError,
+use self::{
+    generic::GenericJsonError,
+    validation::ValidationJsonError,
 };
 
 pub mod generic;
@@ -55,7 +56,8 @@ pub struct JsonErrorStruct {
 impl JsonErrorStruct {
     #[expect(
         clippy::needless_pass_by_value,
-        reason = "we may pass &str here and then &M won't work"
+        reason = "we may pass &str here and then &M won't \
+                  work"
     )]
     pub fn new<S, M>(
         status_code: S,
@@ -80,9 +82,10 @@ impl JsonErrorStruct {
             }
         });
 
-        let http_route =
-            http_route_option.unwrap_or_else(|| Uri::from_static("unknown"));
-        let request_id = request_id_option.unwrap_or(Uuid::nil());
+        let http_route = http_route_option
+            .unwrap_or_else(|| Uri::from_static("unknown"));
+        let request_id =
+            request_id_option.unwrap_or(Uuid::nil());
 
         Self {
             status_code: status_code.into(),
@@ -100,10 +103,12 @@ impl JsonError {
     pub const fn inner_struct(&self) -> &JsonErrorStruct {
         match self {
             Self::Generic(GenericJsonError {
-                error, ..
+                error,
+                ..
             })
             | Self::Validation(ValidationJsonError {
-                error, ..
+                error,
+                ..
             }) => error,
         }
     }
@@ -111,13 +116,20 @@ impl JsonError {
 
 impl IntoResponse for JsonError {
     fn into_response(self) -> Response {
-        (self.inner_struct().status_code, Json(self)).into_response()
+        (self.inner_struct().status_code, Json(self))
+            .into_response()
     }
 }
 
 pub trait InternalErrorStringExt: ToString + Sized {
-    fn to_internal_error_string(self, public: &'static str) -> String {
-        self.to_internal_error_string_with_debug(cfg!(debug_assertions), public)
+    fn to_internal_error_string(
+        self,
+        public: &'static str,
+    ) -> String {
+        self.to_internal_error_string_with_debug(
+            cfg!(debug_assertions),
+            public,
+        )
     }
 
     fn to_internal_error_string_with_debug(
@@ -133,4 +145,7 @@ pub trait InternalErrorStringExt: ToString + Sized {
     }
 }
 
-impl<T> InternalErrorStringExt for T where T: ToString + Sized {}
+impl<T> InternalErrorStringExt for T where
+    T: ToString + Sized
+{
+}

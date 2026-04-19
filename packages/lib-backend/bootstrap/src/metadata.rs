@@ -14,7 +14,8 @@ pub enum MetadataSaverError {
     Save(#[from] io::Error),
 }
 
-pub type MetadataSaverResult = Result<(), MetadataSaverError>;
+pub type MetadataSaverResult =
+    Result<(), MetadataSaverError>;
 
 pub trait MetadataSaver {
     fn save_as(&self, name: &str) -> MetadataSaverResult;
@@ -41,7 +42,8 @@ where
         let mut dotenv_example = String::new();
         C::requirements(&mut dotenv_example);
 
-        let path = format!("./assets/dotenv/{name}.env.example");
+        let path =
+            format!("./assets/dotenv/{name}.env.example");
         fs::write(&path, &dotenv_example)?;
 
         Ok(())

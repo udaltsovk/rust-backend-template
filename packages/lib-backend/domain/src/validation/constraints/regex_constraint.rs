@@ -1,7 +1,7 @@
 use bon::Builder;
 use regex::Regex;
 
-use crate::validation::constraints::Constraint;
+use super::Constraint;
 
 #[derive(Builder)]
 #[builder(derive(Clone), start_fn = with_err)]
@@ -23,9 +23,12 @@ where
     pub fn try_regex(
         self,
         regex: &str,
-    ) -> Result<MatchesBuilder<T, matches_builder::SetRegex<S>>, regex::Error>
-    {
-        Regex::try_from(regex).map(|regex| self.regex(regex))
+    ) -> Result<
+        MatchesBuilder<T, matches_builder::SetRegex<S>>,
+        regex::Error,
+    > {
+        Regex::try_from(regex)
+            .map(|regex| self.regex(regex))
     }
 }
 
@@ -47,10 +50,8 @@ mod tests {
     use regex::Regex;
     use rstest::{fixture, rstest};
 
-    use super::Matches;
-    use crate::validation::constraints::{
-        Constraint as _, regex_constraint::MatchesBuilder,
-    };
+    use super::{Matches, MatchesBuilder};
+    use crate::validation::constraints::Constraint as _;
 
     fn err<T>(_: &T, regex: &Regex) -> String {
         format!("must match pattern `{regex}`")
@@ -62,7 +63,9 @@ mod tests {
     }
 
     #[fixture]
-    fn phone_constraint(matches: MatchesBuilder<String>) -> Matches<String> {
+    fn phone_constraint(
+        matches: MatchesBuilder<String>,
+    ) -> Matches<String> {
         matches
             .try_regex(r"^\d{3}-\d{3}-\d{4}$")
             .expect("valid phone regex")
@@ -70,7 +73,9 @@ mod tests {
     }
 
     #[fixture]
-    fn email_constraint(matches: MatchesBuilder<String>) -> Matches<String> {
+    fn email_constraint(
+        matches: MatchesBuilder<String>,
+    ) -> Matches<String> {
         matches
             .try_regex(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
             .expect("valid email regex")
@@ -158,34 +163,77 @@ mod tests {
     }
 
     #[rstest]
-    fn matches_constraint_phone_number(phone_constraint: Matches<String>) {
-        assert!(phone_constraint.check(&"123-456-7890".to_string()));
-        assert!(phone_constraint.check(&"555-123-4567".to_string()));
-        assert!(phone_constraint.check(&"000-000-0000".to_string()));
+    fn matches_constraint_phone_number(
+        phone_constraint: Matches<String>,
+    ) {
+        assert!(
+            phone_constraint
+                .check(&"123-456-7890".to_string())
+        );
+        assert!(
+            phone_constraint
+                .check(&"555-123-4567".to_string())
+        );
+        assert!(
+            phone_constraint
+                .check(&"000-000-0000".to_string())
+        );
 
-        assert!(!phone_constraint.check(&"invalid".to_string()));
-        assert!(!phone_constraint.check(&"123-45-6789".to_string())); // wrong format
-        assert!(!phone_constraint.check(&"1234-123-4567".to_string())); // too many digits in first group
-        assert!(!phone_constraint.check(&"123-456-78901".to_string())); // too many digits in last group
-        assert!(!phone_constraint.check(&"123 456 7890".to_string())); // spaces instead of hyphens
+        assert!(
+            !phone_constraint.check(&"invalid".to_string())
+        );
+        assert!(
+            !phone_constraint
+                .check(&"123-45-6789".to_string())
+        ); // wrong format
+        assert!(
+            !phone_constraint
+                .check(&"1234-123-4567".to_string())
+        ); // too many digits in first group
+        assert!(
+            !phone_constraint
+                .check(&"123-456-78901".to_string())
+        ); // too many digits in last group
+        assert!(
+            !phone_constraint
+                .check(&"123 456 7890".to_string())
+        ); // spaces instead of hyphens
         assert!(!phone_constraint.check(&String::new())); // empty string
     }
 
     #[rstest]
-    fn matches_constraint_email_pattern(email_constraint: Matches<String>) {
-        assert!(email_constraint.check(&"user@example.com".to_string()));
+    fn matches_constraint_email_pattern(
+        email_constraint: Matches<String>,
+    ) {
         assert!(
-            email_constraint.check(&"test.email+tag@domain.org".to_string())
+            email_constraint
+                .check(&"user@example.com".to_string())
         );
-        assert!(
-            email_constraint.check(&"user123@test-domain.co.uk".to_string())
-        );
+        assert!(email_constraint.check(
+            &"test.email+tag@domain.org".to_string()
+        ));
+        assert!(email_constraint.check(
+            &"user123@test-domain.co.uk".to_string()
+        ));
 
-        assert!(!email_constraint.check(&"invalid".to_string()));
-        assert!(!email_constraint.check(&"user@".to_string()));
-        assert!(!email_constraint.check(&"@domain.com".to_string()));
-        assert!(!email_constraint.check(&"user.domain.com".to_string())); // missing @
-        assert!(!email_constraint.check(&"user@domain".to_string())); // missing TLD
+        assert!(
+            !email_constraint.check(&"invalid".to_string())
+        );
+        assert!(
+            !email_constraint.check(&"user@".to_string())
+        );
+        assert!(
+            !email_constraint
+                .check(&"@domain.com".to_string())
+        );
+        assert!(
+            !email_constraint
+                .check(&"user.domain.com".to_string())
+        ); // missing @
+        assert!(
+            !email_constraint
+                .check(&"user@domain".to_string())
+        ); // missing TLD
     }
 
     #[rstest]
@@ -195,20 +243,50 @@ mod tests {
         contains_test_constraint: Matches<String>,
     ) {
         // Test starts with pattern
-        assert!(starts_with_test_constraint.check(&"test123".to_string()));
-        assert!(starts_with_test_constraint.check(&"testing".to_string()));
-        assert!(!starts_with_test_constraint.check(&"123test".to_string()));
+        assert!(
+            starts_with_test_constraint
+                .check(&"test123".to_string())
+        );
+        assert!(
+            starts_with_test_constraint
+                .check(&"testing".to_string())
+        );
+        assert!(
+            !starts_with_test_constraint
+                .check(&"123test".to_string())
+        );
 
         // Test ends with pattern
-        assert!(ends_with_test_constraint.check(&"123test".to_string()));
-        assert!(ends_with_test_constraint.check(&"mytest".to_string()));
-        assert!(!ends_with_test_constraint.check(&"test123".to_string()));
+        assert!(
+            ends_with_test_constraint
+                .check(&"123test".to_string())
+        );
+        assert!(
+            ends_with_test_constraint
+                .check(&"mytest".to_string())
+        );
+        assert!(
+            !ends_with_test_constraint
+                .check(&"test123".to_string())
+        );
 
         // Test contains pattern
-        assert!(contains_test_constraint.check(&"123test456".to_string()));
-        assert!(contains_test_constraint.check(&"test".to_string()));
-        assert!(contains_test_constraint.check(&"testing".to_string()));
-        assert!(!contains_test_constraint.check(&"tst".to_string()));
+        assert!(
+            contains_test_constraint
+                .check(&"123test456".to_string())
+        );
+        assert!(
+            contains_test_constraint
+                .check(&"test".to_string())
+        );
+        assert!(
+            contains_test_constraint
+                .check(&"testing".to_string())
+        );
+        assert!(
+            !contains_test_constraint
+                .check(&"tst".to_string())
+        );
     }
 
     #[rstest]
@@ -216,14 +294,35 @@ mod tests {
         case_sensitive_constraint: Matches<String>,
         case_insensitive_constraint: Matches<String>,
     ) {
-        assert!(case_sensitive_constraint.check(&"Test".to_string()));
-        assert!(!case_sensitive_constraint.check(&"test".to_string()));
-        assert!(!case_sensitive_constraint.check(&"TEST".to_string()));
+        assert!(
+            case_sensitive_constraint
+                .check(&"Test".to_string())
+        );
+        assert!(
+            !case_sensitive_constraint
+                .check(&"test".to_string())
+        );
+        assert!(
+            !case_sensitive_constraint
+                .check(&"TEST".to_string())
+        );
 
-        assert!(case_insensitive_constraint.check(&"test".to_string()));
-        assert!(case_insensitive_constraint.check(&"Test".to_string()));
-        assert!(case_insensitive_constraint.check(&"TEST".to_string()));
-        assert!(case_insensitive_constraint.check(&"TeSt".to_string()));
+        assert!(
+            case_insensitive_constraint
+                .check(&"test".to_string())
+        );
+        assert!(
+            case_insensitive_constraint
+                .check(&"Test".to_string())
+        );
+        assert!(
+            case_insensitive_constraint
+                .check(&"TEST".to_string())
+        );
+        assert!(
+            case_insensitive_constraint
+                .check(&"TeSt".to_string())
+        );
     }
 
     #[rstest]
@@ -233,25 +332,67 @@ mod tests {
         word_chars_constraint: Matches<String>,
     ) {
         // Digits only
-        assert!(digits_only_constraint.check(&"123".to_string()));
-        assert!(digits_only_constraint.check(&"0".to_string()));
-        assert!(digits_only_constraint.check(&"999999".to_string()));
-        assert!(!digits_only_constraint.check(&"123abc".to_string()));
-        assert!(!digits_only_constraint.check(&String::new()));
+        assert!(
+            digits_only_constraint
+                .check(&"123".to_string())
+        );
+        assert!(
+            digits_only_constraint.check(&"0".to_string())
+        );
+        assert!(
+            digits_only_constraint
+                .check(&"999999".to_string())
+        );
+        assert!(
+            !digits_only_constraint
+                .check(&"123abc".to_string())
+        );
+        assert!(
+            !digits_only_constraint.check(&String::new())
+        );
 
         // Letters only
-        assert!(letters_only_constraint.check(&"abc".to_string()));
-        assert!(letters_only_constraint.check(&"ABC".to_string()));
-        assert!(letters_only_constraint.check(&"AbC".to_string()));
-        assert!(!letters_only_constraint.check(&"abc123".to_string()));
-        assert!(!letters_only_constraint.check(&String::new()));
+        assert!(
+            letters_only_constraint
+                .check(&"abc".to_string())
+        );
+        assert!(
+            letters_only_constraint
+                .check(&"ABC".to_string())
+        );
+        assert!(
+            letters_only_constraint
+                .check(&"AbC".to_string())
+        );
+        assert!(
+            !letters_only_constraint
+                .check(&"abc123".to_string())
+        );
+        assert!(
+            !letters_only_constraint.check(&String::new())
+        );
 
         // Word characters (letters, digits, underscore)
-        assert!(word_chars_constraint.check(&"abc123".to_string()));
-        assert!(word_chars_constraint.check(&"test_value".to_string()));
-        assert!(word_chars_constraint.check(&"_underscore".to_string()));
-        assert!(!word_chars_constraint.check(&"hello world".to_string())); // space is not \w
-        assert!(!word_chars_constraint.check(&"hello-world".to_string())); // hyphen is not \w
+        assert!(
+            word_chars_constraint
+                .check(&"abc123".to_string())
+        );
+        assert!(
+            word_chars_constraint
+                .check(&"test_value".to_string())
+        );
+        assert!(
+            word_chars_constraint
+                .check(&"_underscore".to_string())
+        );
+        assert!(
+            !word_chars_constraint
+                .check(&"hello world".to_string())
+        ); // space is not \w
+        assert!(
+            !word_chars_constraint
+                .check(&"hello-world".to_string())
+        ); // hyphen is not \w
     }
 
     #[rstest]
@@ -332,11 +473,22 @@ mod tests {
             .expect("valid non-capturing groups regex")
             .build();
 
-        assert!(non_capturing.check(&"Mr. Smith".to_string()));
-        assert!(non_capturing.check(&"Ms. Johnson".to_string()));
-        assert!(non_capturing.check(&"Dr. Brown".to_string()));
-        assert!(!non_capturing.check(&"Prof. Davis".to_string()));
-        assert!(!non_capturing.check(&"Mr Smith".to_string())); // missing dot
+        assert!(
+            non_capturing.check(&"Mr. Smith".to_string())
+        );
+        assert!(
+            non_capturing.check(&"Ms. Johnson".to_string())
+        );
+        assert!(
+            non_capturing.check(&"Dr. Brown".to_string())
+        );
+        assert!(
+            !non_capturing
+                .check(&"Prof. Davis".to_string())
+        );
+        assert!(
+            !non_capturing.check(&"Mr Smith".to_string())
+        ); // missing dot
     }
 
     #[rstest]
@@ -348,15 +500,31 @@ mod tests {
 
         // Should match Unicode letters and numbers
         assert!(unicode_pattern.check(&"café".to_string()));
-        assert!(unicode_pattern.check(&"naïve".to_string()));
-        assert!(unicode_pattern.check(&"Москва".to_string()));
-        assert!(unicode_pattern.check(&"東京123".to_string()));
-        assert!(unicode_pattern.check(&"서울456".to_string()));
+        assert!(
+            unicode_pattern.check(&"naïve".to_string())
+        );
+        assert!(
+            unicode_pattern.check(&"Москва".to_string())
+        );
+        assert!(
+            unicode_pattern.check(&"東京123".to_string())
+        );
+        assert!(
+            unicode_pattern.check(&"서울456".to_string())
+        );
 
         // Should not match punctuation or symbols
-        assert!(!unicode_pattern.check(&"hello world".to_string()));
-        assert!(!unicode_pattern.check(&"test@example.com".to_string()));
-        assert!(!unicode_pattern.check(&"hello!".to_string()));
+        assert!(
+            !unicode_pattern
+                .check(&"hello world".to_string())
+        );
+        assert!(
+            !unicode_pattern
+                .check(&"test@example.com".to_string())
+        );
+        assert!(
+            !unicode_pattern.check(&"hello!".to_string())
+        );
     }
 
     #[rstest]
@@ -365,7 +533,8 @@ mod tests {
 
         assert!(result.is_ok());
 
-        let constraint = result.expect("valid regex").build();
+        let constraint =
+            result.expect("valid regex").build();
 
         assert!(constraint.check(&"hello".to_string()));
         assert!(!constraint.check(&"Hello".to_string()));
@@ -401,7 +570,9 @@ mod tests {
             .build();
 
         assert!(optional_content.check(&String::new()));
-        assert!(optional_content.check(&"anything".to_string()));
+        assert!(
+            optional_content.check(&"anything".to_string())
+        );
 
         // Pattern that requires non-empty
         let non_empty_required = matches()
@@ -421,8 +592,12 @@ mod tests {
             .expect("valid literal dot regex")
             .build();
 
-        assert!(literal_dot.check(&"hello.world".to_string()));
-        assert!(!literal_dot.check(&"helloXworld".to_string()));
+        assert!(
+            literal_dot.check(&"hello.world".to_string())
+        );
+        assert!(
+            !literal_dot.check(&"helloXworld".to_string())
+        );
 
         // Test literal brackets
         let literal_brackets = matches()
@@ -430,8 +605,12 @@ mod tests {
             .expect("valid literal brackets regex")
             .build();
 
-        assert!(literal_brackets.check(&"[test]".to_string()));
-        assert!(!literal_brackets.check(&"test".to_string()));
+        assert!(
+            literal_brackets.check(&"[test]".to_string())
+        );
+        assert!(
+            !literal_brackets.check(&"test".to_string())
+        );
 
         // Test literal parentheses
         let literal_parens = matches()
@@ -439,7 +618,9 @@ mod tests {
             .expect("valid literal parentheses regex")
             .build();
 
-        assert!(literal_parens.check(&"(test)".to_string()));
+        assert!(
+            literal_parens.check(&"(test)".to_string())
+        );
         assert!(!literal_parens.check(&"test".to_string()));
     }
 
@@ -452,7 +633,9 @@ mod tests {
             .build();
 
         assert!(single_line.check(&"test".to_string()));
-        assert!(!single_line.check(&"test\nmore".to_string()));
+        assert!(
+            !single_line.check(&"test\nmore".to_string())
+        );
 
         // Multiline mode
         let multiline = matches()
@@ -461,7 +644,10 @@ mod tests {
             .build();
 
         assert!(multiline.check(&"test".to_string()));
-        assert!(multiline.check(&"before\ntest\nafter".to_string()));
+        assert!(
+            multiline
+                .check(&"before\ntest\nafter".to_string())
+        );
         assert!(!multiline.check(&"testing".to_string()));
     }
 }

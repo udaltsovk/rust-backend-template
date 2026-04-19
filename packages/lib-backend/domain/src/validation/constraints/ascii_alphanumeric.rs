@@ -1,6 +1,6 @@
 use bon::Builder;
 
-use crate::validation::constraints::Constraint;
+use super::Constraint;
 
 #[derive(Builder)]
 #[builder(derive(Clone), start_fn = with_err)]
@@ -17,7 +17,10 @@ where
     T: ToString,
 {
     fn check(&self, value: &T) -> bool {
-        value.to_string().chars().all(|c| c.is_ascii_alphanumeric())
+        value
+            .to_string()
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric())
     }
 
     fn error_msg(&self, rejected_value: &T) -> String {
@@ -33,7 +36,8 @@ mod tests {
     use crate::validation::constraints::Constraint as _;
 
     fn err(_: &String) -> String {
-        "must contain only ascii alphanumeric characters".to_string()
+        "must contain only ascii alphanumeric characters"
+            .to_string()
     }
 
     #[fixture]
@@ -128,7 +132,10 @@ mod tests {
         #[case] input: &str,
         #[case] expected: bool,
     ) {
-        assert_eq!(constraint.check(&input.to_string()), expected);
+        assert_eq!(
+            constraint.check(&input.to_string()),
+            expected
+        );
     }
 
     #[rstest]
@@ -136,7 +143,10 @@ mod tests {
         constraint: IsAsciiAlphanumeric<String>,
     ) {
         let value = "🦀".into();
-        assert_eq!(constraint.error_msg(&value), err(&value));
+        assert_eq!(
+            constraint.error_msg(&value),
+            err(&value)
+        );
     }
 
     #[rstest]

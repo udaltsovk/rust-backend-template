@@ -3,7 +3,10 @@ use std::{error::Error, fmt, sync::Arc};
 use axum::http::StatusCode;
 use domain::validation::{
     ValidationConfirmation,
-    error::{ValidationError, ValidationErrors, ValidationErrorsWithFields},
+    error::{
+        ValidationError, ValidationErrors,
+        ValidationErrorsWithFields,
+    },
 };
 use serde::Serialize;
 use serde_json::Value;
@@ -11,7 +14,7 @@ use tap::Pipe as _;
 #[cfg(feature = "openapi")]
 use utoipa::ToSchema;
 
-use crate::errors::{JsonError, JsonErrorStruct};
+use super::{JsonError, JsonErrorStruct};
 
 #[derive(Serialize, Clone, Debug)]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
@@ -27,7 +30,10 @@ pub struct FieldError {
 }
 
 impl fmt::Display for FieldError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+    ) -> fmt::Result {
         write!(
             f,
             "Field: {}, Issue: {}, Rejected value: {:?}",
@@ -48,8 +54,10 @@ impl FieldError {
         Self {
             field: Arc::clone(field),
             issue,
-            rejected_value: serde_json::to_value(rejected_value)
-                .unwrap_or_default(),
+            rejected_value: serde_json::to_value(
+                rejected_value,
+            )
+            .unwrap_or_default(),
         }
     }
 }
@@ -66,8 +74,12 @@ impl From<FieldError> for (Arc<str>, ValidationError) {
             field,
             ValidationError {
                 issue,
-                rejected_value: serde_value::to_value(rejected_value)
-                    .unwrap_or(serde_value::Value::Option(None)),
+                rejected_value: serde_value::to_value(
+                    rejected_value,
+                )
+                .unwrap_or(serde_value::Value::Option(
+                    None,
+                )),
             },
         )
     }
@@ -87,7 +99,9 @@ impl FieldErrors {
         self.0
     }
 
-    pub const fn inner_mut(&mut self) -> &mut Vec<FieldError> {
+    pub const fn inner_mut(
+        &mut self,
+    ) -> &mut Vec<FieldError> {
         &mut self.0
     }
 
@@ -102,10 +116,15 @@ impl FieldErrors {
 
     #[expect(
         clippy::needless_pass_by_value,
-        reason = "clippy doesn't know that both P and M may be &str"
+        reason = "clippy doesn't know that both P and M \
+                  may be &str"
     )]
-    pub fn push<P, M, V>(&mut self, path: P, issue: M, rejected_value: V)
-    where
+    pub fn push<P, M, V>(
+        &mut self,
+        path: P,
+        issue: M,
+        rejected_value: V,
+    ) where
         P: Into<Arc<str>>,
         M: ToString,
         V: Serialize,
@@ -113,22 +132,30 @@ impl FieldErrors {
         let error = FieldError {
             field: path.into(),
             issue: issue.to_string(),
-            rejected_value: serde_json::to_value(rejected_value)
-                .unwrap_or_default(),
+            rejected_value: serde_json::to_value(
+                rejected_value,
+            )
+            .unwrap_or_default(),
         };
         self.0.push(error);
     }
 
-    pub fn into_result<T, F>(self, ok_fn: F) -> Result<T, Self>
+    pub fn into_result<T, F>(
+        self,
+        ok_fn: F,
+    ) -> Result<T, Self>
     where
         F: FnOnce(ValidationConfirmation) -> T,
     {
         self.0
             .is_empty()
             .then(|| {
-                ValidationErrors::new().into_result(ok_fn).expect(
-                    "we've checked for errors here so it should be safe",
-                )
+                ValidationErrors::new()
+                    .into_result(ok_fn)
+                    .expect(
+                        "we've checked for errors here so \
+                         it should be safe",
+                    )
             })
             .ok_or(self)
     }
@@ -141,7 +168,10 @@ impl Default for FieldErrors {
 }
 
 impl fmt::Display for FieldErrors {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+    ) -> fmt::Result {
         let errors = self
             .0
             .iter()
@@ -163,7 +193,11 @@ impl FieldErrors {
         errors
             .into_inner()
             .into_iter()
-            .map(|err| FieldError::from_validation_error(field, err))
+            .map(|err| {
+                FieldError::from_validation_error(
+                    field, err,
+                )
+            })
             .collect::<Vec<_>>()
             .pipe(Self)
     }
@@ -171,12 +205,13 @@ impl FieldErrors {
 
 impl From<Vec<Self>> for FieldErrors {
     fn from(errors: Vec<Self>) -> Self {
-        errors
-            .into_iter()
-            .fold(Self::default(), |mut accumulator, error| {
+        errors.into_iter().fold(
+            Self::default(),
+            |mut accumulator, error| {
                 accumulator.extend(Self(error.0));
                 accumulator
-            })
+            },
+        )
     }
 }
 
@@ -187,13 +222,17 @@ impl From<FieldErrors> for Vec<FieldError> {
 }
 
 impl FromIterator<Self> for FieldErrors {
-    fn from_iter<T: IntoIterator<Item = Self>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = Self>>(
+        iter: T,
+    ) -> Self {
         iter.into_iter().collect::<Vec<_>>().into()
     }
 }
 
 impl FromIterator<FieldError> for FieldErrors {
-    fn from_iter<T: IntoIterator<Item = FieldError>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = FieldError>>(
+        iter: T,
+    ) -> Self {
         Self(iter.into_iter().collect())
     }
 }
@@ -204,7 +243,9 @@ impl From<ValidationErrorsWithFields> for FieldErrors {
             .into_inner()
             .into_iter()
             .map(|(field, error)| {
-                FieldError::from_validation_error(&field, error)
+                FieldError::from_validation_error(
+                    &field, error,
+                )
             })
             .collect()
     }
@@ -239,7 +280,11 @@ impl JsonError {
         E: Into<Vec<FieldError>>,
     {
         Self::Validation(ValidationJsonError {
-            error: JsonErrorStruct::new(status_code, error_code, message),
+            error: JsonErrorStruct::new(
+                status_code,
+                error_code,
+                message,
+            ),
             field_errors: errors.into(),
         })
     }

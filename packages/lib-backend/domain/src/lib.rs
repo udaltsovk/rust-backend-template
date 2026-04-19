@@ -42,13 +42,18 @@ impl<T> From<Id<T>> for Uuid {
 }
 
 impl<T> fmt::Display for Id<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+    ) -> fmt::Result {
         self.value.fmt(f)
     }
 }
 
 impl<'de, T> Deserialize<'de> for Id<T> {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    fn deserialize<D>(
+        deserializer: D,
+    ) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
@@ -57,7 +62,10 @@ impl<'de, T> Deserialize<'de> for Id<T> {
 }
 
 impl<T> Serialize for Id<T> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    fn serialize<S>(
+        &self,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
@@ -79,8 +87,14 @@ where
     }
 
     #[must_use]
-    fn it_should_be_safe_to_unwrap<E>() -> impl FnOnce(E) -> T {
-        move |_| panic!("We've validated field value, so it should be safe")
+    fn it_should_be_safe_to_unwrap<E>()
+    -> impl FnOnce(E) -> T {
+        move |_| {
+            panic!(
+                "We've validated field value, so it \
+                 should be safe"
+            )
+        }
     }
 }
 
@@ -161,11 +175,13 @@ mod tests {
         let user_id: Id<User> = Id::new(uuid);
         let product_id: Id<Product> = Id::new(uuid);
 
-        // IDs with different type parameters should be distinct types
-        // This test ensures compile-time type safety
+        // IDs with different type parameters should be
+        // distinct types This test ensures
+        // compile-time type safety
         assert_eq!(user_id.value, product_id.value);
 
-        // But they should have the same underlying UUID value
+        // But they should have the same underlying UUID
+        // value
         let user_uuid: Uuid = user_id.into();
         let product_uuid: Uuid = product_id.into();
         assert_eq!(user_uuid, product_uuid);
@@ -220,11 +236,13 @@ mod tests {
     }
 
     #[rstest]
-    #[should_panic(
-        expected = "We've validated test_field value, so it should be safe"
-    )]
+    #[should_panic(expected = "We've validated \
+                               test_field value, so it \
+                               should be safe")]
     fn domain_type_safe_unwrap_panics() {
-        let unwrap_fn = TestDomainValue::it_should_be_safe_to_unwrap::<()>();
+        let unwrap_fn =
+            TestDomainValue::it_should_be_safe_to_unwrap::<()>(
+            );
         unwrap_fn(());
     }
 

@@ -8,7 +8,7 @@ use lib::{
     },
     presentation::api::rest::startup::RestApi,
 };
-use template_example::{AppConfig, Modules};
+use template_example::{AppConfig, modules::Modules};
 
 configure_jemalloc!();
 

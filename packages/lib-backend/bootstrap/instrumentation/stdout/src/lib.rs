@@ -43,7 +43,8 @@ pub fn filter_layer() -> EnvFilter {
 #[cfg(not(debug_assertions))]
 #[must_use]
 #[inline]
-pub fn fmt_layer<S>() -> Layer<S, format::DefaultFields, Format<format::Compact>>
+pub fn fmt_layer<S>()
+-> Layer<S, format::DefaultFields, Format<format::Compact>>
 {
     fmt::layer()
         .compact()
@@ -58,7 +59,8 @@ pub fn fmt_layer<S>() -> Layer<S, format::DefaultFields, Format<format::Compact>
 #[cfg(debug_assertions)]
 #[must_use]
 #[inline]
-pub fn fmt_layer<S>() -> Layer<S, format::Pretty, Format<format::Pretty>> {
+pub fn fmt_layer<S>()
+-> Layer<S, format::Pretty, Format<format::Pretty>> {
     fmt::layer()
         .pretty()
         .with_span_events(format::FmtSpan::CLOSE)

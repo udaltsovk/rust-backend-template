@@ -6,8 +6,8 @@ use metrics_tracing_context::MetricsLayer;
 use opentelemetry::KeyValue;
 use opentelemetry_otlp::{ExportConfig, Protocol};
 use opentelemetry_sdk::{
-    Resource, logs::SdkLoggerProvider, metrics::SdkMeterProvider,
-    trace::SdkTracerProvider,
+    Resource, logs::SdkLoggerProvider,
+    metrics::SdkMeterProvider, trace::SdkTracerProvider,
 };
 use opentelemetry_semantic_conventions::attribute;
 use tracing_subscriber::{
@@ -48,7 +48,10 @@ impl Otel {
         }
     }
 
-    fn resource(service_namespace: &str, service_name: &str) -> Resource {
+    fn resource(
+        service_namespace: &str,
+        service_name: &str,
+    ) -> Resource {
         Resource::builder()
             .with_attribute(KeyValue::new(
                 attribute::SERVICE_NAMESPACE,
@@ -59,10 +62,16 @@ impl Otel {
     }
 
     #[must_use]
-    pub fn new(service_namespace: &str, service_name: &str) -> Self {
+    pub fn new(
+        service_namespace: &str,
+        service_name: &str,
+    ) -> Self {
         Self {
             service_name: service_name.to_string(),
-            resource: Self::resource(service_namespace, service_name),
+            resource: Self::resource(
+                service_namespace,
+                service_name,
+            ),
             endpoint: None,
             timeout: None,
             logger_provider: None,
@@ -78,7 +87,10 @@ impl Otel {
     }
 
     #[must_use]
-    pub const fn with_timeout(mut self, timeout: Duration) -> Self {
+    pub const fn with_timeout(
+        mut self,
+        timeout: Duration,
+    ) -> Self {
         self.timeout = Some(timeout);
         self
     }
@@ -150,7 +162,10 @@ mod tests {
             .with_endpoint(endpoint)
             .with_timeout(timeout);
 
-        assert_eq!(otel.endpoint, Some(endpoint.to_string()));
+        assert_eq!(
+            otel.endpoint,
+            Some(endpoint.to_string())
+        );
         assert_eq!(otel.timeout, Some(timeout));
     }
 
@@ -164,44 +179,56 @@ mod tests {
             .with_timeout(timeout);
 
         let config = otel.export_config();
-        assert_eq!(config.endpoint, Some(endpoint.to_string()));
+        assert_eq!(
+            config.endpoint,
+            Some(endpoint.to_string())
+        );
         assert_eq!(config.timeout, Some(timeout));
     }
 
     #[test]
     fn resource_creation() {
         let resource = Otel::resource("my_ns", "my_svc");
-        assert!(format!("{resource:?}").contains("service.name"));
+        assert!(
+            format!("{resource:?}")
+                .contains("service.name")
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn configure_providers() {
         let otel = Otel::new("test_ns", "test_svc");
 
-        let result = tokio::time::timeout(Duration::from_secs(1), async {
-            let otel = otel.configure_logger_provider();
-            assert!(otel.logger_provider.is_some());
-            let _logger_provider = otel.get_logger_provider();
-            let _layer = otel.log_layer();
+        let result = tokio::time::timeout(
+            Duration::from_secs(1),
+            async {
+                let otel = otel.configure_logger_provider();
+                assert!(otel.logger_provider.is_some());
+                let _logger_provider =
+                    otel.get_logger_provider();
+                let _layer = otel.log_layer();
 
-            let otel = otel.configure_meter_provider();
-            assert!(otel.meter_provider.is_some());
-            let _meter_provider = otel.get_meter_provider();
+                let otel = otel.configure_meter_provider();
+                assert!(otel.meter_provider.is_some());
+                let _meter_provider =
+                    otel.get_meter_provider();
 
-            let otel = otel.configure_tracer_provider();
-            assert!(otel.tracer_provider.is_some());
-            let _tracer_provider = otel.get_tracer_provider();
+                let otel = otel.configure_tracer_provider();
+                assert!(otel.tracer_provider.is_some());
+                let _tracer_provider =
+                    otel.get_tracer_provider();
 
-            otel.get_tracer_provider()
-                .shutdown()
-                .expect("shutdown failed");
-            otel.get_meter_provider()
-                .shutdown()
-                .expect("shutdown failed");
-            otel.get_logger_provider()
-                .shutdown()
-                .expect("shutdown failed");
-        })
+                otel.get_tracer_provider()
+                    .shutdown()
+                    .expect("shutdown failed");
+                otel.get_meter_provider()
+                    .shutdown()
+                    .expect("shutdown failed");
+                otel.get_logger_provider()
+                    .shutdown()
+                    .expect("shutdown failed");
+            },
+        )
         .await;
 
         assert!(result.is_ok(), "Test timed out");
@@ -216,7 +243,8 @@ mod tests {
             })
             .await;
 
-        // Call wrap again to trigger subscriber initialization error
+        // Call wrap again to trigger subscriber
+        // initialization error
         otel.wrap(async {
             tracing::info!("Inside wrap 2");
         })

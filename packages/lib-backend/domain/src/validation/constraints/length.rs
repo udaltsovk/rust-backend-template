@@ -1,9 +1,9 @@
 use bon::Builder;
 
-use crate::validation::constraints::Constraint;
+use super::Constraint;
 
 macro_rules! length_constraint {
-    ($name: ident, $func: ident $(,)?) => {
+    ($name:ident, $func:ident $(,)?) => {
         #[derive(Builder)]
         #[builder(derive(Clone), start_fn = with_err)]
         pub struct $name<T> {
@@ -17,7 +17,10 @@ macro_rules! length_constraint {
                 value.chars().count().$func(&self.limit)
             }
 
-            fn error_msg(&self, rejected_value: &String) -> String {
+            fn error_msg(
+                &self,
+                rejected_value: &String,
+            ) -> String {
                 (self.err_fn)(rejected_value, self.limit)
             }
         }
@@ -27,7 +30,10 @@ macro_rules! length_constraint {
                 value.len().$func(&self.limit)
             }
 
-            fn error_msg(&self, rejected_value: &Vec<T>) -> String {
+            fn error_msg(
+                &self,
+                rejected_value: &Vec<T>,
+            ) -> String {
                 (self.err_fn)(rejected_value, self.limit)
             }
         }

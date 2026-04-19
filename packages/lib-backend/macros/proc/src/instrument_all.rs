@@ -1,8 +1,8 @@
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::quote;
 use syn::{
-    Attribute, ImplItem, ItemImpl, LitStr, Type, meta::parser,
-    parse::Parser as _, parse_quote, parse2,
+    Attribute, ImplItem, ItemImpl, LitStr, Type,
+    meta::parser, parse::Parser as _, parse_quote, parse2,
 };
 
 pub fn instrument_all2(
@@ -47,7 +47,9 @@ pub fn instrument_all2(
         LitStr::new(&default_prefix, Span::call_site())
     });
 
-    let level = level.unwrap_or_else(|| LitStr::new("info", Span::call_site()));
+    let level = level.unwrap_or_else(|| {
+        LitStr::new("info", Span::call_site())
+    });
 
     item_impl
         .items

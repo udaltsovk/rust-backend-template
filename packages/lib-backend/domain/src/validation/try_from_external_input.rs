@@ -4,8 +4,9 @@ use std::{
     sync::{LazyLock, RwLock},
 };
 
-static TYPE_NAMES: LazyLock<RwLock<HashMap<&'static str, &'static str>>> =
-    LazyLock::new(|| RwLock::new(HashMap::new()));
+static TYPE_NAMES: LazyLock<
+    RwLock<HashMap<&'static str, &'static str>>,
+> = LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub fn get_type_name<T>() -> &'static str {
     let type_name = type_name::<T>();

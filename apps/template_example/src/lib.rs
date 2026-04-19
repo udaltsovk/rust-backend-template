@@ -1,20 +1,19 @@
-#![feature(try_blocks)]
+#![feature(bool_to_result, trait_alias, try_blocks)]
+
+pub use self::config::AppConfig;
+use self::features::{
+    user::UserFeature, user_auth::UserAuthFeature,
+};
 
 pub mod bootstrappers;
-mod modules;
+mod config;
+pub mod features;
+pub mod modules;
+pub mod shared;
 
-use fromenv::FromEnv;
-use lib::bootstrap::instrumentation::opentelemetry::OtelConfig;
-pub use modules::Modules;
-
-use crate::{bootstrappers::rest_api::RestApiConfig, modules::ModulesConfig};
-
-#[derive(FromEnv, Clone)]
-pub struct AppConfig {
-    #[env(nested)]
-    pub server: RestApiConfig,
-    #[env(nested)]
-    pub modules: ModulesConfig,
-    #[env(nested)]
-    pub otel: OtelConfig,
-}
+pub trait Application = Clone
+    + Send
+    + Sync
+    + UserFeature
+    + UserAuthFeature
+    + 'static;

@@ -1,15 +1,16 @@
 use domain::validation::error::ValidationErrors;
 use tap::Pipe as _;
 
-use crate::{
-    errors::validation::FieldErrors,
-    validation::{UserInput, validator::ValidatorResult},
-};
+use super::{UserInput, validator::ValidatorResult};
+use crate::errors::validation::FieldErrors;
 
 pub trait Parseable<T> {
     fn parse(self) -> ValidatorResult<T>;
 
-    fn parse_field(self, field: impl Into<Option<String>>) -> ValidatorResult<T>
+    fn parse_field(
+        self,
+        field: impl Into<Option<String>>,
+    ) -> ValidatorResult<T>
     where
         Self: Sized,
     {
@@ -19,12 +20,18 @@ pub trait Parseable<T> {
                 .into_inner()
                 .into_iter()
                 .map(|mut err| {
-                    let sep = if !field.is_empty() && err.field != "".into() {
+                    let sep = if !field.is_empty()
+                        && err.field != "".into()
+                    {
                         "."
                     } else {
                         Default::default()
                     };
-                    err.field = format!("{field}{sep}{}", err.field).into();
+                    err.field = format!(
+                        "{field}{sep}{}",
+                        err.field
+                    )
+                    .into();
                     err
                 })
                 .collect()
@@ -38,10 +45,19 @@ where
 {
     fn parse(self) -> ValidatorResult<T> {
         match self {
-            Self::Missing | Self::Null => I::default().parse(),
+            Self::Missing | Self::Null => {
+                I::default().parse()
+            },
             Self::WrongType(value) => {
-                let err = ValidationErrors::with_error("must be object", value);
-                FieldErrors::from_validation_errors(&"".into(), err).pipe(Err)
+                let err = ValidationErrors::with_error(
+                    "must be object",
+                    value,
+                );
+                FieldErrors::from_validation_errors(
+                    &"".into(),
+                    err,
+                )
+                .pipe(Err)
             },
             Self::Ok(inp) => inp.parse(),
         }
@@ -56,15 +72,19 @@ where
         let (oks, errs): (Vec<_>, Vec<_>) = self
             .into_iter()
             .enumerate()
-            .map(|(i, v)| match v.parse_field(i.to_string()) {
-                Ok(ok) => (Some(ok), None),
-                Err(err) => (None, Some(err)),
+            .map(|(i, v)| {
+                match v.parse_field(i.to_string()) {
+                    Ok(ok) => (Some(ok), None),
+                    Err(err) => (None, Some(err)),
+                }
             })
             .unzip();
 
         errs.into_iter()
             .flatten()
             .collect::<FieldErrors>()
-            .into_result(|_| oks.into_iter().flatten().collect())
+            .into_result(|_| {
+                oks.into_iter().flatten().collect()
+            })
     }
 }

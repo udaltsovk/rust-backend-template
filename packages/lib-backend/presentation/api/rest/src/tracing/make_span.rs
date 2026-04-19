@@ -5,14 +5,15 @@ use axum::{
     http::{self, uri::PathAndQuery},
 };
 use opentelemetry::trace::SpanKind;
-use tap::Pipe as _;
 use tower_http::trace::MakeSpan;
 use tracing::{Level, field::Empty};
 use tracing_otel_extra::{
     dyn_span,
     extract::{context, fields},
 };
-use tracing_subscriber::{Registry, registry::LookupSpan as _};
+use tracing_subscriber::{
+    Registry, registry::LookupSpan as _,
+};
 use uuid::Uuid;
 
 use crate::errors::RequestMeta;
@@ -44,20 +45,29 @@ impl Default for AxumOtelSpanCreator {
 }
 
 impl<B> MakeSpan<B> for AxumOtelSpanCreator {
-    fn make_span(&mut self, request: &http::Request<B>) -> tracing::Span {
+    fn make_span(
+        &mut self,
+        request: &http::Request<B>,
+    ) -> tracing::Span {
         let http_method = request.method().as_str();
         let http_route = request.uri().clone();
 
-        let request_id = fields::extract_request_id(request)
-            .pipe(Uuid::from_str)
-            .expect("uuid from fields should be valid");
+        let request_id =
+            fields::extract_request_id(request)
+                .map(Uuid::from_str)
+                .transpose()
+                .expect("uuid from fields should be valid")
+                .expect("request id should be present");
 
         let client_ip = request
             .extensions()
             .get::<ConnectInfo<SocketAddr>>()
-            .map(|ConnectInfo(ip)| tracing::field::debug(ip));
+            .map(|ConnectInfo(ip)| {
+                tracing::field::debug(ip)
+            });
 
-        let span_name = format!("{http_method} {http_route}");
+        let span_name =
+            format!("{http_method} {http_route}");
 
         let span = dyn_span!(
             self.level,
@@ -79,13 +89,16 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
         );
 
         span.with_subscriber(|(id, subscriber)| {
-            if let Some(registry) = subscriber.downcast_ref::<Registry>()
+            if let Some(registry) =
+                subscriber.downcast_ref::<Registry>()
                 && let Some(span_ref) = registry.span(id)
             {
-                span_ref.extensions_mut().insert(RequestMeta {
-                    http_route,
-                    request_id: Some(request_id),
-                });
+                span_ref.extensions_mut().insert(
+                    RequestMeta {
+                        http_route,
+                        request_id: Some(request_id),
+                    },
+                );
             }
         });
 

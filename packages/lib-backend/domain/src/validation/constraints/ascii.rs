@@ -1,6 +1,6 @@
 use bon::Builder;
 
-use crate::validation::constraints::Constraint;
+use super::Constraint;
 
 #[derive(Builder)]
 #[builder(derive(Clone), start_fn = with_err)]
@@ -129,17 +129,25 @@ mod tests {
         #[case] input: &str,
         #[case] expected: bool,
     ) {
-        assert_eq!(constraint.check(&input.to_string()), expected);
+        assert_eq!(
+            constraint.check(&input.to_string()),
+            expected
+        );
     }
 
     #[rstest]
     fn is_ascii_error_message(constraint: IsAscii<String>) {
         let value = "🦀".into();
-        assert_eq!(constraint.error_msg(&value), err(&value));
+        assert_eq!(
+            constraint.error_msg(&value),
+            err(&value)
+        );
     }
 
     #[rstest]
-    fn is_ascii_boundary_values(constraint: IsAscii<String>) {
+    fn is_ascii_boundary_values(
+        constraint: IsAscii<String>,
+    ) {
         // ASCII range is 0-127 (0x00-0x7F)
         let ascii_boundary = String::from("\u{007F}"); // DEL character (127)
         let non_ascii_start = String::from("\u{0080}"); // First non-ASCII character (128)

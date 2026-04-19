@@ -26,9 +26,13 @@ mod tests {
             .body("test body")
             .expect("Response builder should work");
 
-        let modified_response = response.with_status(StatusCode::CREATED);
+        let modified_response =
+            response.with_status(StatusCode::CREATED);
 
-        assert_eq!(modified_response.status(), StatusCode::CREATED);
+        assert_eq!(
+            modified_response.status(),
+            StatusCode::CREATED
+        );
     }
 
     #[rstest]
@@ -39,10 +43,17 @@ mod tests {
             .body(original_body)
             .expect("Response builder should work");
 
-        let modified_response = response.with_status(StatusCode::ACCEPTED);
+        let modified_response =
+            response.with_status(StatusCode::ACCEPTED);
 
-        assert_eq!(modified_response.status(), StatusCode::ACCEPTED);
-        assert_eq!(modified_response.body(), &original_body);
+        assert_eq!(
+            modified_response.status(),
+            StatusCode::ACCEPTED
+        );
+        assert_eq!(
+            modified_response.body(),
+            &original_body
+        );
     }
 
     #[rstest]
@@ -54,9 +65,13 @@ mod tests {
             .body("test body")
             .expect("Response builder should work");
 
-        let modified_response = response.with_status(StatusCode::NO_CONTENT);
+        let modified_response =
+            response.with_status(StatusCode::NO_CONTENT);
 
-        assert_eq!(modified_response.status(), StatusCode::NO_CONTENT);
+        assert_eq!(
+            modified_response.status(),
+            StatusCode::NO_CONTENT
+        );
         assert_eq!(
             modified_response
                 .headers()
@@ -80,9 +95,12 @@ mod tests {
             .status(StatusCode::OK)
             .body(String::from("string body"))
             .expect("Response builder should work");
-        let modified_string_response =
-            string_response.with_status(StatusCode::CREATED);
-        assert_eq!(modified_string_response.status(), StatusCode::CREATED);
+        let modified_string_response = string_response
+            .with_status(StatusCode::CREATED);
+        assert_eq!(
+            modified_string_response.status(),
+            StatusCode::CREATED
+        );
 
         // Test with Vec<u8> body
         let vec_response = Response::builder()
@@ -91,16 +109,22 @@ mod tests {
             .expect("Response builder should work");
         let modified_vec_response =
             vec_response.with_status(StatusCode::ACCEPTED);
-        assert_eq!(modified_vec_response.status(), StatusCode::ACCEPTED);
+        assert_eq!(
+            modified_vec_response.status(),
+            StatusCode::ACCEPTED
+        );
 
         // Test with &str body
         let str_response = Response::builder()
             .status(StatusCode::OK)
             .body("str body")
             .expect("Response builder should work");
-        let modified_str_response =
-            str_response.with_status(StatusCode::NO_CONTENT);
-        assert_eq!(modified_str_response.status(), StatusCode::NO_CONTENT);
+        let modified_str_response = str_response
+            .with_status(StatusCode::NO_CONTENT);
+        assert_eq!(
+            modified_str_response.status(),
+            StatusCode::NO_CONTENT
+        );
     }
 
     #[rstest]
@@ -130,8 +154,12 @@ mod tests {
                 .body("test")
                 .expect("Response builder should work");
 
-            let modified_response = cloned_response.with_status(status_code);
-            assert_eq!(modified_response.status(), status_code);
+            let modified_response =
+                cloned_response.with_status(status_code);
+            assert_eq!(
+                modified_response.status(),
+                status_code
+            );
         }
     }
 
@@ -143,10 +171,13 @@ mod tests {
             .expect("Response builder should work")
             .with_status(StatusCode::CREATED);
 
-        // Test that we can still modify headers after using with_status
+        // Test that we can still modify headers after using
+        // with_status
         response.headers_mut().insert(
             "X-Test",
-            "test-value".parse().expect("Valid header value"),
+            "test-value"
+                .parse()
+                .expect("Valid header value"),
         );
 
         assert_eq!(response.status(), StatusCode::CREATED);
@@ -161,15 +192,19 @@ mod tests {
 
     #[rstest]
     fn response_ext_with_status_is_must_use() {
-        // This test verifies that the with_status method has the #[must_use] attribute
-        // If it doesn't, this will generate a compiler warning
+        // This test verifies that the with_status method
+        // has the #[must_use] attribute
+        // If it doesn't, this will generate a compiler
+        // warning
         let response = Response::builder()
             .status(StatusCode::OK)
             .body("test")
             .expect("Response builder should work");
 
-        let _modified_response = response.with_status(StatusCode::CREATED);
-        // The #[must_use] attribute ensures the return value must be used
+        let _modified_response =
+            response.with_status(StatusCode::CREATED);
+        // The #[must_use] attribute ensures the return
+        // value must be used
     }
 
     #[rstest]
@@ -182,10 +217,17 @@ mod tests {
             .body("test")
             .expect("Response builder should work");
 
-        let modified_response = response.with_status(StatusCode::ACCEPTED);
+        let modified_response =
+            response.with_status(StatusCode::ACCEPTED);
 
-        assert_eq!(modified_response.version(), Version::HTTP_11);
-        assert_eq!(modified_response.status(), StatusCode::ACCEPTED);
+        assert_eq!(
+            modified_response.version(),
+            Version::HTTP_11
+        );
+        assert_eq!(
+            modified_response.status(),
+            StatusCode::ACCEPTED
+        );
     }
 
     #[rstest]
@@ -195,9 +237,13 @@ mod tests {
             .body(())
             .expect("Response builder should work");
 
-        let modified_response = response.with_status(StatusCode::NO_CONTENT);
+        let modified_response =
+            response.with_status(StatusCode::NO_CONTENT);
 
-        assert_eq!(modified_response.status(), StatusCode::NO_CONTENT);
+        assert_eq!(
+            modified_response.status(),
+            StatusCode::NO_CONTENT
+        );
         assert_eq!(modified_response.body(), &());
     }
 }

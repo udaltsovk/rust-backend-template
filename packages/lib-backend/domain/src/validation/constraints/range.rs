@@ -3,10 +3,10 @@ use std::fmt::Display;
 use bon::Builder;
 pub use num_traits::Num;
 
-use crate::validation::constraints::Constraint;
+use super::Constraint;
 
 macro_rules! range_constraint {
-    ($name: ident, $func: ident $(,)?) => {
+    ($name:ident, $func:ident $(,)?) => {
         #[derive(Builder)]
         #[builder(derive(Clone), start_fn = with_err)]
         pub struct $name<T>
@@ -26,7 +26,10 @@ macro_rules! range_constraint {
                 value.$func(&self.limit)
             }
 
-            fn error_msg(&self, rejected_value: &T) -> String {
+            fn error_msg(
+                &self,
+                rejected_value: &T,
+            ) -> String {
                 (self.err_fn)(rejected_value, &self.limit)
             }
         }
@@ -128,7 +131,7 @@ mod tests {
     #[case(10.5_f64, 5.2_f64, true)]
     #[case(10.5_f64, 10.5_f64, true)]
     #[case(10.5_f64, 15.8_f64, false)]
-    #[case(0.0_f64, 0.0_f64, true)]
+    #[case(0_f64, 0_f64, true)]
     #[case(-5.5_f64, -10.2_f64, true)]
     #[case(-5.5_f64, 0.1_f64, false)]
     fn max_f64_constraint(
@@ -216,7 +219,7 @@ mod tests {
     #[case(10.5_f64, 5.2_f64, false)]
     #[case(10.5_f64, 10.5_f64, true)]
     #[case(10.5_f64, 15.8_f64, true)]
-    #[case(0.0_f64, 0.0_f64, true)]
+    #[case(0_f64, 0_f64, true)]
     #[case(-5.5_f64, -10.2_f64, false)]
     #[case(-5.5_f64, 0.1_f64, true)]
     fn min_f64_constraint(
@@ -260,7 +263,7 @@ mod tests {
     #[case(10.5_f64, 5.2_f64, false)]
     #[case(10.5_f64, 10.5_f64, false)]
     #[case(10.5_f64, 15.8_f64, true)]
-    #[case(0.0_f64, 0.1_f64, true)]
+    #[case(0_f64, 0.1_f64, true)]
     #[case(-5.5_f64, -10.2_f64, false)]
     #[case(-5.5_f64, 0.1_f64, true)]
     fn greater_than_f64_constraint(

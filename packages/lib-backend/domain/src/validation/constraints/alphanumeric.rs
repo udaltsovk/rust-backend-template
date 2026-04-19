@@ -1,6 +1,6 @@
 use bon::Builder;
 
-use crate::validation::constraints::Constraint;
+use super::Constraint;
 
 #[derive(Builder)]
 #[builder(derive(Clone), start_fn = with_err)]
@@ -33,7 +33,8 @@ mod tests {
     use crate::validation::constraints::Constraint;
 
     fn err(_: &String) -> String {
-        "must contain only alphanumeric characters".to_string()
+        "must contain only alphanumeric characters"
+            .to_string()
     }
 
     #[fixture]
@@ -93,12 +94,20 @@ mod tests {
         #[case] input: &str,
         #[case] expected: bool,
     ) {
-        assert_eq!(constraint.check(&input.to_string()), expected);
+        assert_eq!(
+            constraint.check(&input.to_string()),
+            expected
+        );
     }
 
     #[rstest]
-    fn is_alphanumeric_error_message(constraint: impl Constraint<String>) {
+    fn is_alphanumeric_error_message(
+        constraint: impl Constraint<String>,
+    ) {
         let value = "**".into();
-        assert_eq!(constraint.error_msg(&value), err(&value));
+        assert_eq!(
+            constraint.error_msg(&value),
+            err(&value)
+        );
     }
 }

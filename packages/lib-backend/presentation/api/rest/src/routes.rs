@@ -1,6 +1,6 @@
 use axum::{http::StatusCode, response::IntoResponse};
 
-use crate::errors::JsonError;
+use super::errors::JsonError;
 
 pub async fn fallback_404() -> impl IntoResponse {
     JsonError::new(
@@ -27,16 +27,21 @@ mod tests {
 
     #[rstest]
     #[tokio::test]
-    async fn fallback_404_returns_correct_status_and_error() {
+    async fn fallback_404_returns_correct_status_and_error()
+    {
         let response = fallback_404().await;
         let response = response.into_response();
 
-        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+        assert_eq!(
+            response.status(),
+            StatusCode::NOT_FOUND
+        );
     }
 
     #[rstest]
     #[tokio::test]
-    async fn fallback_404_returns_correct_error_structure() {
+    async fn fallback_404_returns_correct_error_structure()
+    {
         let error_struct = JsonError::new(
             StatusCode::NOT_FOUND,
             "not_found",
@@ -48,15 +53,22 @@ mod tests {
         let actual_response = response.into_response();
 
         // Verify status matches
-        assert_eq!(actual_response.status(), StatusCode::NOT_FOUND);
+        assert_eq!(
+            actual_response.status(),
+            StatusCode::NOT_FOUND
+        );
 
-        // The actual JsonError would be serialized in the response body,
-        // but we can verify the structure by creating it directly
+        // The actual JsonError would be serialized in the
+        // response body, but we can verify the
+        // structure by creating it directly
         assert_eq!(
             error_struct.inner_struct().status_code,
             StatusCode::NOT_FOUND
         );
-        assert_eq!(error_struct.inner_struct().error_code, "not_found");
+        assert_eq!(
+            error_struct.inner_struct().error_code,
+            "not_found"
+        );
         assert_eq!(
             error_struct.inner_struct().message,
             "the specified route does not exist"
@@ -65,20 +77,26 @@ mod tests {
 
     #[rstest]
     #[tokio::test]
-    async fn fallback_405_returns_correct_status_and_error() {
+    async fn fallback_405_returns_correct_status_and_error()
+    {
         let response = fallback_405().await;
         let response = response.into_response();
 
-        assert_eq!(response.status(), StatusCode::METHOD_NOT_ALLOWED);
+        assert_eq!(
+            response.status(),
+            StatusCode::METHOD_NOT_ALLOWED
+        );
     }
 
     #[rstest]
     #[tokio::test]
-    async fn fallback_405_returns_correct_error_structure() {
+    async fn fallback_405_returns_correct_error_structure()
+    {
         let error_struct = JsonError::new(
             StatusCode::METHOD_NOT_ALLOWED,
             "method_not_allowed",
-            "the specified route does not support this method",
+            "the specified route does not support this \
+             method",
         );
 
         // Test that our function creates the same structure
@@ -86,7 +104,10 @@ mod tests {
         let actual_response = response.into_response();
 
         // Verify status matches
-        assert_eq!(actual_response.status(), StatusCode::METHOD_NOT_ALLOWED);
+        assert_eq!(
+            actual_response.status(),
+            StatusCode::METHOD_NOT_ALLOWED
+        );
 
         // Verify the structure matches what we expect
         assert_eq!(
@@ -99,19 +120,32 @@ mod tests {
         );
         assert_eq!(
             error_struct.inner_struct().message,
-            "the specified route does not support this method"
+            "the specified route does not support this \
+             method"
         );
     }
 
     #[rstest]
     #[tokio::test]
-    async fn fallback_functions_return_different_status_codes() {
-        let response_404 = fallback_404().await.into_response();
-        let response_405 = fallback_405().await.into_response();
+    async fn fallback_functions_return_different_status_codes()
+     {
+        let response_404 =
+            fallback_404().await.into_response();
+        let response_405 =
+            fallback_405().await.into_response();
 
-        assert_eq!(response_404.status(), StatusCode::NOT_FOUND);
-        assert_eq!(response_405.status(), StatusCode::METHOD_NOT_ALLOWED);
-        assert_ne!(response_404.status(), response_405.status());
+        assert_eq!(
+            response_404.status(),
+            StatusCode::NOT_FOUND
+        );
+        assert_eq!(
+            response_405.status(),
+            StatusCode::METHOD_NOT_ALLOWED
+        );
+        assert_ne!(
+            response_404.status(),
+            response_405.status()
+        );
     }
 
     #[rstest]
@@ -121,23 +155,28 @@ mod tests {
         let _result_404 = fallback_404().await;
         let _result_405 = fallback_405().await;
 
-        // If we reach this point, both functions are properly async
-        // Test passes by reaching this point
+        // If we reach this point, both functions are
+        // properly async Test passes by reaching
+        // this point
     }
 
     #[rstest]
     #[tokio::test]
     async fn fallback_functions_implement_into_response() {
-        // Test that both functions return types that implement IntoResponse
+        // Test that both functions return types that
+        // implement IntoResponse
         let response_404 = fallback_404().await;
         let response_405 = fallback_405().await;
 
         // Converting to Response should work
-        let _actual_response_404 = response_404.into_response();
-        let _actual_response_405 = response_405.into_response();
+        let _actual_response_404 =
+            response_404.into_response();
+        let _actual_response_405 =
+            response_405.into_response();
 
-        // If we reach this point, IntoResponse is properly implemented
-        // Test passes by reaching this point
+        // If we reach this point, IntoResponse is properly
+        // implemented Test passes by reaching this
+        // point
     }
 
     #[rstest]
@@ -150,7 +189,10 @@ mod tests {
             "the specified route does not exist",
         );
 
-        assert_eq!(expected_error.inner_struct().error_code, "not_found");
+        assert_eq!(
+            expected_error.inner_struct().error_code,
+            "not_found"
+        );
         assert_eq!(
             expected_error.inner_struct().message,
             "the specified route does not exist"
@@ -164,7 +206,8 @@ mod tests {
         let expected_error = JsonError::new(
             StatusCode::METHOD_NOT_ALLOWED,
             "method_not_allowed",
-            "the specified route does not support this method",
+            "the specified route does not support this \
+             method",
         );
 
         assert_eq!(
@@ -173,20 +216,30 @@ mod tests {
         );
         assert_eq!(
             expected_error.inner_struct().message,
-            "the specified route does not support this method"
+            "the specified route does not support this \
+             method"
         );
     }
 
     #[rstest]
     #[tokio::test]
     async fn fallback_functions_use_json_error_struct() {
-        // Verify that both functions use JsonError internally
-        // by checking that the responses have the expected status codes
-        let response_404 = fallback_404().await.into_response();
-        let response_405 = fallback_405().await.into_response();
+        // Verify that both functions use JsonError
+        // internally by checking that the responses
+        // have the expected status codes
+        let response_404 =
+            fallback_404().await.into_response();
+        let response_405 =
+            fallback_405().await.into_response();
 
         // JsonError should set these status codes correctly
-        assert_eq!(response_404.status(), StatusCode::NOT_FOUND);
-        assert_eq!(response_405.status(), StatusCode::METHOD_NOT_ALLOWED);
+        assert_eq!(
+            response_404.status(),
+            StatusCode::NOT_FOUND
+        );
+        assert_eq!(
+            response_405.status(),
+            StatusCode::METHOD_NOT_ALLOWED
+        );
     }
 }

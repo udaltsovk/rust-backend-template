@@ -10,32 +10,47 @@ pub fn domain_type2(input: TokenStream2) -> TokenStream2 {
 
     let ident = input.ident;
     let generics = input.generics;
-    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+    let (impl_generics, ty_generics, where_clause) =
+        generics.split_for_impl();
 
     let fields = match &input.data {
         Data::Struct(s) => &s.fields,
-        _ => panic!("DomainType can only be derived for structs"),
+        _ => panic!(
+            "DomainType can only be derived for structs"
+        ),
     };
 
-    let (from_impl, value_impl, value_mut_impl, inner_type) = match fields {
-        Fields::Named(_) => {
-            panic!("DomainType can only be derived for unnamed field structs")
-        },
-        Fields::Unnamed(fields) if fields.unnamed.len() == 1 => {
-            let inner_type = &fields
-                .unnamed
-                .first()
-                .expect("We've checked for field count so it's safe")
-                .ty;
-            (
-                quote! { domain_type.0 },
-                quote! { &self.0 },
-                quote! { &mut self.0 },
-                inner_type,
-            )
-        },
-        _ => panic!("DomainType requires exactly one field in the struct"),
-    };
+    let (from_impl, value_impl, value_mut_impl, inner_type) =
+        match fields {
+            Fields::Named(_) => {
+                panic!(
+                    "DomainType can only be derived for \
+                     unnamed field structs"
+                )
+            },
+            Fields::Unnamed(fields)
+                if fields.unnamed.len() == 1 =>
+            {
+                let inner_type = &fields
+                    .unnamed
+                    .first()
+                    .expect(
+                        "We've checked for field count so \
+                         it's safe",
+                    )
+                    .ty;
+                (
+                    quote! { domain_type.0 },
+                    quote! { &self.0 },
+                    quote! { &mut self.0 },
+                    inner_type,
+                )
+            },
+            _ => panic!(
+                "DomainType requires exactly one field in \
+                 the struct"
+            ),
+        };
 
     quote! {
         impl From<#ident #ty_generics> for #inner_type #where_clause {

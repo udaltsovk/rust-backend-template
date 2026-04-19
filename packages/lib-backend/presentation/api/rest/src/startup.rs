@@ -14,11 +14,12 @@ use {
     utoipa_scalar::{Scalar, Servable as _},
 };
 
-use crate::{
+use super::{
     panic_handler::PanicHandler,
     routes::{fallback_404, fallback_405},
     tracing::{
-        AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator, Level,
+        AxumOtelOnFailure, AxumOtelOnResponse,
+        AxumOtelSpanCreator, Level,
     },
 };
 
@@ -47,7 +48,10 @@ where
 
     #[cfg(feature = "openapi")]
     #[must_use]
-    pub fn with_openapi(mut self, openapi: OpenApi) -> Self {
+    pub fn with_openapi(
+        mut self,
+        openapi: OpenApi,
+    ) -> Self {
         self.openapi = Some(openapi);
         self
     }
@@ -58,27 +62,40 @@ where
 
     pub fn build(self) -> RestApi {
         #[cfg(feature = "openapi")]
-        let mut router = Self::router(self.router, self.modules);
+        let mut router =
+            Self::router(self.router, self.modules);
 
         #[cfg(not(feature = "openapi"))]
-        let router = Self::router(self.router, self.modules);
+        let router =
+            Self::router(self.router, self.modules);
 
         #[cfg(feature = "openapi")]
         if let Some(openapi) = self.openapi {
             let openapi_json = Json(openapi.clone());
             router = router
-                .merge(Scalar::with_url("/openapi", openapi))
-                .route("/openapi.json", get(async move || openapi_json));
+                .merge(Scalar::with_url(
+                    "/openapi", openapi,
+                ))
+                .route(
+                    "/openapi.json",
+                    get(async move || openapi_json),
+                );
         }
 
         let middlewares = ServiceBuilder::new()
-            .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
+            .layer(SetRequestIdLayer::x_request_id(
+                MakeRequestUuid,
+            ))
             .layer(
                 TraceLayer::new_for_http()
                     .make_span_with(
-                        AxumOtelSpanCreator::new().level(Level::INFO),
+                        AxumOtelSpanCreator::new()
+                            .level(Level::INFO),
                     )
-                    .on_response(AxumOtelOnResponse::new().level(Level::INFO))
+                    .on_response(
+                        AxumOtelOnResponse::new()
+                            .level(Level::INFO),
+                    )
                     .on_failure(AxumOtelOnFailure::new()),
             )
             .layer(PanicHandler::layer());
@@ -99,7 +116,10 @@ pub struct RestApi {
 }
 
 impl RestApi {
-    pub fn builder<M>(router: Router<M>, modules: &M) -> RestApiBuilder<M>
+    pub fn builder<M>(
+        router: Router<M>,
+        modules: &M,
+    ) -> RestApiBuilder<M>
     where
         M: Send + Sync + Clone + 'static,
     {
@@ -119,18 +139,26 @@ impl RestApi {
     }
 
     pub async fn serve(self, listener: TcpListener) {
-        self.serve_with_shutdown(listener, Self::shutdown_signal())
-            .await;
+        self.serve_with_shutdown(
+            listener,
+            Self::shutdown_signal(),
+        )
+        .await;
     }
 
-    pub async fn serve_with_shutdown<F>(self, listener: TcpListener, signal: F)
-    where
-        F: std::future::Future<Output = ()> + Send + 'static,
+    pub async fn serve_with_shutdown<F>(
+        self,
+        listener: TcpListener,
+        signal: F,
+    ) where
+        F: std::future::Future<Output = ()>
+            + Send
+            + 'static,
     {
         let app = self.router.into_make_service();
-        let addr = listener
-            .local_addr()
-            .expect("TcpListener must have a local address.");
+        let addr = listener.local_addr().expect(
+            "TcpListener must have a local address.",
+        );
         tracing::info!("Server is listening on {}", addr);
 
         axum::serve(listener, app)
@@ -148,10 +176,12 @@ impl RestApi {
 
         #[cfg(unix)]
         let terminate = async {
-            signal::unix::signal(signal::unix::SignalKind::terminate())
-                .expect("failed to install signal handler")
-                .recv()
-                .await;
+            signal::unix::signal(
+                signal::unix::SignalKind::terminate(),
+            )
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
         };
 
         #[cfg(not(unix))]

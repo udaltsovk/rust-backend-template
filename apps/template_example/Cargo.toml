@@ -14,28 +14,46 @@ path = "./src/bin/metadata.rs"
 
 [dependencies]
 lib = { workspace = true, features = [
+  "application",
   "bootstrap-openapi",
   "bootstrap-redis",
   "bootstrap-sqlx",
   # "bootstrap-instrumentation-stdout",
   "bootstrap-instrumentation-opentelemetry-grpc-tonic",
+  "domain",
+  "infrastructure-persistence-redis",
+  "infrastructure-persistence-sqlx",
+  "infrastructure-services",
+  "macros-proc",
+  "presentation-api-rest-openapi",
 ] }
-domain = { path = "./domain", package = "template_example-domain" }
-application = { path = "./application", package = "template_example-application" }
-infrastructure = { path = "./infrastructure", package = "template_example-infrastructure", features = [
-  "persistence-postgres",
-  "persistence-redis",
-  "services-hasher-argon2",
-  "services-token-jwt",
-] }
-presentation = { path = "./presentation", package = "template_example-presentation", features = [
-  "api-rest",
-] }
-
+argon2 = { version = "0.5", features = ["std"] }
+axum = { workspace = true, features = ["macros"] }
+axum-extra = { version = "0.12", features = ["typed-header"] }
+bon.workspace = true
+derive_more = { workspace = true, features = ["from", "into"] }
 entrait.workspace = true
 fromenv.workspace = true
+jsonwebtoken = { version = "10.3", features = ["rust_crypto"] }
+model-mapper.workspace = true
+redis = { version = "1.0", features = ["json", "uuid"] }
+rust_iso3166 = "0.1"
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid"] }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tracing.workspace = true
+url = "2.5"
+utoipa = { workspace = true, features = [
+  "axum_extras",
+  "preserve_order",
+  "preserve_path_order",
+  "non_strict_integers",
+  "uuid",
+  "chrono",
+  "url",
+] }
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { workspace = true, features = [

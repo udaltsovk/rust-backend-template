@@ -1,35 +1,30 @@
 use std::sync::OnceLock;
 
-use application::repository::{
-    session::DelegateSessionRepository, user::DelegateUserRepository,
-};
-use infrastructure::persistence::{
-    postgres::{POSTGRES_MIGRATOR, repository::PostgresRepositoryImpl},
-    redis::repository::RedisRepositoryImpl,
-};
 use lib::{
     application::impl_has,
     bootstrap::impl_repositories,
     infrastructure::persistence::{
-        mobc_sqlx::MigratorExt as _,
         redis::{Namespace, RedisPool},
         sqlx::SqlxPool,
     },
-    mobc_redis::{RedisConnectionManager, redis},
-    mobc_sqlx::{
-        SqlxConnectionManager,
-        mobc::Pool,
-        sqlx::{Postgres, postgres::PgConnectOptions},
-    },
-    tap::Pipe as _,
+    mobc_sqlx::sqlx::Postgres,
 };
 
-pub use crate::modules::repositories::config::{
-    PostgresConfig, RepositoriesConfig,
+pub use self::config::RepositoriesConfig;
+use super::Modules;
+use crate::{
+    features::{
+        user::application::repository::DelegateUserRepository,
+        user_auth::application::repository::session::DelegateSessionRepository,
+    },
+    shared::infrastructure::persistence::{
+        PostgresRepositoryImpl, RedisRepositoryImpl,
+    },
 };
-use crate::{Modules, modules::repositories::config::RedisConfig};
 
 mod config;
+mod postgres;
+mod redis;
 
 #[derive(Clone)]
 pub struct RepositoriesModule {
@@ -38,29 +33,16 @@ pub struct RepositoriesModule {
 }
 
 impl RepositoriesModule {
-    pub(crate) async fn new(config: &RepositoriesConfig) -> Self {
+    pub(crate) async fn new(
+        config: &RepositoriesConfig,
+    ) -> Self {
         Self {
-            postgres: Self::setup_postgres(&config.postgres).await,
+            postgres: Self::setup_postgres(
+                &config.postgres,
+            )
+            .await,
             redis: Self::setup_redis(&config.redis),
         }
-    }
-
-    async fn setup_postgres(config: &PostgresConfig) -> SqlxPool<Postgres> {
-        let postgres = PgConnectOptions::from(config)
-            .pipe(SqlxConnectionManager::new)
-            .pipe(Pool::new);
-
-        if config.run_migrator {
-            POSTGRES_MIGRATOR.migrate(&postgres).await;
-        }
-
-        postgres
-    }
-
-    fn setup_redis(config: &RedisConfig) -> RedisPool {
-        redis::Client::from(config)
-            .pipe(RedisConnectionManager::new)
-            .pipe(Pool::new)
     }
 }
 
