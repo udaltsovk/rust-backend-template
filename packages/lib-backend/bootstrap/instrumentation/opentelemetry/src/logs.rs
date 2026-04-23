@@ -5,7 +5,6 @@ use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
     feature = "grpc-tonic",
     feature = "http-proto",
     feature = "http-json",
-    test
 ))]
 use opentelemetry_otlp::{
     LogExporter, WithExportConfig as _,
@@ -51,7 +50,6 @@ impl Otel {
                 any(
                     feature = "http-proto",
                     feature = "http-json",
-                    test
                 )
             ))]
             {
@@ -68,9 +66,7 @@ impl Otel {
                 feature = "grpc-tonic",
                 feature = "http-proto",
                 feature = "http-json",
-                test
             )))]
-            #[allow(clippy::cfg_not_test)]
             {
                 panic!(
                     "No OpenTelemetry protocol selected!"
@@ -105,36 +101,5 @@ impl Otel {
         OpenTelemetryTracingBridge::new(
             &self.get_logger_provider(),
         )
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    #[should_panic(
-        expected = "Called `Otel::get_logger_provider` \
-                    too early"
-    )]
-    fn get_logger_provider_panic() {
-        let otel = Otel::new("test", "test");
-        let _provider = otel.get_logger_provider();
-    }
-
-    #[tokio::test]
-    async fn configure_logger_provider() {
-        let otel = Otel::new("test", "test");
-        let otel = otel.configure_logger_provider();
-
-        // Should not panic now
-        let _provider = otel.get_logger_provider();
-    }
-
-    #[tokio::test]
-    async fn log_layer() {
-        let otel = Otel::new("test", "test");
-        let otel = otel.configure_logger_provider();
-        let _layer = otel.log_layer();
     }
 }

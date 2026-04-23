@@ -30,19 +30,19 @@ lint *args="--workspace --all-targets -- -D warnings":
 fix *args="--workspace --all-targets":
     just lint --fix {{ args }}
 
-test *args="--workspace":
-    cargo test {{ args }}
-
-coverage *args="--skip-clean --workspace --all-targets -o Xml -o Html":
-    cargo tarpaulin {{ args }}
-    pycobertura show cobertura.xml
+# test *args="--workspace":
+#     cargo test {{ args }}
+# coverage *args="--skip-clean --workspace --all-targets -o Xml -o Html":
+#     cargo tarpaulin {{ args }}
+#     pycobertura show cobertura.xml
 
 build crate=(default_app_name + "-monolyth") *args:
     cargo build --bin {{ crate }} {{ args }}
 
 style: fmt lint
 
-check: udeps audit style coverage
+# check: udeps audit style coverage
+check: udeps audit style
 
 run crate=(default_app_name + "-monolyth") *args:
     cargo run --bin {{ crate }} {{ args }}

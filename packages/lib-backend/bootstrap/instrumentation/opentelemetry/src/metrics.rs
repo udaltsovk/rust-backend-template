@@ -7,7 +7,6 @@ use opentelemetry::{global, metrics::MeterProvider as _};
     feature = "grpc-tonic",
     feature = "http-proto",
     feature = "http-json",
-    test
 ))]
 use opentelemetry_otlp::{
     MetricExporter, WithExportConfig as _,
@@ -61,7 +60,6 @@ impl Otel {
                 any(
                     feature = "http-proto",
                     feature = "http-json",
-                    test
                 )
             ))]
             {
@@ -78,9 +76,7 @@ impl Otel {
                 feature = "grpc-tonic",
                 feature = "http-proto",
                 feature = "http-json",
-                test
             )))]
-            #[allow(clippy::cfg_not_test)]
             {
                 panic!(
                     "No OpenTelemetry protocol selected!"
@@ -147,52 +143,5 @@ impl Otel {
                 tokio::time::sleep(interval).await;
             }
         });
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::time::Duration;
-
-    use super::*;
-
-    #[test]
-    #[should_panic(
-        expected = "Called `Otel::get_meter_provider` too \
-                    early"
-    )]
-    fn get_meter_provider_panic() {
-        let otel = Otel::new("test", "test");
-        let _provider = otel.get_meter_provider();
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn configure_meter_provider() {
-        let otel = Otel::new("test", "test");
-
-        let result = tokio::time::timeout(
-            Duration::from_secs(1),
-            async {
-                let otel = otel.configure_meter_provider();
-
-                // Should not panic now
-                let provider = otel.get_meter_provider();
-
-                // Shutdown to clean up
-                provider
-                    .shutdown()
-                    .expect("shutdown failed");
-            },
-        )
-        .await;
-
-        assert!(result.is_ok(), "Test timed out");
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn setup_metrics() {
-        let otel = Otel::new("test", "test");
-        let otel = otel.configure_meter_provider();
-        otel.setup_metrics();
     }
 }

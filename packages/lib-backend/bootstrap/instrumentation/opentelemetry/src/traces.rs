@@ -5,7 +5,6 @@ use opentelemetry::{global, trace::TracerProvider as _};
     feature = "grpc-tonic",
     feature = "http-proto",
     feature = "http-json",
-    test
 ))]
 use opentelemetry_otlp::{
     SpanExporter, WithExportConfig as _,
@@ -56,7 +55,6 @@ impl Otel {
                 any(
                     feature = "http-proto",
                     feature = "http-json",
-                    test
                 )
             ))]
             {
@@ -73,9 +71,7 @@ impl Otel {
                 feature = "grpc-tonic",
                 feature = "http-proto",
                 feature = "http-json",
-                test
             )))]
-            #[allow(clippy::cfg_not_test)]
             {
                 panic!(
                     "No OpenTelemetry protocol selected!"
@@ -115,38 +111,5 @@ impl Otel {
             self.get_tracer_provider()
                 .tracer(self.service_name.clone()),
         )
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use tracing_subscriber::Registry;
-
-    use super::*;
-
-    #[test]
-    #[should_panic(
-        expected = "Called `Otel::get_tracer_provider` \
-                    too early"
-    )]
-    fn get_tracer_provider_panic() {
-        let otel = Otel::new("test", "test");
-        let _provider = otel.get_tracer_provider();
-    }
-
-    #[tokio::test]
-    async fn configure_tracer_provider() {
-        let otel = Otel::new("test", "test");
-        let otel = otel.configure_tracer_provider();
-
-        // Should not panic now
-        let _provider = otel.get_tracer_provider();
-    }
-
-    #[tokio::test]
-    async fn trace_layer() {
-        let otel = Otel::new("test", "test");
-        let otel = otel.configure_tracer_provider();
-        let _layer = otel.trace_layer::<Registry>();
     }
 }

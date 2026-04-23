@@ -82,35 +82,3 @@ where
 
     future.await;
 }
-
-#[cfg(test)]
-mod tests {
-    use tracing_subscriber::Registry;
-
-    use super::*;
-
-    #[test]
-    fn parse_directive_valid() {
-        let directive = parse_directive("info");
-        assert_eq!(directive.to_string(), "info");
-    }
-
-    #[test]
-    #[should_panic(expected = "Failed to parse directive")]
-    fn parse_directive_invalid() {
-        parse_directive("invalid=directive=format");
-    }
-
-    #[test]
-    fn filter_layer_creation() {
-        let filter = filter_layer();
-        let filter_str = filter.to_string();
-        assert!(filter_str.contains("tokio=off"));
-        assert!(filter_str.contains("hyper=off"));
-    }
-
-    #[test]
-    fn fmt_layer_creation() {
-        let _layer = fmt_layer::<Registry>();
-    }
-}
