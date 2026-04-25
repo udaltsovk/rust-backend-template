@@ -20,7 +20,12 @@ where
 {
     fn get_connection(
         &self,
-    ) -> impl Future<Output = Result<Connection<M>, mobc::Error<M::Error>>>;
+    ) -> impl Future<
+        Output = Result<
+            Connection<M>,
+            mobc::Error<M::Error>,
+        >,
+    >;
 }
 
 impl<D, M> HasPoolExt<M> for D
@@ -31,7 +36,10 @@ where
     fn get_connection(
         &self,
     ) -> impl Future<
-        Output = Result<Connection<M>, mobc::Error<<M as Manager>::Error>>,
+        Output = Result<
+            Connection<M>,
+            mobc::Error<<M as Manager>::Error>,
+        >,
     > {
         self.get_dependency().get()
     }

@@ -19,7 +19,10 @@ pub use application;
     feature = "infrastructure-services",
 ))]
 pub use async_trait::async_trait;
-#[cfg(all(feature = "bootstrap", feature = "presentation-api-rest"))]
+#[cfg(all(
+    feature = "bootstrap",
+    feature = "presentation-api-rest"
+))]
 pub use axum;
 #[cfg(all(
     feature = "bootstrap-instrumentation-opentelemetry",

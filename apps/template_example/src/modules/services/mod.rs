@@ -1,13 +1,19 @@
-use application::service::{
-    secret_hasher::DelegateSecretHasherService, token::DelegateTokenService,
+use lib::{
+    application::impl_has, bootstrap::impl_services,
 };
-use infrastructure::services::{
-    hasher::argon2::Argon2Service, token::jwt::JwtService,
-};
-use lib::{application::impl_has, bootstrap::impl_services};
 
-use crate::Modules;
-pub use crate::modules::services::config::ServicesConfig;
+pub use self::config::ServicesConfig;
+use super::Modules;
+use crate::features::user_auth::{
+    application::service::{
+        secret_hasher::DelegateSecretHasherService,
+        token::DelegateTokenService,
+    },
+    infrastructure::services::{
+        hasher::argon2::Argon2Service,
+        token::jwt::JwtService,
+    },
+};
 
 mod config;
 

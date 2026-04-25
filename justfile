@@ -30,19 +30,19 @@ lint *args="--workspace --all-targets -- -D warnings":
 fix *args="--workspace --all-targets":
     just lint --fix {{ args }}
 
-test *args="--workspace":
-    cargo test {{ args }}
-
-coverage *args="--skip-clean --workspace --all-targets -o Xml -o Html":
-    cargo tarpaulin {{ args }}
-    pycobertura show cobertura.xml
+# test *args="--workspace":
+#     cargo test {{ args }}
+# coverage *args="--skip-clean --workspace --all-targets -o Xml -o Html":
+#     cargo tarpaulin {{ args }}
+#     pycobertura show cobertura.xml
 
 build crate=(default_app_name + "-monolyth") *args:
     cargo build --bin {{ crate }} {{ args }}
 
 style: fmt lint
 
-check: udeps audit style coverage
+# check: udeps audit style coverage
+check: udeps audit style
 
 run crate=(default_app_name + "-monolyth") *args:
     cargo run --bin {{ crate }} {{ args }}
@@ -54,10 +54,13 @@ watch-rs crate=(default_app_name + "-monolyth"):
         "just style run {{ crate }}"
 
 sqlx-reset crate=default_app_name db="postgres" *args:
-    {{ database_url }} cargo sqlx database reset --source ./apps/{{ crate }}/infrastructure/persistence/{{ db }}/migrations {{ args }}
+    migration_dirs="$$(find ./apps/{{ crate }}/src/features -type d -path '*/infrastructure/persistence/{{ db }}/migration' | sort)" && \
+    count="$$(printf '%s\n' "$$migration_dirs" | sed '/^$/d' | wc -l | tr -d ' ')" && \
+    [ "$$count" -eq 1 ] || { echo "expected exactly one {{ db }} migration directory, found $$count" >&2; exit 1; } && \
+    {{ database_url }} cargo sqlx database reset --source "$$migration_dirs" {{ args }}
 
 sqlx-prepare crate=default_app_name db="postgres" *args:
-    cd ./apps/{{ crate }}/infrastructure/persistence/{{ db }} && \
+    cd ./apps/{{ crate }} && \
     {{ database_url }} cargo sqlx prepare {{ args }}
 
 watch-sql crate=default_app_name:

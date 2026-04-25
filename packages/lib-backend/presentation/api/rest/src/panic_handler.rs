@@ -5,9 +5,11 @@ use axum::{
     http::{Response, StatusCode},
     response::IntoResponse as _,
 };
-use tower_http::catch_panic::{CatchPanicLayer, ResponseForPanic};
+use tower_http::catch_panic::{
+    CatchPanicLayer, ResponseForPanic,
+};
 
-use crate::errors::JsonError;
+use super::errors::JsonError;
 
 #[derive(Clone)]
 pub struct PanicHandler;

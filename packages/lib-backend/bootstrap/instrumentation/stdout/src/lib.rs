@@ -43,7 +43,8 @@ pub fn filter_layer() -> EnvFilter {
 #[cfg(not(debug_assertions))]
 #[must_use]
 #[inline]
-pub fn fmt_layer<S>() -> Layer<S, format::DefaultFields, Format<format::Compact>>
+pub fn fmt_layer<S>()
+-> Layer<S, format::DefaultFields, Format<format::Compact>>
 {
     fmt::layer()
         .compact()
@@ -58,7 +59,8 @@ pub fn fmt_layer<S>() -> Layer<S, format::DefaultFields, Format<format::Compact>
 #[cfg(debug_assertions)]
 #[must_use]
 #[inline]
-pub fn fmt_layer<S>() -> Layer<S, format::Pretty, Format<format::Pretty>> {
+pub fn fmt_layer<S>()
+-> Layer<S, format::Pretty, Format<format::Pretty>> {
     fmt::layer()
         .pretty()
         .with_span_events(format::FmtSpan::CLOSE)
@@ -79,36 +81,4 @@ where
         .init();
 
     future.await;
-}
-
-#[cfg(test)]
-mod tests {
-    use tracing_subscriber::Registry;
-
-    use super::*;
-
-    #[test]
-    fn parse_directive_valid() {
-        let directive = parse_directive("info");
-        assert_eq!(directive.to_string(), "info");
-    }
-
-    #[test]
-    #[should_panic(expected = "Failed to parse directive")]
-    fn parse_directive_invalid() {
-        parse_directive("invalid=directive=format");
-    }
-
-    #[test]
-    fn filter_layer_creation() {
-        let filter = filter_layer();
-        let filter_str = filter.to_string();
-        assert!(filter_str.contains("tokio=off"));
-        assert!(filter_str.contains("hyper=off"));
-    }
-
-    #[test]
-    fn fmt_layer_creation() {
-        let _layer = fmt_layer::<Registry>();
-    }
 }

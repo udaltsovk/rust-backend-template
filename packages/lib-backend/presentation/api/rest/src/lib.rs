@@ -1,6 +1,8 @@
 #[doc(hidden)]
 pub use {
-    domain::validation::{ExternalInput, error::ValidationErrors},
+    domain::validation::{
+        ExternalInput, error::ValidationErrors,
+    },
     serde_json, tap,
 };
 

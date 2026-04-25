@@ -1,7 +1,7 @@
 use bon::Builder;
 use validator_rs::is_valid_email;
 
-use crate::validation::constraints::Constraint;
+use super::Constraint;
 
 #[derive(Builder)]
 #[builder(derive(Clone), start_fn = with_err)]

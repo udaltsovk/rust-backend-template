@@ -1,6 +1,8 @@
 use std::{fmt::Debug, str::FromStr};
 
-use domain::{DomainType, input_impls, validation::ExternalInput};
+use domain::{
+    DomainType, input_impls, validation::ExternalInput,
+};
 use model_mapper::Mapper;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_value::{Value, ValueDeserializer};
@@ -51,14 +53,18 @@ impl<'de, T> Deserialize<'de> for UserInput<T>
 where
     T: Deserialize<'de>,
 {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    fn deserialize<D>(
+        deserializer: D,
+    ) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
         let raw_value = Value::deserialize(deserializer)?;
 
-        match Option::deserialize(ValueDeserializer::<D::Error>::new(
-            raw_value.clone(),
+        match Option::deserialize(ValueDeserializer::<
+            D::Error,
+        >::new(
+            raw_value.clone()
         )) {
             Ok(Some(value)) => Self::Ok(value),
             Ok(None) => Self::Null,
@@ -72,7 +78,10 @@ impl<T> Serialize for UserInput<T>
 where
     T: Serialize,
 {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    fn serialize<S>(
+        &self,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
@@ -117,30 +126,37 @@ impl<'de, T> Deserialize<'de> for LossyUserInput<T>
 where
     T: Deserialize<'de> + Debug + FromStr,
 {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    fn deserialize<D>(
+        deserializer: D,
+    ) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
         let raw_value = Value::deserialize(deserializer)?;
 
         let deserialized_option =
-            Option::deserialize(ValueDeserializer::<D::Error>::new(
-                raw_value.clone(),
+            Option::deserialize(ValueDeserializer::<
+                D::Error,
+            >::new(
+                raw_value.clone()
             ));
 
-        let raw_value_string = if let Value::String(value) = &raw_value {
-            Some(value)
-        } else {
-            None
-        };
+        let raw_value_string =
+            if let Value::String(value) = &raw_value {
+                Some(value)
+            } else {
+                None
+            };
 
         match (deserialized_option, raw_value_string) {
             (Ok(Some(value)), _) => UserInput::Ok(value),
             (Ok(None), _) => UserInput::Null,
-            (Err(_), Some(value)) => value.parse().map_or_else(
-                |_| UserInput::WrongType(raw_value),
-                UserInput::Ok,
-            ),
+            (Err(_), Some(value)) => {
+                value.parse().map_or_else(
+                    |_| UserInput::WrongType(raw_value),
+                    UserInput::Ok,
+                )
+            },
             (Err(_), _) => UserInput::WrongType(raw_value),
         }
         .pipe(Self)

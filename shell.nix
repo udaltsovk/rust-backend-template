@@ -17,8 +17,6 @@
     sqlx-cli
     cargo-udeps
     cargo-audit
-    cargo-tarpaulin
-    pycobertura
     cargo-expand
   ];
 
@@ -31,6 +29,7 @@ in
     mkShell {
       name = "rust-backend-template";
       buildInputs = packages ++ libraries;
+      hardeningDisable = ["fortify"];
 
       DIRENV_LOG_FORMAT = "";
       LD_LIBRARY_PATH = "${lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH";

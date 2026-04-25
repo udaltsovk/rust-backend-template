@@ -1,11 +1,14 @@
 use std::any::type_name;
 
-use domain::{DomainType, validation::error::ValidationErrors};
+use domain::{
+    DomainType, validation::error::ValidationErrors,
+};
 
 pub trait DomainTypeFromDb<T, I>
 where
     Self: Sized,
-    T: DomainType<I> + TryFrom<Self, Error = ValidationErrors>,
+    T: DomainType<I>
+        + TryFrom<Self, Error = ValidationErrors>,
     I: From<T> + Clone,
 {
     fn into_domain(self) -> T;

@@ -1,6 +1,9 @@
-pub use crate::modules::config::ModulesConfig;
-use crate::modules::{
-    repositories::RepositoriesModule, services::ServicesModule,
+use lib::bootstrap::bootstrapper_ext_trait;
+
+pub use self::config::ModulesConfig;
+use self::{
+    repositories::RepositoriesModule,
+    services::ServicesModule,
 };
 
 mod config;
@@ -18,8 +21,13 @@ impl Modules {
     pub async fn init(config: &ModulesConfig) -> Self {
         Self {
             config: config.clone(),
-            repositories: RepositoriesModule::new(&config.repositories).await,
+            repositories: RepositoriesModule::new(
+                &config.repositories,
+            )
+            .await,
             services: ServicesModule::new(&config.services),
         }
     }
 }
+
+bootstrapper_ext_trait!(Modules);

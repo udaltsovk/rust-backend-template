@@ -9,19 +9,37 @@ use mobc_sqlx::{
 
 #[async_trait]
 pub trait MigratorExt {
-    async fn migrate<DB>(&self, pool: &Pool<SqlxConnectionManager<DB>>)
-    where
+    async fn migrate<DB>(
+        &self,
+        pool: &Pool<SqlxConnectionManager<DB>>,
+    ) where
         DB: Database + Sync,
         <DB as Database>::Connection: Migrate;
 }
 
 #[async_trait]
 impl MigratorExt for Migrator {
-    async fn migrate<DB>(&self, pool: &Pool<SqlxConnectionManager<DB>>)
-    where
+    async fn migrate<DB>(
+        &self,
+        pool: &Pool<SqlxConnectionManager<DB>>,
+    ) where
         DB: Database + Sync,
         <DB as Database>::Connection: Migrate,
     {
-        pool.migrate(&self).await.expect("failed to run migrations");
+        pool.migrate(&self)
+            .await
+            .expect("failed to run migrations");
+    }
+}
+
+pub async fn migrate_all<DB>(
+    pool: &Pool<SqlxConnectionManager<DB>>,
+    migrators: &[&Migrator],
+) where
+    DB: Database + Sync,
+    <DB as Database>::Connection: Migrate,
+{
+    for migrator in migrators {
+        migrator.migrate(pool).await;
     }
 }

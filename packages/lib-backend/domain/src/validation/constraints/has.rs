@@ -1,6 +1,6 @@
 use bon::Builder;
 
-use crate::validation::constraints::Constraint;
+use super::Constraint;
 
 #[macro_export]
 macro_rules! has {

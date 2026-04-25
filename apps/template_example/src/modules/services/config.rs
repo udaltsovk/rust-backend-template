@@ -1,5 +1,6 @@
 use fromenv::FromEnv;
-use infrastructure::services::token::jwt::{
+
+use crate::features::user_auth::infrastructure::services::token::jwt::{
     DecodingKey, EncodingKey, JwtService,
 };
 

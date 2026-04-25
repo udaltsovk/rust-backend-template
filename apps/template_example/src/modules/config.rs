@@ -1,7 +1,8 @@
 use fromenv::FromEnv;
 
-use crate::modules::{
-    repositories::RepositoriesConfig, services::ServicesConfig,
+use super::{
+    repositories::RepositoriesConfig,
+    services::ServicesConfig,
 };
 
 #[derive(FromEnv, Clone)]

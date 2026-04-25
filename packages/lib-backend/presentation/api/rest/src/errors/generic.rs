@@ -5,7 +5,7 @@ use tap::Pipe as _;
 #[cfg(feature = "openapi")]
 use utoipa::ToSchema;
 
-use crate::errors::{JsonError, JsonErrorStruct};
+use super::{JsonError, JsonErrorStruct};
 
 #[derive(Serialize, Debug)]
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
@@ -31,7 +31,11 @@ impl JsonError {
         D: Serialize,
     {
         Self::Generic(GenericJsonError {
-            error: JsonErrorStruct::new(status_code, error_code, message),
+            error: JsonErrorStruct::new(
+                status_code,
+                error_code,
+                message,
+            ),
             details: serde_json::to_value(details)?,
         })
         .pipe(Ok)
@@ -47,7 +51,11 @@ impl JsonError {
         M: ToString,
     {
         Self::Generic(GenericJsonError {
-            error: JsonErrorStruct::new(status_code, error_code, message),
+            error: JsonErrorStruct::new(
+                status_code,
+                error_code,
+                message,
+            ),
             details: Value::Null,
         })
     }

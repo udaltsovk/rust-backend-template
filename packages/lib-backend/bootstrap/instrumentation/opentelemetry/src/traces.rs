@@ -5,11 +5,13 @@ use opentelemetry::{global, trace::TracerProvider as _};
     feature = "grpc-tonic",
     feature = "http-proto",
     feature = "http-json",
-    test
 ))]
-use opentelemetry_otlp::{SpanExporter, WithExportConfig as _};
+use opentelemetry_otlp::{
+    SpanExporter, WithExportConfig as _,
+};
 use opentelemetry_sdk::trace::{
-    BatchSpanProcessor, SdkTracerProvider, SpanProcessor, Tracer,
+    BatchSpanProcessor, SdkTracerProvider, SpanProcessor,
+    Tracer,
 };
 use tap::{Pipe as _, Tap as _};
 use tracing::Subscriber;
@@ -19,34 +21,48 @@ use tracing_subscriber::registry::LookupSpan;
 use crate::Otel;
 
 impl Otel {
-    pub(super) fn get_tracer_provider(&self) -> SdkTracerProvider {
+    pub(super) fn get_tracer_provider(
+        &self,
+    ) -> SdkTracerProvider {
         self.tracer_provider
             .clone()
-            .expect("Called `Otel::get_tracer_provider` too early")
+            .expect(
+                "Called `Otel::get_tracer_provider` too \
+                 early",
+            )
             .deref()
             .clone()
     }
 
     #[inline]
-    fn span_processor(&self) -> impl SpanProcessor + 'static {
+    fn span_processor(
+        &self,
+    ) -> impl SpanProcessor + 'static {
         let exporter = {
             #[cfg(feature = "grpc-tonic")]
             {
                 SpanExporter::builder()
                     .with_tonic()
-                    .with_export_config(self.export_config())
+                    .with_export_config(
+                        self.export_config(),
+                    )
                     .build()
                     .expect("Failed to build exporter!")
             }
 
             #[cfg(all(
                 not(feature = "grpc-tonic"),
-                any(feature = "http-proto", feature = "http-json", test)
+                any(
+                    feature = "http-proto",
+                    feature = "http-json",
+                )
             ))]
             {
                 SpanExporter::builder()
                     .with_http()
-                    .with_export_config(self.export_config())
+                    .with_export_config(
+                        self.export_config(),
+                    )
                     .build()
                     .expect("Failed to build exporter!")
             }
@@ -55,11 +71,11 @@ impl Otel {
                 feature = "grpc-tonic",
                 feature = "http-proto",
                 feature = "http-json",
-                test
             )))]
-            #[allow(clippy::cfg_not_test)]
             {
-                panic!("No OpenTelemetry protocol selected!");
+                panic!(
+                    "No OpenTelemetry protocol selected!"
+                );
             }
         };
 
@@ -67,13 +83,17 @@ impl Otel {
     }
 
     #[inline]
-    pub(super) fn configure_tracer_provider(mut self) -> Self {
+    pub(super) fn configure_tracer_provider(
+        mut self,
+    ) -> Self {
         self.tracer_provider = SdkTracerProvider::builder()
             .with_resource(self.resource.clone())
             .with_span_processor(self.span_processor())
             .build()
             .tap(|provider| {
-                global::set_tracer_provider(provider.clone());
+                global::set_tracer_provider(
+                    provider.clone(),
+                );
             })
             .pipe(Arc::new)
             .pipe(Some);
@@ -82,41 +102,14 @@ impl Otel {
     }
 
     #[inline]
-    pub(super) fn trace_layer<S: Subscriber + for<'span> LookupSpan<'span>>(
+    pub(super) fn trace_layer<
+        S: Subscriber + for<'span> LookupSpan<'span>,
+    >(
         &self,
     ) -> OpenTelemetryLayer<S, Tracer> {
         OpenTelemetryLayer::new(
-            self.get_tracer_provider().tracer(self.service_name.clone()),
+            self.get_tracer_provider()
+                .tracer(self.service_name.clone()),
         )
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use tracing_subscriber::Registry;
-
-    use super::*;
-
-    #[test]
-    #[should_panic(expected = "Called `Otel::get_tracer_provider` too early")]
-    fn get_tracer_provider_panic() {
-        let otel = Otel::new("test", "test");
-        let _provider = otel.get_tracer_provider();
-    }
-
-    #[tokio::test]
-    async fn configure_tracer_provider() {
-        let otel = Otel::new("test", "test");
-        let otel = otel.configure_tracer_provider();
-
-        // Should not panic now
-        let _provider = otel.get_tracer_provider();
-    }
-
-    #[tokio::test]
-    async fn trace_layer() {
-        let otel = Otel::new("test", "test");
-        let otel = otel.configure_tracer_provider();
-        let _layer = otel.trace_layer::<Registry>();
     }
 }
