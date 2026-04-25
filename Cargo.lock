@@ -1614,7 +1614,6 @@ dependencies = [
  "entrait",
  "fromenv",
  "lib-infrastructure-instrumentation",
- "lib-infrastructure-persistence",
  "mobc",
  "pastey",
  "quote",
@@ -1709,7 +1708,6 @@ dependencies = [
 name = "lib-infrastructure-persistence-redis"
 version = "0.1.0"
 dependencies = [
- "lib-application",
  "mobc-redis",
  "rstest",
 ]
@@ -1718,7 +1716,6 @@ dependencies = [
 name = "lib-infrastructure-persistence-sqlx"
 version = "0.1.0"
 dependencies = [
- "lib-application",
  "mobc-sqlx",
 ]
 

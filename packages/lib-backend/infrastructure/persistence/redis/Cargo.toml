@@ -5,8 +5,6 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-application = { path = "../../../application", package = "lib-application" }
-
 mobc-redis.workspace = true
 
 [dev-dependencies]
