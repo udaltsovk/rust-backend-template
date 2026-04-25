@@ -16,7 +16,6 @@ sqlx = { path = "./sqlx", package = "lib-infrastructure-persistence-sqlx", optio
 redis = { path = "./redis", package = "lib-infrastructure-persistence-redis", optional = true }
 
 derive-where.workspace = true
-entrait.workspace = true
 mobc.workspace = true
 mobc-sqlx = { workspace = true, optional = true }
 pastey.workspace = true

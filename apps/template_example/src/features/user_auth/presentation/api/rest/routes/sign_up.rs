@@ -19,6 +19,7 @@ use crate::{
         },
         user_auth::{
             application::usecase::session::CreateSessionUsecase,
+            domain::session::entity::SessionEntity,
             presentation::api::rest::dto::session::SessionDto,
         },
     },
@@ -63,11 +64,12 @@ pub async fn sign_up<App>(
 where
     App: CreateUserUsecase + CreateSessionUsecase,
 {
-    let user = source.parse()?;
-
-    let user = app.create_user(user).await?;
-
-    app.create_session(user.into())
+    source
+        .parse()?
+        .pipe(|user| app.create_user(user))
+        .await?
+        .conv::<SessionEntity>()
+        .pipe(|entity| app.create_session(entity))
         .await?
         .conv::<SessionDto>()
         .pipe(Json)

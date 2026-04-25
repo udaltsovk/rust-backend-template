@@ -1694,7 +1694,6 @@ name = "lib-infrastructure-persistence"
 version = "0.1.0"
 dependencies = [
  "derive-where",
- "entrait",
  "lib-application",
  "lib-domain",
  "lib-infrastructure-persistence-redis",
@@ -1743,7 +1742,6 @@ version = "0.1.0"
 dependencies = [
  "lib-presentation-api",
  "lib-presentation-bot",
- "rstest",
 ]
 
 [[package]]
