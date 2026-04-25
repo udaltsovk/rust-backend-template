@@ -7,9 +7,7 @@
     },
 }: let
   packages = with pkgs; [
-    (rust-bin.nightly.latest.default.override {
-      extensions = ["rust-src" "rust-analyzer"];
-    })
+    (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
 
     just
 
