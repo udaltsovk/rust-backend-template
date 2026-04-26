@@ -3,6 +3,8 @@ use tower_http::trace::OnResponse;
 use tracing::Level;
 use tracing_otel_extra::dyn_event;
 
+use super::http_route;
+
 #[derive(Clone, Copy, Debug)]
 pub struct AxumOtelOnResponse {
     level: Level,
@@ -47,10 +49,14 @@ impl<B> OnResponse<B> for AxumOtelOnResponse {
         );
         span.record("otel.status_code", "OK");
 
+        let http_route = http_route(span)
+            .unwrap_or_else(|| "unknown".into());
+
         dyn_event!(
             self.level,
             latency = %latency.as_millis(),
             status = %status,
+            http.route = %http_route,
             "finished processing request"
         );
     }

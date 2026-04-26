@@ -8,7 +8,6 @@ use lib::{
         HttpMetricsLayerBuilder, PathSkipper,
     },
     presentation::api::rest::startup::RestApi,
-    tower::ServiceBuilder,
     tower_http::cors::CorsLayer,
 };
 
@@ -64,14 +63,10 @@ impl BootstrapperExt for RestApi {
         };
 
         let (router, openapi) = routes::router()
-            .layer(
-                ServiceBuilder::new()
-                    .layer(metric_layer)
-                    .layer(cors_layer),
-            )
+            .layer(metric_layer)
             .split_for_parts();
 
-        Self::builder(router, deps)
+        Self::builder(router, cors_layer, deps)
             .with_openapi(openapi)
             .build()
             .run(SocketAddr::from(config))

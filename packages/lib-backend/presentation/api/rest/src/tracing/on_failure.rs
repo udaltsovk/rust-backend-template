@@ -4,6 +4,8 @@ use tower_http::{
 use tracing::Level;
 use tracing_otel_extra::dyn_event;
 
+use super::http_route;
+
 #[derive(Clone, Copy, Debug)]
 pub struct AxumOtelOnFailure {
     level: Level,
@@ -43,10 +45,14 @@ impl OnFailure<ServerErrorsFailureClass>
         latency: std::time::Duration,
         span: &tracing::Span,
     ) {
+        let http_route = http_route(span)
+            .unwrap_or_else(|| "unknown".into());
+
         dyn_event!(
             self.level,
             classification = %failure_classification,
             latency = %latency.as_millis(),
+            http.route = %http_route,
             "response failed"
         );
         match failure_classification {

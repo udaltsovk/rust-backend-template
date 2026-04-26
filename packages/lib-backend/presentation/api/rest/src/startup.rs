@@ -4,6 +4,7 @@ use axum::Router;
 use tokio::{net::TcpListener, signal};
 use tower::ServiceBuilder;
 use tower_http::{
+    cors::CorsLayer,
     request_id::{MakeRequestUuid, SetRequestIdLayer},
     trace::TraceLayer,
 };
@@ -28,6 +29,7 @@ where
     M: Send + Sync + Clone + 'static,
 {
     pub router: Router<M>,
+    pub cors: CorsLayer,
     pub modules: M,
     #[cfg(feature = "openapi")]
     pub openapi: Option<OpenApi>,
@@ -37,9 +39,14 @@ impl<M> RestApiBuilder<M>
 where
     M: Send + Sync + Clone + 'static,
 {
-    pub fn new(router: Router<M>, modules: &M) -> Self {
+    pub fn new(
+        router: Router<M>,
+        cors: CorsLayer,
+        modules: &M,
+    ) -> Self {
         Self {
             router,
+            cors,
             modules: modules.clone(),
             #[cfg(feature = "openapi")]
             openapi: None,
@@ -98,6 +105,7 @@ where
                     )
                     .on_failure(AxumOtelOnFailure::new()),
             )
+            .layer(self.cors)
             .layer(PanicHandler::layer());
 
         let router = router
@@ -118,12 +126,13 @@ pub struct RestApi {
 impl RestApi {
     pub fn builder<M>(
         router: Router<M>,
+        cors: CorsLayer,
         modules: &M,
     ) -> RestApiBuilder<M>
     where
         M: Send + Sync + Clone + 'static,
     {
-        RestApiBuilder::new(router, modules)
+        RestApiBuilder::new(router, cors, modules)
     }
 
     #[must_use]
