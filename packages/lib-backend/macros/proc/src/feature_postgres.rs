@@ -130,7 +130,10 @@ pub fn feature_postgres_migrator2(
     );
 
     Ok(quote! {
-        sqlx::migrate!(#path)
+        sqlx::migrate::Migrator {
+            ignore_missing: true,
+            ..sqlx::migrate!(#path)
+        }
     })
 }
 
