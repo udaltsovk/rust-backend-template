@@ -23,8 +23,8 @@
   "panels": [
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "fieldConfig": {
         "defaults": {
@@ -74,8 +74,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) by(service_namespace, service_name)",
@@ -87,8 +87,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -122,8 +122,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "fieldConfig": {
         "defaults": {
@@ -172,8 +172,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -190,8 +190,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -204,8 +204,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -218,8 +218,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -232,8 +232,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -246,8 +246,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -260,8 +260,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -274,8 +274,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -318,8 +318,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "description": "request amount distribution",
       "fieldConfig": {
@@ -377,8 +377,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) by(http_request_method, http_route)",
@@ -394,8 +394,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "description": "cumulative latency distribution",
       "fieldConfig": {
@@ -453,8 +453,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -471,8 +471,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "description": "overall request rate per minute over last 3 minutes",
       "fieldConfig": {
@@ -520,8 +520,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "expr": "sum(rate(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])*60)",
@@ -536,8 +536,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "description": "percentage of HTTP status 5xx in all requests",
       "fieldConfig": {
@@ -589,8 +589,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "expr": "sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_response_status_code=~\"5.*|\", http_route=~\"$route\"})/sum(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}) or vector(0)",
@@ -605,8 +605,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "description": "request rate per minute over last 3 minutes",
       "fieldConfig": {
@@ -690,8 +690,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "expr": "sum(rate(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])*60)  by(http_request_method, http_route)",
@@ -707,8 +707,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "description": "PR95 latency over last 3 minutes",
       "fieldConfig": {
@@ -792,8 +792,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])) by (le, http_request_method, http_route))",
@@ -809,8 +809,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "description": "by route and http status code",
       "fieldConfig": {
@@ -872,8 +872,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -890,8 +890,8 @@
     },
     {
       "datasource": {
-        "type": "victoriametrics-metrics-datasource",
-        "uid": "victoriametrics"
+        "type": "prometheus",
+        "uid": "mimir"
       },
       "description": "Details of each API",
       "fieldConfig": {
@@ -1018,8 +1018,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1031,8 +1031,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service_namespace=\"$namespace\", service_name=\"$service\", http_route=~\"$route\"}[3m])) by (le, service_namespace, service_name, http_request_method, http_route))",
@@ -1043,8 +1043,8 @@
         },
         {
           "datasource": {
-            "type": "victoriametrics-metrics-datasource",
-            "uid": "victoriametrics"
+            "type": "prometheus",
+            "uid": "mimir"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1118,10 +1118,10 @@
       "panels": [
         {
           "datasource": {
-            "type": "victoriametrics-logs-datasource",
-            "uid": "victorialogs"
+            "type": "loki",
+            "uid": "loki"
           },
-          "description": "Logs of the service, filtered by `service.name`.\n\nTo explore the logs, open the menu clicking on the icon `⋮` of this panel and click on `Explore`.",
+          "description": "Logs of the service, filtered by `service_name`.\n\nTo explore the logs, open the menu clicking on the icon `⋮` of this panel and click on `Explore`.",
           "fieldConfig": {
             "defaults": {},
             "overrides": []
@@ -1153,13 +1153,13 @@
           "targets": [
             {
               "datasource": {
-                "type": "victoriametrics-logs-datasource",
-                "uid": "victorialogs"
+                "type": "loki",
+                "uid": "loki"
               },
               "direction": "asc",
               "editorMode": "code",
-              "expr": "{service.namespace=\"$namespace\", service.name=\"$service\"}",
-              "queryType": "instant",
+              "expr": "{service_namespace=\"$namespace\", service_name=\"$service\"} | http_route =~ \"${route:regex}\"",
+              "queryType": "range",
               "refId": "A"
             }
           ],
@@ -1185,8 +1185,8 @@
     },
     {
       "datasource": {
-        "type": "jaeger",
-        "uid": "victoriatraces"
+        "type": "tempo",
+        "uid": "tempo"
       },
       "description": "Traces containing a span emitted by the service",
       "fieldConfig": {
@@ -1236,12 +1236,15 @@
       "targets": [
         {
           "datasource": {
-            "type": "jaeger",
-            "uid": "victoriatraces"
+            "type": "tempo",
+            "uid": "tempo"
           },
-          "queryType": "search",
+          "limit": 20,
+          "metricsQueryType": "range",
+          "query": "{ resource.service.namespace = \"$namespace\" && resource.service.name = \"$service\" && span.http.route =~ \"${route:regex}\" }",
+          "queryType": "traceql",
           "refId": "A",
-          "service": "$service"
+          "tableType": "traces"
         }
       ],
       "title": "",
@@ -1260,8 +1263,8 @@
           "value": "template_example"
         },
         "datasource": {
-          "type": "victoriametrics-metrics-datasource",
-          "uid": "victoriametrics"
+          "type": "prometheus",
+          "uid": "mimir"
         },
         "definition": "label_values(service_namespace)",
         "label": "Service namespace",
@@ -1283,8 +1286,8 @@
           "value": "monolyth"
         },
         "datasource": {
-          "type": "victoriametrics-metrics-datasource",
-          "uid": "victoriametrics"
+          "type": "prometheus",
+          "uid": "mimir"
         },
         "definition": "label_values({service_namespace=\"$namespace\"},service_name)",
         "includeAll": false,
@@ -1309,10 +1312,11 @@
           ]
         },
         "datasource": {
-          "type": "victoriametrics-metrics-datasource",
-          "uid": "victoriametrics"
+          "type": "prometheus",
+          "uid": "mimir"
         },
-        "definition": "label_values({service_name=\"$service\"},http_route)",
+        "allValue": ".*",
+        "definition": "label_values(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\"},http_route)",
         "includeAll": true,
         "label": "Route",
         "multi": true,
@@ -1320,23 +1324,13 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values({service_name=\"$service\"},http_route)",
+          "query": "label_values(http_server_request_duration_seconds_count{service_namespace=\"$namespace\", service_name=\"$service\"},http_route)",
           "refId": "VariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
         "type": "query"
-      },
-      {
-        "baseFilters": [],
-        "datasource": {
-          "type": "victoriametrics-logs-datasource",
-          "uid": "victorialogs"
-        },
-        "filters": [],
-        "name": "Filters",
-        "type": "adhoc"
       }
     ]
   },

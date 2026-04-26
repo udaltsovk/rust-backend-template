@@ -1,10 +1,10 @@
 name: template_example-dev
 services:
-  postgres_db:
+  postgres:
     image: postgres:alpine
     restart: on-failure
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     environment:
       POSTGRES_DB: template_example
       POSTGRES_USER: postgres
@@ -19,44 +19,39 @@ services:
       - redis-data:/data
     ports:
       - "6379:6379"
-  victoria-metrics:
-    image: victoriametrics/victoria-metrics:latest
-    volumes:
-      - victoria-metrics-data:/victoria-metrics-data
-      - ./assets/configs/dev/promscrape.victoriametrics.yml:/scrape.yml
+  mimir:
+    image: grafana/mimir:latest
     command:
-      - "-enableMetadata"
-      - "-httpListenAddr=:8428"
-      - "-opentelemetry.convertMetricNamesToPrometheus=true"
-      - "-opentelemetry.usePrometheusNaming=true"
-      - "-promscrape.config=/scrape.yml"
-      - "-retentionPeriod=1d"
-      - "-storageDataPath=/victoria-metrics-data"
-    ports:
-      - "8428:8428"
-  victoria-logs:
-    image: victoriametrics/victoria-logs:latest
+      - "-config.file=/etc/mimir/mimir.yaml"
     volumes:
-      - victoria-logs-data:/victoria-logs-data
-    command:
-      - "-futureRetention=1h"
-      - "-httpListenAddr=:9428"
-      - "-retentionPeriod=1d"
-      - "-storageDataPath=/victoria-logs-data"
+      - mimir-data:/data
+      - ./assets/configs/dev/mimir.yml:/etc/mimir/mimir.yaml
     ports:
-      - "9428:9428"
-  victoria-traces:
-    image: victoriametrics/victoria-traces:latest
+      - "9009:9009"
+  loki:
+    image: grafana/loki:latest
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"
     volumes:
-      - victoria-traces-data:/victoria-traces-data
-    command:
-      - "-httpListenAddr=:10428"
-      - "-retentionPeriod=1d"
-      - "-storageDataPath=/victoria-traces-data"
+      - loki-data:/loki
+      - ./assets/configs/dev/loki.yml:/etc/loki/local-config.yaml
     ports:
-      - "10428:10428"
+      - "3100:3100"
+  tempo:
+    image: grafana/tempo:latest
+    command:
+      - "-config.file=/etc/tempo/tempo.yaml"
+    volumes:
+      - tempo-data:/var/tempo
+      - ./assets/configs/dev/tempo.yml:/etc/tempo/tempo.yaml
+    ports:
+      - "3200:3200"
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
+    depends_on:
+      - mimir
+      - loki
+      - tempo
     volumes:
       - ./assets/configs/dev/otel-collector.yml:/etc/otelcol-contrib/config.yaml
     ports:
@@ -64,10 +59,12 @@ services:
       - "8888:8888"
   grafana:
     image: grafana/grafana:latest
+    depends_on:
+      - mimir
+      - loki
+      - tempo
     ports:
       - "3001:3000"
-    environment:
-      - GF_INSTALL_PLUGINS=victoriametrics-metrics-datasource,victoriametrics-logs-datasource
     volumes:
       - ./assets/configs/dev/grafana/datasources/:/etc/grafana/provisioning/datasources
       - ./assets/configs/dev/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -76,7 +73,7 @@ services:
 volumes:
   postgres-data:
   redis-data:
-  victoria-metrics-data:
-  victoria-logs-data:
-  victoria-traces-data:
+  mimir-data:
+  loki-data:
+  tempo-data:
   grafana-data:
