@@ -12,7 +12,10 @@ use tower_http::{
 use {
     axum::{Json, routing::get},
     utoipa::openapi::OpenApi,
-    utoipa_scalar::{Scalar, Servable as _},
+    utoipa_scalar::{
+        Scalar, ScalarConfig, ScalarMcp,
+        ScalarShowDeveloperTools, ScalarTheme,
+    },
 };
 
 use super::{
@@ -80,8 +83,17 @@ where
         if let Some(openapi) = self.openapi {
             let openapi_json = Json(openapi.clone());
             router = router
-                .merge(Scalar::with_url(
-                    "/openapi", openapi,
+                .merge(Scalar::with_url_and_config(
+                    "/openapi",
+                    openapi,
+                    ScalarConfig::builder()
+                        .dark_mode(true)
+                        .theme(ScalarTheme::Mars)
+                        .show_developer_tools(
+                            ScalarShowDeveloperTools::Never,
+                        )
+                        .mcp(ScalarMcp::Disabled)
+                        .build(),
                 ))
                 .route(
                     "/openapi.json",

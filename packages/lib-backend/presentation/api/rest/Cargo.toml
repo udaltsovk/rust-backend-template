@@ -35,7 +35,7 @@ tracing-otel-extra = { version = "0.31", features = [
   "fields",
   "macros",
 ] }
-utoipa-scalar = { version = "0.3", optional = true, features = ["axum"] }
+utoipa-scalar = { version = "0.4", optional = true, features = ["axum"] }
 
 [dev-dependencies]
 rstest.workspace = true

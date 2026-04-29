@@ -47,6 +47,7 @@ mobc = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
 mobc-redis = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
 utoipa = { git = "https://github.com/NikSneMC/utoipa" }
 utoipa-axum = { git = "https://github.com/NikSneMC/utoipa" }
+utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa" }
 
 
 [profile.release]
