@@ -1,5 +1,3 @@
-use lib::bootstrap::bootstrapper_ext_trait;
-
 pub use self::config::ModulesConfig;
 use self::{
     repositories::RepositoriesModule,
@@ -29,5 +27,3 @@ impl Modules {
         }
     }
 }
-
-bootstrapper_ext_trait!(Modules);

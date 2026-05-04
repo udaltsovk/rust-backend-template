@@ -7,7 +7,7 @@ use crate::features::user_auth::domain::session::{
 
 #[entrait(
     SessionRepositoryImpl,
-    delegate_by=DelegateSessionRepository
+    delegate_by=ref
 )]
 #[async_trait]
 pub trait SessionRepository {

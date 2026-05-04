@@ -1602,6 +1602,7 @@ dependencies = [
  "axum",
  "axum-otel-metrics",
  "chrono",
+ "entrait",
  "lib-application",
  "lib-bootstrap",
  "lib-domain",

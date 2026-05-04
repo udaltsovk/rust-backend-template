@@ -15,7 +15,8 @@ use super::Modules;
 use crate::{
     features::{
         user::application::repository::DelegateUserRepository,
-        user_auth::application::repository::session::DelegateSessionRepository,
+        user_auth::application::repository::session::SessionRepositoryImpl,
+        // user_auth::application::repository::session::DelegateSessionRepository,
     },
     shared::infrastructure::persistence::{
         PostgresRepositoryImpl, RedisRepositoryImpl,
@@ -62,5 +63,5 @@ impl_has! {
 impl_repositories! {
     struct: Modules,
     DelegateUserRepository: PostgresRepositoryImpl,
-    DelegateSessionRepository: RedisRepositoryImpl,
+    SessionRepositoryImpl: |_cfg| &RedisRepositoryImpl,
 }

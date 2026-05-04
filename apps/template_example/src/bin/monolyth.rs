@@ -18,7 +18,6 @@ async fn main() {
 
     // // Without opentelemetry
     // stdout::wrap(bootstrap!(
-    //     template_example,
     //     [RestApi(&config.server)],
     //     Modules::init(&config.modules)
     // ))
@@ -28,7 +27,6 @@ async fn main() {
     Otel::from(&config.otel)
         .with_timeout(Duration::from_secs(30))
         .wrap(bootstrap!(
-            template_example,
             [RestApi(&config.server)],
             Modules::init(&config.modules)
         ))

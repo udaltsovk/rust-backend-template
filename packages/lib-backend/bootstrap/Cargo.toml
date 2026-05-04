@@ -31,6 +31,7 @@ openapi = ["dep:serde_json", "dep:utoipa"]
 [dependencies]
 instrumentation = { path = "./instrumentation", package = "lib-infrastructure-instrumentation", optional = true }
 
+async-trait.workspace = true
 entrait.workspace = true
 fromenv.workspace = true
 mobc.workspace = true

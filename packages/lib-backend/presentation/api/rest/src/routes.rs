@@ -2,6 +2,8 @@ use axum::{http::StatusCode, response::IntoResponse};
 
 use super::errors::JsonError;
 
+pub trait Application = Clone + Send + Sync + 'static;
+
 pub async fn fallback_404() -> impl IntoResponse {
     JsonError::new(
         StatusCode::NOT_FOUND,

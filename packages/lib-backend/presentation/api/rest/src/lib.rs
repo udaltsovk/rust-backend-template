@@ -1,3 +1,5 @@
+#![feature(trait_alias)]
+
 #[doc(hidden)]
 pub use {
     domain::validation::{

@@ -9,6 +9,7 @@ edition = "2024"
 [workspace.dependencies]
 lib = { path = "./packages/lib-backend" }
 
+async-trait = "0.1"
 axum = "0.8"
 bon = "3.7"
 chrono = "0.4"
@@ -31,13 +32,13 @@ strum = "0.28"
 tap = "1.0"
 tikv-jemallocator = "0.6"
 thiserror = "2.0"
-tokio = "1.47"
+tokio = "1.52"
 tower = "0.5"
 tower-http = "0.6"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 utoipa = "5.4"
-uuid = "1.18"
+uuid = "1.23"
 
 
 [patch.crates-io]

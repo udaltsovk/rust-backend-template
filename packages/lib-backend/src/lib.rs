@@ -35,6 +35,14 @@ pub use bootstrap;
 pub use chrono;
 #[cfg(feature = "domain")]
 pub use domain;
+#[cfg(any(
+    feature = "application",
+    feature = "bootstrap",
+    feature = "infrastructure",
+    feature = "infrastructure",
+    feature = "presentation",
+))]
+pub use entrait;
 #[cfg(feature = "infrastructure")]
 pub use infrastructure;
 #[cfg(feature = "macros")]

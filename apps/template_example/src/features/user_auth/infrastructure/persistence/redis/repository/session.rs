@@ -33,7 +33,7 @@ where
     })
 }
 
-#[entrait]
+#[entrait(ref)]
 #[async_trait]
 #[instrument_all]
 impl SessionRepositoryImpl for RedisRepositoryImpl {

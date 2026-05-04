@@ -7,6 +7,7 @@ use lib::{
     axum_otel_metrics::{
         HttpMetricsLayerBuilder, PathSkipper,
     },
+    bootstrap::Bootstrapper,
     presentation::api::rest::startup::RestApi,
     tower_http::cors::CorsLayer,
 };
@@ -14,14 +15,14 @@ use lib::{
 pub use self::{
     config::RestApiConfig, openapi::ApiDoc, routes::router,
 };
-use crate::modules::{BootstrapperExt, Modules};
+use crate::modules::Modules;
 
 mod config;
 mod openapi;
 mod routes;
 
 #[async_trait]
-impl BootstrapperExt for RestApi {
+impl Bootstrapper<Modules> for RestApi {
     type Config = RestApiConfig;
 
     async fn bootstrap(

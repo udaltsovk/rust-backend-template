@@ -1,13 +1,25 @@
+use async_trait::async_trait;
+
+#[async_trait]
+pub trait Bootstrapper<M> {
+    type Config: fromenv::__private::FromEnv;
+
+    async fn bootstrap(
+        config: &Self::Config,
+        deps: &::entrait::Impl<M>,
+    );
+}
+
 #[macro_export]
 macro_rules! bootstrap {
-    ($_app_crate: ident, [], $_modules_fut: expr) => {
+    ([], $_modules_fut: expr) => {
       const {
            panic!("`bootstrap!` can't be called with empty bootstrapper array!");
       }
     };
-    ($app_crate: ident, [$($bootstrapper: tt($config_field: expr)),*], $modules_fut: expr) => {
+    ([$($bootstrapper: tt($config_field: expr)),*], $modules_fut: expr) => {
         async {
-            use $app_crate::modules::BootstrapperExt as _;
+            use $crate::Bootstrapper as _;
 
 
             let modules = $crate::entrait::Impl::new($modules_fut.await);
