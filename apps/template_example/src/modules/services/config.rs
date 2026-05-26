@@ -4,13 +4,13 @@ use crate::features::user_auth::infrastructure::services::token::jwt::{
     DecodingKey, EncodingKey, JwtService,
 };
 
-#[derive(FromEnv, Clone)]
+#[derive(FromEnv)]
 pub struct ServicesConfig {
     #[env(nested)]
     pub jwt: JwtConfig,
 }
 
-#[derive(FromEnv, Clone)]
+#[derive(FromEnv)]
 #[env(prefix = "JWT_")]
 pub struct JwtConfig {
     pub secret: String,

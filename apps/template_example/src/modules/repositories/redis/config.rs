@@ -2,7 +2,7 @@ use std::fmt::Write as _;
 
 use fromenv::FromEnv;
 
-#[derive(FromEnv, Clone)]
+#[derive(FromEnv)]
 #[env(prefix = "REDIS_")]
 pub struct RedisConfig {
     pub host: String,

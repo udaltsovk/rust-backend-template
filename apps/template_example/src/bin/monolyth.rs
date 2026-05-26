@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{sync::LazyLock, time::Duration};
 
 // use lib::bootstrap::instrumentation::stdout;
 use lib::{
@@ -12,23 +12,24 @@ use template_example::{AppConfig, modules::Modules};
 
 configure_jemalloc!();
 
+static CONFIG: LazyLock<AppConfig> =
+    LazyLock::new(AppConfig::load);
+
 #[tokio::main]
 async fn main() {
-    let config = AppConfig::load();
-
     // // Without opentelemetry
     // stdout::wrap(bootstrap!(
-    //     [RestApi(&config.server)],
-    //     Modules::init(&config.modules)
+    //     [RestApi(&CONFIG.server)],
+    //     Modules::init(&CONFIG.modules)
     // ))
     // .await;
 
     // With opentelemetry
-    Otel::from(&config.otel)
+    Otel::from(&CONFIG.otel)
         .with_timeout(Duration::from_secs(30))
         .wrap(bootstrap!(
-            [RestApi(&config.server)],
-            Modules::init(&config.modules)
+            [RestApi(&CONFIG.server)],
+            Modules::init(&CONFIG.modules)
         ))
         .await;
 }

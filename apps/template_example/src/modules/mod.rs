@@ -10,15 +10,17 @@ mod services;
 
 #[derive(Clone)]
 pub struct Modules {
-    config: ModulesConfig,
+    config: &'static ModulesConfig,
     repositories: RepositoriesModule,
     services: ServicesModule,
 }
 
 impl Modules {
-    pub async fn init(config: &ModulesConfig) -> Self {
+    pub async fn init(
+        config: &'static ModulesConfig,
+    ) -> Self {
         Self {
-            config: config.clone(),
+            config,
             repositories: RepositoriesModule::new(
                 &config.repositories,
             )

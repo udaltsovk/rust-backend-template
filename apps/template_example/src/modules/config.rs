@@ -5,7 +5,7 @@ use super::{
     services::ServicesConfig,
 };
 
-#[derive(FromEnv, Clone)]
+#[derive(FromEnv)]
 pub struct ModulesConfig {
     #[env(nested)]
     pub repositories: RepositoriesConfig,

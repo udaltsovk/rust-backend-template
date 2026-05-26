@@ -6,7 +6,7 @@ use crate::{
     modules::ModulesConfig,
 };
 
-#[derive(FromEnv, Clone)]
+#[derive(FromEnv)]
 pub struct AppConfig {
     #[env(nested)]
     pub server: RestApiConfig,

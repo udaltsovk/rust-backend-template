@@ -1,7 +1,7 @@
 use fromenv::FromEnv;
 use sqlx::postgres::PgConnectOptions;
 
-#[derive(FromEnv, Clone)]
+#[derive(FromEnv)]
 #[env(prefix = "POSTGRES_")]
 pub struct PostgresConfig {
     #[env(default = "true")]

@@ -8,7 +8,7 @@ use fromenv::FromEnv;
 
 use crate::Otel;
 
-#[derive(FromEnv, Clone)]
+#[derive(FromEnv)]
 #[env(prefix = "OTEL_")]
 pub struct OtelConfig {
     pub endpoint: String,
