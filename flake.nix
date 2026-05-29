@@ -1,20 +1,34 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-compat.url = "github:NixOS/flake-compat";
+    systems.url = "github:nix-systems/default";
 
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+
+    fenix = {
+      url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-  };
-  outputs = inputs:
-    inputs.flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import inputs.nixpkgs {
-        inherit system;
-        overlays = [(import inputs.rust-overlay)];
+    naersk = {
+      url = "github:nix-community/naersk";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        fenix.follows = "fenix";
       };
-    in {
-      devShell = import ./shell.nix {inherit pkgs;};
-    });
+    };
+  };
+
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = import inputs.systems;
+      imports = [./nix];
+      flake.defaultTemplate = {
+        path = ./.;
+        description = "Rust backend template";
+      };
+    };
 }

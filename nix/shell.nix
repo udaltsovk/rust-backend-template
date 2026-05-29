@@ -1,0 +1,37 @@
+{
+  perSystem = {
+    pkgs,
+    toolchain,
+    ...
+  }: {
+    devShells.default = let
+      packages = with pkgs; [
+        git
+
+        toolchain
+
+        just
+
+        watchexec
+        sqlx-cli
+        cargo-udeps
+        cargo-audit
+        cargo-expand
+      ];
+
+      libraries = with pkgs; [
+        pkg-config
+        openssl
+      ];
+    in
+      with pkgs;
+        mkShell {
+          name = "rust-backend-template";
+          buildInputs = packages ++ libraries;
+          hardeningDisable = ["fortify"];
+
+          DIRENV_LOG_FORMAT = "";
+          LD_LIBRARY_PATH = "${lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH";
+        };
+  };
+}
