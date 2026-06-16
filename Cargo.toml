@@ -46,6 +46,7 @@ entrait = { git = "https://github.com/NikSneMC/entrait", branch = "fix/clippy" }
 fromenv = { git = "https://github.com/NikSneMC/fromenv", branch = "main" }
 mobc = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
 mobc-redis = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
+proc-macro-error2 = { git = "https://github.com/fgardt/proc-macro-error-2", branch = "fix/future-incompat" }
 utoipa = { git = "https://github.com/NikSneMC/utoipa" }
 utoipa-axum = { git = "https://github.com/NikSneMC/utoipa" }
 utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa" }

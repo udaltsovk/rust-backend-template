@@ -1,2 +1,9 @@
+assist.preferSelf = true
+check.command = "clippy"
+completion.hideDeprecated = true
+completion.termSearch.enable = true
+diagnostics.styleLints.enable = true
+
 [imports]
 prefix = "self"
+granularity.enforce = true

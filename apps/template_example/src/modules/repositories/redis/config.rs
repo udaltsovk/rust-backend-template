@@ -31,7 +31,7 @@ impl From<&RedisConfig> for redis::Client {
                 write!(url, "@")?;
             }
 
-            write!(url, "{}", &config.host)?;
+            write!(url, "{}", config.host)?;
 
             if let Some(port) = &config.port {
                 write!(url, ":{port}")?;

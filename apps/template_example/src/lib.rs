@@ -1,4 +1,4 @@
-#![feature(bool_to_result, trait_alias, try_blocks)]
+#![feature(trait_alias, try_blocks)]
 
 pub use self::config::AppConfig;
 
