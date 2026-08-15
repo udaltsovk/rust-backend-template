@@ -34,13 +34,22 @@ bon.workspace = true
 derive_more = { workspace = true, features = ["from", "into"] }
 entrait.workspace = true
 fromenv.workspace = true
-jsonwebtoken = { version = "10.3", features = ["rust_crypto"] }
+jsonwebtoken = { version = "11.0", default-features = false, features = [
+  "rust_crypto",
+] }
+mimalloc.workspace = true
 model-mapper.workspace = true
-redis = { version = "1.0", features = ["json", "uuid"] }
-rust_iso3166 = "0.1"
+redis = { version = "1.0", default-features = false, features = ["uuid"] }
+rust_iso3166 = "0.2"
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid"] }
+sqlx = { version = "0.9", default-features = false, features = [
+  "runtime-tokio",
+  "postgres",
+  "uuid",
+  "macros",
+  "migrate",
+] }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing.workspace = true
@@ -53,14 +62,6 @@ utoipa = { workspace = true, features = [
   "uuid",
   "chrono",
   "url",
-] }
-
-[target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = { workspace = true, features = [
-  "profiling",
-  "background_threads_runtime_support",
-  "background_threads",
-  "override_allocator_on_supported_platforms",
 ] }
 
 [lints]

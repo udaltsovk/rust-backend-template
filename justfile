@@ -13,12 +13,6 @@ dev-compose-up:
 
 dev-compose-restart: dev-compose-down dev-compose-up
 
-udeps *args="--all":
-    cargo udeps {{ args }}
-
-audit *args="-n":
-    cargo audit {{ args }}
-
 fmt *args="--all":
     cargo fmt {{ args }}
 
@@ -35,8 +29,6 @@ build crate=(default_app_name + "-monolyth") *args:
     cargo build --bin {{ crate }} {{ args }}
 
 style: fmt lint
-
-check: udeps audit style test
 
 run crate=(default_app_name + "-monolyth") *args:
     cargo run --bin {{ crate }} {{ args }}

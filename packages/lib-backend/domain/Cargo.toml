@@ -15,11 +15,5 @@ num-traits = "0.2"
 regex = "1.12"
 validator-rs = "0.1"
 
-
-[dev-dependencies]
-rstest = { workspace = true }
-tokio = { workspace = true }
-
-
 [lints]
 workspace = true

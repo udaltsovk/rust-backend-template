@@ -7,8 +7,8 @@ pub use self::{
     bootstrap::Bootstrapper, config::ConfigExt,
 };
 
+mod allocator;
 mod bootstrap;
 mod config;
-mod jemalloc;
 pub mod metadata;
 mod modules;

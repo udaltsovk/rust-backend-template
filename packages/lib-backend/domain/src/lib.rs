@@ -86,7 +86,6 @@ where
         self.as_ref().clone()
     }
 
-    #[must_use]
     fn it_should_be_safe_to_unwrap<E>()
     -> impl FnOnce(E) -> T {
         move |_| {

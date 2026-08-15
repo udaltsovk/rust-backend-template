@@ -34,9 +34,9 @@ macro_rules! impl_repositories {
         $repository: ident: |$s: ident| $body: expr,
         $($rest: tt)*
     ) => {
-        impl_repositories!(@parse struct: $struct, $repository: |$s| $body);
+        impl_repositories! { @parse struct: $struct, $repository: |$s| $body }
 
-        impl_repositories!(@parse struct: $struct, $($rest)*);
+        impl_repositories! { @parse struct: $struct, $($rest)* }
     };
 
     (
@@ -45,15 +45,15 @@ macro_rules! impl_repositories {
         $delegate: ident: $implementation: ty,
         $($rest: tt)*
     ) => {
-        impl_repositories!(@parse struct: $struct, $delegate: $implementation);
+        impl_repositories! { @parse struct: $struct, $delegate: $implementation }
 
-        impl_repositories!(@parse struct: $struct, $($rest)*);
+        impl_repositories! { @parse struct: $struct, $($rest)* }
     };
 
     (
         struct: $struct: ident,
         $($rest: tt)*
     ) => {
-        impl_repositories!(@parse struct: $struct, $($rest)*);
+        impl_repositories! { @parse struct: $struct, $($rest)* }
     };
 }

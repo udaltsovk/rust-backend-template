@@ -4,7 +4,7 @@ use std::{sync::Arc, time::Duration};
 
 use metrics_tracing_context::MetricsLayer;
 use opentelemetry::KeyValue;
-use opentelemetry_otlp::{ExportConfig, Protocol};
+use opentelemetry_otlp::{Protocol, WithExportConfig};
 use opentelemetry_sdk::{
     Resource, logs::SdkLoggerProvider,
     metrics::SdkMeterProvider, trace::SdkTracerProvider,
@@ -94,11 +94,23 @@ impl Otel {
     }
 
     #[inline]
-    fn export_config(&self) -> ExportConfig {
-        ExportConfig {
-            protocol: Self::protocol(),
-            endpoint: self.endpoint.clone(),
-            timeout: self.timeout,
+    fn with_export_config<B: WithExportConfig>(
+        &self,
+        builder: B,
+    ) -> B {
+        let builder =
+            builder.with_protocol(Self::protocol());
+
+        let builder = match self.endpoint.as_deref() {
+            Some(endpoint) => {
+                builder.with_endpoint(endpoint)
+            },
+            None => builder,
+        };
+
+        match self.timeout {
+            Some(timeout) => builder.with_timeout(timeout),
+            None => builder,
         }
     }
 

@@ -9,12 +9,8 @@ api = ["dep:api"]
 api-rest = ["api", "api/rest"]
 api-rest-openapi = ["api-rest", "api/rest-openapi"]
 
-bot = ["dep:bot"]
-bot-telegram = ["bot", "bot/telegram"]
-
 [dependencies]
 api = { path = "./api", package = "lib-presentation-api", optional = true }
-bot = { path = "./bot", package = "lib-presentation-bot", optional = true }
 
 [lints]
 workspace = true

@@ -6,9 +6,7 @@ use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
     feature = "http-proto",
     feature = "http-json",
 ))]
-use opentelemetry_otlp::{
-    LogExporter, WithExportConfig as _,
-};
+use opentelemetry_otlp::LogExporter;
 use opentelemetry_sdk::logs::{
     BatchLogProcessor, LogProcessor, SdkLogger,
     SdkLoggerProvider,
@@ -36,13 +34,11 @@ impl Otel {
         let exporter = {
             #[cfg(feature = "grpc-tonic")]
             {
-                LogExporter::builder()
-                    .with_tonic()
-                    .with_export_config(
-                        self.export_config(),
-                    )
-                    .build()
-                    .expect("Failed to build exporter!")
+                self.with_export_config(
+                    LogExporter::builder().with_tonic(),
+                )
+                .build()
+                .expect("Failed to build exporter!")
             }
 
             #[cfg(all(
@@ -53,13 +49,11 @@ impl Otel {
                 )
             ))]
             {
-                LogExporter::builder()
-                    .with_http()
-                    .with_export_config(
-                        self.export_config(),
-                    )
-                    .build()
-                    .expect("Failed to build exporter!")
+                self.with_export_config(
+                    LogExporter::builder().with_http(),
+                )
+                .build()
+                .expect("Failed to build exporter!")
             }
 
             #[cfg(not(any(

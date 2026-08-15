@@ -12,7 +12,8 @@
 
       toolchain = pkgs.fenix.fromToolchainFile {
         file = ../rust-toolchain.toml;
-        sha256 = "sha256-rNsOYVHiSXXSDRGdg/StkiKCsyCTEPBfsP3R9spCu1c=";
+        sha256 = "sha256-Du6MVMrLsqbYhnqdyenK/pNt1Fu24vNsiqPiW03a/Dg=";
+        # sha256 = pkgs.lib.fakeHash;
       };
     in {
       inherit pkgs toolchain;

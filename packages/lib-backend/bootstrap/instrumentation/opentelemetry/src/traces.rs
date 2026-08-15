@@ -6,9 +6,7 @@ use opentelemetry::{global, trace::TracerProvider as _};
     feature = "http-proto",
     feature = "http-json",
 ))]
-use opentelemetry_otlp::{
-    SpanExporter, WithExportConfig as _,
-};
+use opentelemetry_otlp::SpanExporter;
 use opentelemetry_sdk::trace::{
     BatchSpanProcessor, SdkTracerProvider, SpanProcessor,
     Tracer,
@@ -41,13 +39,11 @@ impl Otel {
         let exporter = {
             #[cfg(feature = "grpc-tonic")]
             {
-                SpanExporter::builder()
-                    .with_tonic()
-                    .with_export_config(
-                        self.export_config(),
-                    )
-                    .build()
-                    .expect("Failed to build exporter!")
+                self.with_export_config(
+                    SpanExporter::builder().with_tonic(),
+                )
+                .build()
+                .expect("Failed to build exporter!")
             }
 
             #[cfg(all(
@@ -58,13 +54,11 @@ impl Otel {
                 )
             ))]
             {
-                SpanExporter::builder()
-                    .with_http()
-                    .with_export_config(
-                        self.export_config(),
-                    )
-                    .build()
-                    .expect("Failed to build exporter!")
+                self.with_export_config(
+                    SpanExporter::builder().with_http(),
+                )
+                .build()
+                .expect("Failed to build exporter!")
             }
 
             #[cfg(not(any(

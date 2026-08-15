@@ -18,19 +18,17 @@ derive-where = "1.6"
 entrait = "0.7"
 fromenv = "0.1"
 metrics = "0.24"
+mimalloc = "0.1"
 mobc = "0.9"
 mobc-redis = "0.9"
-mobc-sqlx = "2.0"
-model-mapper = "0.7"
+mobc-sqlx = "3.0"
+model-mapper = "0.8"
 opentelemetry = "0.31"
 pastey = "0.2"
-rstest = "0.26"
 serde = "1.0"
 serde_json = "1.0"
 serde-value = "0.7"
-strum = "0.28"
 tap = "1.0"
-tikv-jemallocator = "0.6"
 thiserror = "2.0"
 tokio = "1.52"
 tower = "0.5"
@@ -40,17 +38,15 @@ tracing-subscriber = "0.3"
 utoipa = "5.4"
 uuid = "1.23"
 
-
 [patch.crates-io]
-entrait = { git = "https://github.com/NikSneMC/entrait", branch = "fix/clippy" }
-fromenv = { git = "https://github.com/NikSneMC/fromenv", branch = "main" }
+entrait = { git = "https://github.com/NikSneMC/entrait", branch = "useful" }
+fromenv = { git = "https://github.com/NikSneMC/fromenv", branch = "useful" }
 mobc = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
 mobc-redis = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
 proc-macro-error2 = { git = "https://github.com/fgardt/proc-macro-error-2", branch = "fix/future-incompat" }
-utoipa = { git = "https://github.com/NikSneMC/utoipa" }
-utoipa-axum = { git = "https://github.com/NikSneMC/utoipa" }
-utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa" }
-
+utoipa = { git = "https://github.com/NikSneMC/utoipa", branch = "useful" }
+utoipa-axum = { git = "https://github.com/NikSneMC/utoipa", branch = "useful" }
+utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa", branch = "useful" }
 
 [profile.release]
 lto = "fat"
@@ -58,6 +54,9 @@ strip = true
 opt-level = 3
 panic = "unwind"
 codegen-units = 1
+
+[workspace.metadata.cargo-shear]
+ignored = ["mimalloc"]
 
 [workspace.lints.rust]
 # unknown_lints = "allow"
@@ -176,7 +175,6 @@ explicit_into_iter_loop = "warn"
 explicit_iter_loop = "warn"
 filter_map_next = "warn"
 flat_map_option = "warn"
-from_iter_instead_of_collect = "warn"
 into_iter_without_iter = "warn"
 iter_filter_is_ok = "warn"
 iter_filter_is_some = "warn"

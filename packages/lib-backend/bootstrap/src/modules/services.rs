@@ -34,9 +34,9 @@ macro_rules! impl_services {
         $service: ident: |$s: ident| $body: expr,
         $($rest: tt)*
     ) => {
-        impl_services!(@parse struct: $struct, $service: |$s| $body);
+        impl_services! { @parse struct: $struct, $service: |$s| $body }
 
-        impl_services!(@parse struct: $struct, $($rest)*);
+        impl_services! { @parse struct: $struct, $($rest)* }
     };
 
     (
@@ -45,15 +45,15 @@ macro_rules! impl_services {
         $delegate: ident: $implementation: ty,
         $($rest: tt)*
     ) => {
-        impl_services!(@parse struct: $struct, $delegate: $implementation);
+        impl_services! { @parse struct: $struct, $delegate: $implementation }
 
-        impl_services!(@parse struct: $struct, $($rest)*);
+        impl_services! { @parse struct: $struct, $($rest)* }
     };
 
     (
         struct: $struct: ident,
         $($rest: tt)*
     ) => {
-        impl_services!(@parse struct: $struct, $($rest)*);
+        impl_services! { @parse struct: $struct, $($rest)* }
     };
 }

@@ -12,8 +12,5 @@ derive-where.workspace = true
 entrait.workspace = true
 pastey.workspace = true
 
-[dev-dependencies]
-rstest.workspace = true
-
 [lints]
 workspace = true

@@ -3,14 +3,14 @@ use std::{sync::LazyLock, time::Duration};
 // use lib::bootstrap::instrumentation::stdout;
 use lib::{
     bootstrap::{
-        ConfigExt as _, bootstrap, configure_jemalloc,
+        ConfigExt as _, bootstrap, configure_allocator,
         instrumentation::opentelemetry::Otel,
     },
     presentation::api::rest::startup::RestApi,
 };
 use template_example::{AppConfig, modules::Modules};
 
-configure_jemalloc!();
+configure_allocator!();
 
 static CONFIG: LazyLock<AppConfig> =
     LazyLock::new(AppConfig::load);

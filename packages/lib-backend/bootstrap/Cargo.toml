@@ -44,11 +44,9 @@ utoipa = { workspace = true, optional = true }
 dotenvy = "0.15"
 
 [dev-dependencies]
-rstest.workspace = true
-tokio = { workspace = true, features = ["full"] }
+tokio = { workspace = true}
 
 async-trait = "0.1"
-quote = "1.0"
 
 [lints]
 workspace = true

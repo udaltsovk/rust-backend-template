@@ -30,7 +30,7 @@ tracing-subscriber.workspace = true
 utoipa = { workspace = true, optional = true }
 uuid.workspace = true
 
-tracing-otel-extra = { version = "0.31", features = [
+tracing-otel-extra = { version = "0.32", features = [
   "context",
   "fields",
   "macros",
@@ -38,12 +38,8 @@ tracing-otel-extra = { version = "0.31", features = [
 utoipa-scalar = { version = "0.4", optional = true, features = ["axum"] }
 
 [dev-dependencies]
-rstest.workspace = true
 serde_json.workspace = true
 tokio = { workspace = true, features = ["test-util"] }
-
-serde_urlencoded = "0.7"
-
 
 [lints]
 workspace = true

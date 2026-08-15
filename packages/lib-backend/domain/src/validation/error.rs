@@ -49,6 +49,7 @@ impl ValidationErrors {
         &mut self.0
     }
 
+    #[must_use]
     pub fn inner(&self) -> &[ValidationError] {
         &self.0
     }
@@ -181,6 +182,7 @@ impl ValidationErrorsWithFields {
         &mut self.0
     }
 
+    #[must_use]
     pub fn inner(&self) -> &[(Arc<str>, ValidationError)] {
         &self.0
     }

@@ -24,7 +24,6 @@ tracing-subscriber = { workspace = true, features = ["env-filter"] }
 metrics-exporter-otel = "0.3"
 metrics-process = "2.4"
 metrics-tracing-context = "0.18"
-metrics-util = "0.20"
 opentelemetry_sdk = { version = "0.31", features = [
   "rt-tokio",
   "trace",
@@ -34,7 +33,6 @@ opentelemetry_sdk = { version = "0.31", features = [
   "experimental_metrics_periodicreader_with_async_runtime",
 ] }
 opentelemetry-appender-tracing = { version = "0.31", features = [
-  "experimental_metadata_attributes",
   #    "spec_unstable_logs_enabled",
   "experimental_use_tracing_span_context",
 ] }
@@ -46,7 +44,7 @@ opentelemetry-otlp = { version = "0.31", default-features = false, features = [
 opentelemetry-semantic-conventions = { version = "0.31", features = [
   "semconv_experimental",
 ] }
-tokio-metrics = { version = "0.4", features = ["rt", "metrics-rs-integration"] }
+tokio-metrics = { version = "0.5", features = ["rt", "metrics-rs-integration"] }
 tracing-opentelemetry = "0.32"
 
 [dev-dependencies]

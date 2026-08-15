@@ -9,13 +9,21 @@
         git
 
         toolchain
+        clang
+        mold
 
         just
 
         watchexec
         sqlx-cli
+
+        cargo-machete
+        cargo-shear
         cargo-udeps
+        cargo-features-manager
+
         cargo-audit
+
         cargo-expand
       ];
 

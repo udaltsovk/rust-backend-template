@@ -117,9 +117,6 @@ presentation-api-rest-openapi = [
   "dep:utoipa-axum",
 ]
 
-presentation-bot = ["presentation/bot"]
-presentation-bot-telegram = ["presentation-bot", "presentation/bot-telegram"]
-
 [dependencies]
 application = { path = "./application", package = "lib-application", optional = true }
 bootstrap = { path = "./bootstrap", package = "lib-bootstrap", optional = true }
@@ -134,7 +131,6 @@ entrait = { workspace = true, optional = true }
 mobc-redis = { workspace = true, optional = true }
 mobc-sqlx = { workspace = true, optional = true }
 tap = { workspace = true, optional = true }
-thiserror = { workspace = true, optional = true }
 tower = { workspace = true, optional = true }
 tower-http = { workspace = true, optional = true, features = ["cors"] }
 uuid = { workspace = true, optional = true, features = ["v7"] }

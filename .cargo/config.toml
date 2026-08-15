@@ -1,6 +1,11 @@
-parallel-compiler = true
+[unstable]
+codegen-backend = true
 
-[build]
+[profile.dev]
+codegen-backend = "cranelift"
+
+[target.'cfg(target_os = "linux")']
+linker = "clang"
 rustflags = [
   "--cfg",
   "tokio_unstable",
@@ -8,4 +13,22 @@ rustflags = [
   "target-cpu=native",
   "-Z",
   "macro-backtrace",
+  "-Z",
+  "threads=8",
+  "-C",
+  "link-arg=-fuse-ld=mold",
+]
+
+[target.'cfg(not(target_os = "linux"))']
+rustflags = [
+  "--cfg",
+  "tokio_unstable",
+  "-C",
+  "target-cpu=native",
+  "-Z",
+  "macro-backtrace",
+  "-Z",
+  "threads=8",
+  "-C",
+  "link-arg=-fuse-ld=lld",
 ]

@@ -8,9 +8,7 @@ use opentelemetry::{global, metrics::MeterProvider as _};
     feature = "http-proto",
     feature = "http-json",
 ))]
-use opentelemetry_otlp::{
-    MetricExporter, WithExportConfig as _,
-};
+use opentelemetry_otlp::MetricExporter;
 use opentelemetry_sdk::{
     metrics::{
         SdkMeterProvider,
@@ -46,13 +44,11 @@ impl Otel {
         let exporter = {
             #[cfg(feature = "grpc-tonic")]
             {
-                MetricExporter::builder()
-                    .with_tonic()
-                    .with_export_config(
-                        self.export_config(),
-                    )
-                    .build()
-                    .expect("Failed to build exporter!")
+                self.with_export_config(
+                    MetricExporter::builder().with_tonic(),
+                )
+                .build()
+                .expect("Failed to build exporter!")
             }
 
             #[cfg(all(
@@ -63,13 +59,11 @@ impl Otel {
                 )
             ))]
             {
-                MetricExporter::builder()
-                    .with_http()
-                    .with_export_config(
-                        self.export_config(),
-                    )
-                    .build()
-                    .expect("Failed to build exporter!")
+                self.with_export_config(
+                    MetricExporter::builder().with_http(),
+                )
+                .build()
+                .expect("Failed to build exporter!")
             }
 
             #[cfg(not(any(
