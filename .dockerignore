@@ -1,7 +1,7 @@
 apps/**/Containerfile
 **.md
 
-.cargo/audit.toml
+.cargo
 .direnv
 .idea
 .forgejo

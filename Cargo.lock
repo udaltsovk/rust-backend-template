@@ -801,7 +801,7 @@ checksum = "c34f04666d835ff5d62e058c3995147c06f42fe86ff053337632bca83e42702d"
 [[package]]
 name = "entrait"
 version = "0.7.1"
-source = "git+https://github.com/NikSneMC/entrait?branch=useful#03a53f375677953ed769c1f080d8c65d0f96f4c3"
+source = "git+https://github.com/NikSneMC/entrait?rev=03a53f375677953ed769c1f080d8c65d0f96f4c3#03a53f375677953ed769c1f080d8c65d0f96f4c3"
 dependencies = [
  "entrait_macros",
  "implementation",
@@ -810,7 +810,7 @@ dependencies = [
 [[package]]
 name = "entrait_macros"
 version = "0.7.1"
-source = "git+https://github.com/NikSneMC/entrait?branch=useful#03a53f375677953ed769c1f080d8c65d0f96f4c3"
+source = "git+https://github.com/NikSneMC/entrait?rev=03a53f375677953ed769c1f080d8c65d0f96f4c3#03a53f375677953ed769c1f080d8c65d0f96f4c3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -926,7 +926,7 @@ dependencies = [
 [[package]]
 name = "fromenv"
 version = "0.1.0"
-source = "git+https://github.com/NikSneMC/fromenv?branch=useful#56f55fbe76dd795c0326ba77f9e0ded113aab418"
+source = "git+https://github.com/NikSneMC/fromenv?rev=56f55fbe76dd795c0326ba77f9e0ded113aab418#56f55fbe76dd795c0326ba77f9e0ded113aab418"
 dependencies = [
  "fromenv-derive",
 ]
@@ -934,7 +934,7 @@ dependencies = [
 [[package]]
 name = "fromenv-derive"
 version = "0.1.0"
-source = "git+https://github.com/NikSneMC/fromenv?branch=useful#56f55fbe76dd795c0326ba77f9e0ded113aab418"
+source = "git+https://github.com/NikSneMC/fromenv?rev=56f55fbe76dd795c0326ba77f9e0ded113aab418#56f55fbe76dd795c0326ba77f9e0ded113aab418"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -1661,6 +1661,7 @@ dependencies = [
  "entrait",
  "fromenv",
  "lib-infrastructure-instrumentation",
+ "mimalloc",
  "mobc",
  "pastey",
  "serde_json",
@@ -2060,7 +2061,7 @@ dependencies = [
 [[package]]
 name = "mobc"
 version = "0.9.0"
-source = "git+https://github.com/NikSneMC/mobc?branch=useful#b463832592039c518449c02213ff1ffbf361ca8a"
+source = "git+https://github.com/NikSneMC/mobc?rev=b463832592039c518449c02213ff1ffbf361ca8a#b463832592039c518449c02213ff1ffbf361ca8a"
 dependencies = [
  "async-trait",
  "futures-channel",
@@ -2078,7 +2079,7 @@ dependencies = [
 [[package]]
 name = "mobc-redis"
 version = "0.9.0"
-source = "git+https://github.com/NikSneMC/mobc?branch=useful#b463832592039c518449c02213ff1ffbf361ca8a"
+source = "git+https://github.com/NikSneMC/mobc?rev=b463832592039c518449c02213ff1ffbf361ca8a#b463832592039c518449c02213ff1ffbf361ca8a"
 dependencies = [
  "mobc",
  "redis",
@@ -2587,7 +2588,7 @@ dependencies = [
 [[package]]
 name = "proc-macro-error-attr2"
 version = "2.0.0"
-source = "git+https://github.com/fgardt/proc-macro-error-2?branch=fix%2Ffuture-incompat#53ff94b61c678593158db1a3d50269c6f0de0db7"
+source = "git+https://github.com/fgardt/proc-macro-error-2?rev=53ff94b61c678593158db1a3d50269c6f0de0db7#53ff94b61c678593158db1a3d50269c6f0de0db7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2596,7 +2597,7 @@ dependencies = [
 [[package]]
 name = "proc-macro-error2"
 version = "2.0.1"
-source = "git+https://github.com/fgardt/proc-macro-error-2?branch=fix%2Ffuture-incompat#53ff94b61c678593158db1a3d50269c6f0de0db7"
+source = "git+https://github.com/fgardt/proc-macro-error-2?rev=53ff94b61c678593158db1a3d50269c6f0de0db7#53ff94b61c678593158db1a3d50269c6f0de0db7"
 dependencies = [
  "proc-macro-error-attr2",
  "proc-macro2",
@@ -3633,7 +3634,6 @@ dependencies = [
  "fromenv",
  "jsonwebtoken",
  "lib",
- "mimalloc",
  "model-mapper",
  "redis",
  "rust_iso3166",
@@ -3895,6 +3895,7 @@ dependencies = [
  "http-body",
  "http-body-util",
  "pin-project-lite",
+ "tokio",
  "tower",
  "tower-layer",
  "tower-service",
@@ -4075,7 +4076,7 @@ checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
 [[package]]
 name = "utoipa"
 version = "5.5.0"
-source = "git+https://github.com/NikSneMC/utoipa?branch=useful#1c247af9d473c88bf716355b5bcc10e41883dd79"
+source = "git+https://github.com/NikSneMC/utoipa?rev=1c247af9d473c88bf716355b5bcc10e41883dd79#1c247af9d473c88bf716355b5bcc10e41883dd79"
 dependencies = [
  "indexmap 2.14.0",
  "serde",
@@ -4086,7 +4087,7 @@ dependencies = [
 [[package]]
 name = "utoipa-axum"
 version = "0.2.0"
-source = "git+https://github.com/NikSneMC/utoipa?branch=useful#1c247af9d473c88bf716355b5bcc10e41883dd79"
+source = "git+https://github.com/NikSneMC/utoipa?rev=1c247af9d473c88bf716355b5bcc10e41883dd79#1c247af9d473c88bf716355b5bcc10e41883dd79"
 dependencies = [
  "axum",
  "pastey",
@@ -4098,7 +4099,7 @@ dependencies = [
 [[package]]
 name = "utoipa-gen"
 version = "5.5.0"
-source = "git+https://github.com/NikSneMC/utoipa?branch=useful#1c247af9d473c88bf716355b5bcc10e41883dd79"
+source = "git+https://github.com/NikSneMC/utoipa?rev=1c247af9d473c88bf716355b5bcc10e41883dd79#1c247af9d473c88bf716355b5bcc10e41883dd79"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4111,7 +4112,7 @@ dependencies = [
 [[package]]
 name = "utoipa-scalar"
 version = "0.4.0"
-source = "git+https://github.com/NikSneMC/utoipa?branch=useful#1c247af9d473c88bf716355b5bcc10e41883dd79"
+source = "git+https://github.com/NikSneMC/utoipa?rev=1c247af9d473c88bf716355b5bcc10e41883dd79#1c247af9d473c88bf716355b5bcc10e41883dd79"
 dependencies = [
  "axum",
  "bon",

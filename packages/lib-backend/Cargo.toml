@@ -25,6 +25,11 @@ bootstrap = [
   "dep:tower-http",
 ]
 
+bootstrap-allocator-secure = [
+  "bootstrap",
+  "bootstrap/allocator-secure",
+]
+
 bootstrap-openapi = ["bootstrap", "bootstrap/openapi"]
 
 bootstrap-redis = ["bootstrap", "dep:mobc-redis"]

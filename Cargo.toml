@@ -39,14 +39,14 @@ utoipa = "5.4"
 uuid = "1.23"
 
 [patch.crates-io]
-entrait = { git = "https://github.com/NikSneMC/entrait", branch = "useful" }
-fromenv = { git = "https://github.com/NikSneMC/fromenv", branch = "useful" }
-mobc = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
-mobc-redis = { git = "https://github.com/NikSneMC/mobc", branch = "useful" }
-proc-macro-error2 = { git = "https://github.com/fgardt/proc-macro-error-2", branch = "fix/future-incompat" }
-utoipa = { git = "https://github.com/NikSneMC/utoipa", branch = "useful" }
-utoipa-axum = { git = "https://github.com/NikSneMC/utoipa", branch = "useful" }
-utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa", branch = "useful" }
+entrait = { git = "https://github.com/NikSneMC/entrait", rev = "03a53f375677953ed769c1f080d8c65d0f96f4c3" }
+fromenv = { git = "https://github.com/NikSneMC/fromenv", rev = "56f55fbe76dd795c0326ba77f9e0ded113aab418" }
+mobc = { git = "https://github.com/NikSneMC/mobc", rev = "b463832592039c518449c02213ff1ffbf361ca8a" }
+mobc-redis = { git = "https://github.com/NikSneMC/mobc", rev = "b463832592039c518449c02213ff1ffbf361ca8a" }
+proc-macro-error2 = { git = "https://github.com/fgardt/proc-macro-error-2", rev = "53ff94b61c678593158db1a3d50269c6f0de0db7" }
+utoipa = { git = "https://github.com/NikSneMC/utoipa", rev = "1c247af9d473c88bf716355b5bcc10e41883dd79" }
+utoipa-axum = { git = "https://github.com/NikSneMC/utoipa", rev = "1c247af9d473c88bf716355b5bcc10e41883dd79" }
+utoipa-scalar = { git = "https://github.com/NikSneMC/utoipa", rev = "1c247af9d473c88bf716355b5bcc10e41883dd79" }
 
 [profile.release]
 lto = "fat"
@@ -54,9 +54,6 @@ strip = true
 opt-level = 3
 panic = "unwind"
 codegen-units = 1
-
-[workspace.metadata.cargo-shear]
-ignored = ["mimalloc"]
 
 [workspace.lints.rust]
 # unknown_lints = "allow"

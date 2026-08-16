@@ -37,7 +37,6 @@ fromenv.workspace = true
 jsonwebtoken = { version = "11.0", default-features = false, features = [
   "rust_crypto",
 ] }
-mimalloc.workspace = true
 model-mapper.workspace = true
 redis = { version = "1.0", default-features = false, features = ["uuid"] }
 rust_iso3166 = "0.2"

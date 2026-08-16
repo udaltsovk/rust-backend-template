@@ -5,6 +5,8 @@ authors.workspace = true
 edition.workspace = true
 
 [features]
+allocator-secure = ["mimalloc/secure"]
+
 instrumentation = ["dep:instrumentation"]
 
 instrumentation-opentelemetry = [
@@ -34,6 +36,7 @@ instrumentation = { path = "./instrumentation", package = "lib-infrastructure-in
 async-trait.workspace = true
 entrait.workspace = true
 fromenv.workspace = true
+mimalloc.workspace = true
 mobc.workspace = true
 pastey.workspace = true
 serde_json = { workspace = true, optional = true }

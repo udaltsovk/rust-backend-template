@@ -1,7 +1,7 @@
 #[cfg(feature = "instrumentation")]
 pub use instrumentation;
 #[doc(hidden)]
-pub use {entrait, mobc::Pool, pastey};
+pub use {entrait, mimalloc, mobc::Pool, pastey};
 
 pub use self::{
     bootstrap::Bootstrapper, config::ConfigExt,
