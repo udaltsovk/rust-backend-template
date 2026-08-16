@@ -1,3 +1,8 @@
+#![expect(
+    clippy::expect_used,
+    reason = "startup path: failing fast here is intended"
+)]
+
 use tracing::level_filters::LevelFilter;
 use tracing_subscriber::{
     EnvFilter,
@@ -43,8 +48,7 @@ pub fn filter_layer() -> EnvFilter {
 #[cfg(not(debug_assertions))]
 #[must_use]
 #[inline]
-pub fn fmt_layer<S>()
--> Layer<S, format::DefaultFields, Format<format::Compact>>
+pub fn fmt_layer<S>() -> Layer<S, format::DefaultFields, Format<format::Compact>>
 {
     fmt::layer()
         .compact()
@@ -59,8 +63,7 @@ pub fn fmt_layer<S>()
 #[cfg(debug_assertions)]
 #[must_use]
 #[inline]
-pub fn fmt_layer<S>()
--> Layer<S, format::Pretty, Format<format::Pretty>> {
+pub fn fmt_layer<S>() -> Layer<S, format::Pretty, Format<format::Pretty>> {
     fmt::layer()
         .pretty()
         .with_span_events(format::FmtSpan::CLOSE)

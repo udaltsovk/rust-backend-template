@@ -1,28 +1,38 @@
 [package]
 name = "lib-presentation-api-rest"
 version = "0.1.0"
+publish = false
 authors.workspace = true
 edition.workspace = true
 
 [features]
 openapi = ["dep:utoipa", "dep:utoipa-scalar"]
+opentelemetry = ["dep:opentelemetry", "tracing-otel-extra/context"]
 
 [dependencies]
 domain = { path = "../../../domain", package = "lib-domain" }
+application = { path = "../../../application", package = "lib-application" }
 
 axum = { workspace = true, features = ["macros"] }
 chrono = { workspace = true, features = ["serde"] }
+entrait.workspace = true
+futures-util = "0.3"
 model-mapper.workspace = true
-opentelemetry = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json.workspace = true
+opentelemetry = { workspace = true, optional = true }
+result-like.workspace = true
+serde = { workspace = true, features = ["derive", "rc"] }
+serde_json = { workspace = true, features = [
+  "preserve_order",
+] }
 serde-value.workspace = true
 tap.workspace = true
-tokio = { workspace = true, features = ["signal"] }
+tokio = { workspace = true, features = ["macros", "signal", "time"] }
 tower.workspace = true
 tower-http = { workspace = true, features = [
   "catch-panic",
+  "cors",
   "request-id",
+  "timeout",
   "trace",
 ] }
 tracing.workspace = true
@@ -30,11 +40,7 @@ tracing-subscriber.workspace = true
 utoipa = { workspace = true, optional = true }
 uuid.workspace = true
 
-tracing-otel-extra = { version = "0.32", features = [
-  "context",
-  "fields",
-  "macros",
-] }
+tracing-otel-extra = { version = "0.32", features = ["fields", "macros"] }
 utoipa-scalar = { version = "0.4", optional = true, features = ["axum"] }
 
 [dev-dependencies]

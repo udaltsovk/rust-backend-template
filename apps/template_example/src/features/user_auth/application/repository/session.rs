@@ -11,10 +11,7 @@ use crate::features::user_auth::domain::session::{
 )]
 #[async_trait]
 pub trait SessionRepository {
-    async fn save_session(
-        &self,
-        source: Session,
-    ) -> Result<Session>;
+    async fn save_session(&self, source: Session) -> Result<Session>;
 
     async fn find_session_by_entity(
         &self,

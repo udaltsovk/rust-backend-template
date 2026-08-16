@@ -2,15 +2,20 @@
 [package]
 name = "lib-application"
 version = "0.1.0"
+publish = false
 authors.workspace = true
 edition.workspace = true
 
-[features]
-
 [dependencies]
 derive-where.workspace = true
+futures-util = "0.3"
 entrait.workspace = true
 pastey.workspace = true
+result-like.workspace = true
+serde = { workspace = true, features = ["derive"] }
+tap.workspace = true
+tokio = { workspace = true, features = ["time"] }
+tracing.workspace = true
 
 [lints]
 workspace = true

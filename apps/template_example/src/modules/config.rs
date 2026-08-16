@@ -1,9 +1,6 @@
 use fromenv::FromEnv;
 
-use super::{
-    repositories::RepositoriesConfig,
-    services::ServicesConfig,
-};
+use super::{repositories::RepositoriesConfig, services::ServicesConfig};
 
 #[derive(FromEnv)]
 pub struct ModulesConfig {

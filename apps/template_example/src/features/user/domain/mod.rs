@@ -1,8 +1,7 @@
 use lib::domain::Id;
 
 use self::{
-    avatar_url::UserAvatarUrl, name::UserName,
-    surname::UserSurname,
+    avatar_url::UserAvatarUrl, name::UserName, surname::UserSurname,
     target_settings::UserTargetSettings,
 };
 use crate::shared::domain::{

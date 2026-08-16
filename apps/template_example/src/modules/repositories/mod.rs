@@ -3,10 +3,7 @@ use std::sync::OnceLock;
 use lib::{
     application::impl_has,
     bootstrap::impl_repositories,
-    infrastructure::persistence::{
-        redis::{Namespace, RedisPool},
-        sqlx::SqlxPool,
-    },
+    infrastructure::persistence::{RedisPool, SqlxPool, redis::Namespace},
     mobc_sqlx::sqlx::Postgres,
 };
 
@@ -16,7 +13,6 @@ use crate::{
     features::{
         user::application::repository::DelegateUserRepository,
         user_auth::application::repository::session::SessionRepositoryImpl,
-        // user_auth::application::repository::session::DelegateSessionRepository,
     },
     shared::infrastructure::persistence::{
         PostgresRepositoryImpl, RedisRepositoryImpl,
@@ -34,14 +30,9 @@ pub struct RepositoriesModule {
 }
 
 impl RepositoriesModule {
-    pub(crate) async fn new(
-        config: &RepositoriesConfig,
-    ) -> Self {
+    pub(crate) async fn new(config: &RepositoriesConfig) -> Self {
         Self {
-            postgres: Self::setup_postgres(
-                &config.postgres,
-            )
-            .await,
+            postgres: Self::setup_postgres(&config.postgres).await,
             redis: Self::setup_redis(&config.redis),
         }
     }

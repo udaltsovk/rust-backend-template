@@ -1,26 +1,21 @@
-use bon::Builder;
+use macros::{constraint, constraint_check};
 
-use super::Constraint;
+use super::{Constraint, Validation};
 
-#[derive(Builder)]
-#[builder(derive(Clone), start_fn = with_err)]
+#[constraint]
 pub struct IsAscii<T>
 where
     T: ToString,
 {
-    #[builder(start_fn)]
     err_fn: fn(&T) -> String,
 }
 
-impl<T> Constraint<T> for IsAscii<T>
+#[constraint_check(T)]
+impl<T> IsAscii<T>
 where
     T: ToString,
 {
-    fn check(&self, value: &T) -> bool {
+    fn is_valid(value: &T) -> bool {
         value.to_string().is_ascii()
-    }
-
-    fn error_msg(&self, rejected_value: &T) -> String {
-        (self.err_fn)(rejected_value)
     }
 }

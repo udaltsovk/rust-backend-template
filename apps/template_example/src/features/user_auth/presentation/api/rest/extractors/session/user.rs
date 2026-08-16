@@ -1,6 +1,5 @@
 use axum::{
-    RequestPartsExt as _, extract::FromRequestParts,
-    http::request::Parts,
+    RequestPartsExt as _, extract::FromRequestParts, http::request::Parts,
 };
 use axum_extra::{
     TypedHeader,
@@ -13,9 +12,7 @@ use crate::{
         user::domain::User,
         user_auth::{
             application::usecase::session::GetSessionFromTokenUsecase,
-            domain::session::{
-                Session, entity::SessionEntity,
-            },
+            domain::session::{Session, entity::SessionEntity},
             presentation::api::rest::errors::AuthError,
         },
     },
@@ -44,16 +41,13 @@ where
             .map_err(|_| AuthError::InvalidToken)?;
 
         let session = app
-            .get_session_from_token(Secret::new(
-                bearer.token(),
-            ))
+            .get_session_from_token(Secret::new(bearer.token()))
             .await
             .map_err(|_| AuthError::InvalidToken)?;
 
         #[expect(
             unreachable_patterns,
-            reason = "other session entities may be added \
-                      in the future"
+            reason = "other session entities may be added in the future"
         )]
         match session.entity {
             SessionEntity::User(user_id) => Self {

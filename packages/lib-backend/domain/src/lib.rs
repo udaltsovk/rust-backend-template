@@ -42,18 +42,13 @@ impl<T> From<Id<T>> for Uuid {
 }
 
 impl<T> fmt::Display for Id<T> {
-    fn fmt(
-        &self,
-        f: &mut fmt::Formatter<'_>,
-    ) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.value.fmt(f)
     }
 }
 
 impl<'de, T> Deserialize<'de> for Id<T> {
-    fn deserialize<D>(
-        deserializer: D,
-    ) -> Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
@@ -62,10 +57,7 @@ impl<'de, T> Deserialize<'de> for Id<T> {
 }
 
 impl<T> Serialize for Id<T> {
-    fn serialize<S>(
-        &self,
-        serializer: S,
-    ) -> Result<S::Ok, S::Error>
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
@@ -84,15 +76,5 @@ where
 
     fn cloned_inner(&self) -> T {
         self.as_ref().clone()
-    }
-
-    fn it_should_be_safe_to_unwrap<E>()
-    -> impl FnOnce(E) -> T {
-        move |_| {
-            panic!(
-                "We've validated field value, so it \
-                 should be safe"
-            )
-        }
     }
 }

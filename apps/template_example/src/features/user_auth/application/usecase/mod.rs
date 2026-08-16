@@ -1,5 +1,4 @@
 pub mod session;
 
 pub trait AuthUseCases =
-    session::CreateSessionUsecase
-        + session::GetSessionFromTokenUsecase;
+    session::CreateSessionUsecase + session::GetSessionFromTokenUsecase;

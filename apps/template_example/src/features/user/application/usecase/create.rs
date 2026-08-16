@@ -20,30 +20,17 @@ async fn create_user<Deps>(
 where
     Deps: UserRepository + SecretHasherService,
 {
-    if UserRepository::find_user_by_email(
-        deps,
-        &source.email,
-    )
-    .await?
-    .is_some()
+    if UserRepository::find_user_by_email(deps, &source.email)
+        .await?
+        .is_some()
     {
-        return UserUseCaseError::EmailAlreadyUsed(
-            source.email,
-        )
-        .pipe(Err);
+        return UserUseCaseError::EmailAlreadyUsed(source.email).pipe(Err);
     }
 
-    let password_hash = SecretHasherService::hash_secret(
-        deps,
-        &source.password,
-    )?;
+    let password_hash =
+        SecretHasherService::hash_secret(deps, &source.password)?;
 
-    UserRepository::create_user(
-        deps,
-        Id::generate(),
-        source,
-        password_hash,
-    )
-    .await?
-    .pipe(Ok)
+    UserRepository::create_user(deps, Id::generate(), source, password_hash)
+        .await?
+        .pipe(Ok)
 }

@@ -1,9 +1,3 @@
-#![allow(
-    clippy::allow_attributes,
-    clippy::allow_attributes_without_reason,
-    clippy::same_name_method
-)]
-
 use fromenv::FromEnv;
 
 use crate::Otel;
@@ -18,10 +12,7 @@ pub struct OtelConfig {
 
 impl From<&OtelConfig> for Otel {
     fn from(config: &OtelConfig) -> Self {
-        Self::new(
-            &config.service_namespace,
-            &config.service_name,
-        )
-        .with_endpoint(&config.endpoint)
+        Self::new(&config.service_namespace, &config.service_name)
+            .with_endpoint(&config.endpoint)
     }
 }

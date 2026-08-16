@@ -5,9 +5,7 @@ use axum::{
     http::{Response, StatusCode},
     response::IntoResponse as _,
 };
-use tower_http::catch_panic::{
-    CatchPanicLayer, ResponseForPanic,
-};
+use tower_http::catch_panic::{CatchPanicLayer, ResponseForPanic};
 
 use super::errors::JsonError;
 

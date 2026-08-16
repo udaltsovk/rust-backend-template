@@ -1,14 +1,21 @@
 [package]
 name = "lib-domain"
 version = "0.1.0"
+publish = false
 edition = "2024"
 
 [dependencies]
+macros = { path = "../macros", package = "lib-macros", features = [
+  "proc",
+] }
+
 bon.workspace = true
 derive-where.workspace = true
 pastey.workspace = true
+result-like.workspace = true
 serde.workspace = true
 serde-value.workspace = true
+tap.workspace = true
 uuid = { workspace = true, features = ["v7", "serde"] }
 
 num-traits = "0.2"

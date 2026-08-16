@@ -1,7 +1,5 @@
 use entrait::entrait;
-use jsonwebtoken::{
-    Algorithm, Header, Validation, decode, encode,
-};
+use jsonwebtoken::{Algorithm, Header, Validation, decode, encode};
 pub use jsonwebtoken::{DecodingKey, EncodingKey};
 use lib::{
     anyhow::{Context as _, Result},
@@ -13,8 +11,7 @@ use lib::{
 
 use self::claims::Claims;
 use crate::features::user_auth::{
-    application::service::token::TokenServiceImpl,
-    domain::session::Session,
+    application::service::token::TokenServiceImpl, domain::session::Session,
 };
 
 mod claims;
@@ -44,10 +41,7 @@ impl TokenServiceImpl for JwtService {
         .context("while encoding jwt")
     }
 
-    fn parse_token<App>(
-        app: &App,
-        token: Secret<&str>,
-    ) -> Result<Session>
+    fn parse_token<App>(app: &App, token: Secret<&str>) -> Result<Session>
     where
         App: Has<Self>,
     {

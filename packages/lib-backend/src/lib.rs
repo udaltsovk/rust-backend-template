@@ -19,10 +19,7 @@ pub use application;
     feature = "infrastructure-services",
 ))]
 pub use async_trait::async_trait;
-#[cfg(all(
-    feature = "bootstrap",
-    feature = "presentation-api-rest"
-))]
+#[cfg(all(feature = "bootstrap", feature = "presentation-api-rest"))]
 pub use axum;
 #[cfg(all(
     feature = "bootstrap-instrumentation-opentelemetry",
@@ -45,8 +42,11 @@ pub use domain;
 pub use entrait;
 #[cfg(feature = "infrastructure")]
 pub use infrastructure;
-#[cfg(feature = "macros")]
-pub use macros::*;
+#[cfg(feature = "macros-proc")]
+pub use macros::{
+    DomainType, constraint, constraint_check, instrument_all, migrate,
+    query_file_as,
+};
 #[cfg(feature = "bootstrap-redis")]
 pub use mobc_redis;
 #[cfg(feature = "bootstrap-sqlx")]

@@ -1,6 +1,7 @@
 [package]
 name = "lib"
 version = "0.1.0"
+publish = false
 authors.workspace = true
 edition.workspace = true
 
@@ -28,6 +29,38 @@ bootstrap = [
 bootstrap-allocator-secure = [
   "bootstrap",
   "bootstrap/allocator-secure",
+]
+
+bootstrap-allocator-v2 = ["bootstrap", "bootstrap/allocator-v2"]
+
+bootstrap-allocator-no-thp = [
+  "bootstrap",
+  "bootstrap/allocator-no-thp",
+]
+
+bootstrap-allocator-local-dynamic-tls = [
+  "bootstrap",
+  "bootstrap/allocator-local-dynamic-tls",
+]
+
+bootstrap-allocator-override = [
+  "bootstrap",
+  "bootstrap/allocator-override",
+]
+
+bootstrap-allocator-extended = [
+  "bootstrap",
+  "bootstrap/allocator-extended",
+]
+
+bootstrap-allocator-debug = [
+  "bootstrap",
+  "bootstrap/allocator-debug",
+]
+
+bootstrap-allocator-debug-in-debug = [
+  "bootstrap",
+  "bootstrap/allocator-debug-in-debug",
 ]
 
 bootstrap-openapi = ["bootstrap", "bootstrap/openapi"]
@@ -120,6 +153,10 @@ presentation-api-rest-openapi = [
   "presentation-api-rest",
   "presentation/api-rest-openapi",
   "dep:utoipa-axum",
+]
+presentation-api-rest-opentelemetry = [
+  "presentation-api-rest",
+  "presentation/api-rest-opentelemetry",
 ]
 
 [dependencies]

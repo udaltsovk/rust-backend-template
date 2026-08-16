@@ -45,9 +45,11 @@ macro_rules! impl_try_from_string {
                         .map(|variant| format!("`{variant}`"))
                         .collect();
 
-                    let (last, rest) = variants
-                        .split_last()
-                        .expect("enum should have at least one variant");
+                    let Some((last, rest)) =
+                        variants.split_last()
+                    else {
+                        return "must be a valid value".to_owned();
+                    };
 
                     let parts: String = rest
                         .iter()

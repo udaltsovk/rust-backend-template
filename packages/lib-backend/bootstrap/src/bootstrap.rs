@@ -1,21 +1,20 @@
 use async_trait::async_trait;
 
 #[async_trait]
-pub trait Bootstrapper<M> {
+pub trait Bootstrapper {
     type Config: fromenv::__private::FromEnv;
+    type Modules: Send + Sync;
 
     async fn bootstrap(
         config: &Self::Config,
-        deps: &::entrait::Impl<M>,
+        deps: &::entrait::Impl<Self::Modules>,
     );
 }
 
 #[macro_export]
 macro_rules! bootstrap {
     ([], $_modules_fut: expr) => {
-      const {
-           panic!("`bootstrap!` can't be called with empty bootstrapper array!");
-      }
+       compile_error!("`bootstrap!` can't be called with empty bootstrapper array!")
     };
     ([$($bootstrapper: tt($config_field: expr)),*], $modules_fut: expr) => {
         async {

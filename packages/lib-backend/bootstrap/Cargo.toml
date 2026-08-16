@@ -1,11 +1,19 @@
 [package]
 name = "lib-bootstrap"
 version = "0.1.0"
+publish = false
 authors.workspace = true
 edition.workspace = true
 
 [features]
 allocator-secure = ["mimalloc/secure"]
+allocator-v2 = ["mimalloc/v2"]
+allocator-no-thp = ["mimalloc/no_thp"]
+allocator-local-dynamic-tls = ["mimalloc/local_dynamic_tls"]
+allocator-override = ["mimalloc/override"]
+allocator-extended = ["mimalloc/extended"]
+allocator-debug = ["mimalloc/debug"]
+allocator-debug-in-debug = ["mimalloc/debug_in_debug"]
 
 instrumentation = ["dep:instrumentation"]
 

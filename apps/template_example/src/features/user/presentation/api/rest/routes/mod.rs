@@ -12,10 +12,7 @@ pub mod profile;
 
 pub fn router<App>() -> OpenApiRouter<App>
 where
-    App: Application
-        + UserFeature
-        + GetSessionFromTokenUsecase,
+    App: Application + UserFeature + GetSessionFromTokenUsecase,
 {
-    OpenApiRouter::new()
-        .routes(routes!(profile::get_profile::<App>))
+    OpenApiRouter::new().routes(routes!(profile::get_profile::<App>))
 }

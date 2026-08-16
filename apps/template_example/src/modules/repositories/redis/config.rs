@@ -1,3 +1,8 @@
+#![expect(
+    clippy::expect_used,
+    reason = "startup path: failing fast here is intended"
+)]
+
 use std::fmt::Write as _;
 
 use fromenv::FromEnv;
@@ -43,11 +48,8 @@ impl From<&RedisConfig> for redis::Client {
 
             url
         }
-        .expect(
-            "url formatting should finish successfully",
-        );
+        .expect("url formatting should finish successfully");
 
-        Self::open(url)
-            .expect("redis client should open successfully")
+        Self::open(url).expect("redis client should open successfully")
     }
 }

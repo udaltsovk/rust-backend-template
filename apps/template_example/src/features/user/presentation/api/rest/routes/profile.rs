@@ -1,26 +1,19 @@
-use axum::{
-    extract::State, http::StatusCode,
-    response::IntoResponse,
-};
+use axum::{extract::State, http::StatusCode, response::IntoResponse};
 use lib::{
-    presentation::api::rest::{
-        errors::JsonError, response::ResponseExt as _,
-    },
+    presentation::api::rest::{errors::JsonError, response::ResponseExt as _},
     tap::{Conv as _, Pipe as _},
 };
 use tracing::instrument;
 
 use crate::{
     features::{
-        user_auth::presentation::api::rest::extractors::session::UserSession,
         user::{
             application::usecase::GetUserByIdUsecase,
             presentation::api::rest::dto::UserDto,
         },
+        user_auth::presentation::api::rest::extractors::session::UserSession,
     },
-    shared::presentation::api::rest::{
-        ApiError, B2C_TAG, extractors::Json,
-    },
+    shared::presentation::api::rest::{ApiError, B2C_TAG, extractors::Json},
 };
 
 #[utoipa::path(

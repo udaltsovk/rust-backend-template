@@ -13,6 +13,13 @@ use super::input_impls;
 #[derive(Clone, Copy)]
 pub struct ValidationConfirmation(());
 
+impl ValidationConfirmation {
+    #[must_use]
+    pub const fn new_unchecked() -> Self {
+        Self(())
+    }
+}
+
 #[derive(Default, PartialEq, Eq, Debug)]
 #[must_use]
 pub enum ExternalInput<T> {
@@ -108,9 +115,7 @@ macro_rules! input_impls {
                 use $input as I;
                 match self {
                     Self::$ok(value) => I::$ok(value),
-                    Self::$wrong_type(value) => {
-                        I::$wrong_type(value.clone())
-                    },
+                    Self::$wrong_type(value) => I::$wrong_type(value.clone()),
                     Self::$none => I::$none,
                     Self::$missing => I::$missing,
                 }
@@ -121,9 +126,7 @@ macro_rules! input_impls {
                 use $input as I;
                 match self {
                     Self::$ok(value) => I::$ok(value),
-                    Self::$wrong_type(value) => {
-                        I::$wrong_type(value.clone())
-                    },
+                    Self::$wrong_type(value) => I::$wrong_type(value.clone()),
                     Self::$none => I::$none,
                     Self::$missing => I::$missing,
                 }
@@ -137,9 +140,7 @@ macro_rules! input_impls {
                 use $input as I;
                 match self {
                     Self::$ok(value) => I::$ok(op(value)),
-                    Self::$wrong_type(value) => {
-                        I::$wrong_type(value)
-                    },
+                    Self::$wrong_type(value) => I::$wrong_type(value),
                     Self::$none => I::$none,
                     Self::$missing => I::$missing,
                 }
@@ -203,10 +204,7 @@ macro_rules! input_impls {
             }
 
             #[inline]
-            pub fn inspect_mismatched_type<F>(
-                self,
-                f: F,
-            ) -> Self
+            pub fn inspect_mismatched_type<F>(self, f: F) -> Self
             where
                 F: FnOnce(&$value),
             {
@@ -226,9 +224,7 @@ macro_rules! input_impls {
             }
 
             #[inline]
-            pub fn as_deref_mut(
-                &mut self,
-            ) -> $input<&mut T::Target>
+            pub fn as_deref_mut(&mut self) -> $input<&mut T::Target>
             where
                 T: std::ops::DerefMut,
             {
@@ -236,16 +232,11 @@ macro_rules! input_impls {
             }
 
             #[inline]
-            pub fn and<U>(
-                self,
-                inp: $input<U>,
-            ) -> $input<U> {
+            pub fn and<U>(self, inp: $input<U>) -> $input<U> {
                 use $input as I;
                 match self {
                     Self::$ok(_) => inp,
-                    Self::$wrong_type(value) => {
-                        I::$wrong_type(value)
-                    },
+                    Self::$wrong_type(value) => I::$wrong_type(value),
                     Self::$none => I::$none,
                     Self::$missing => I::$missing,
                 }
@@ -259,9 +250,7 @@ macro_rules! input_impls {
                 use $input as I;
                 match self {
                     Self::$ok(value) => op(value),
-                    Self::$wrong_type(value) => {
-                        I::$wrong_type(value)
-                    },
+                    Self::$wrong_type(value) => I::$wrong_type(value),
                     Self::$none => I::$none,
                     Self::$missing => I::$missing,
                 }
@@ -317,13 +306,9 @@ macro_rules! input_impls {
             pub fn transpose(self) -> Option<$input<T>> {
                 use $input as I;
                 match self {
-                    Self::$ok(Some(value)) => {
-                        Some(I::$ok(value))
-                    },
+                    Self::$ok(Some(value)) => Some(I::$ok(value)),
                     Self::$ok(None) => None,
-                    Self::$wrong_type(value) => {
-                        Some(I::$wrong_type(value))
-                    },
+                    Self::$wrong_type(value) => Some(I::$wrong_type(value)),
                     Self::$none => Some(I::$none),
                     Self::$missing => Some(I::$missing),
                 }
@@ -341,16 +326,10 @@ macro_rules! input_impls {
         }
 
         impl<T> From<Option<Option<T>>> for $input<T> {
-            fn from(
-                double_option: Option<Option<T>>,
-            ) -> Self {
-                double_option.map_or(
-                    Self::$missing,
-                    |option| {
-                        option
-                            .map_or(Self::$none, Self::$ok)
-                    },
-                )
+            fn from(double_option: Option<Option<T>>) -> Self {
+                double_option.map_or(Self::$missing, |option| {
+                    option.map_or(Self::$none, Self::$ok)
+                })
             }
         }
     };

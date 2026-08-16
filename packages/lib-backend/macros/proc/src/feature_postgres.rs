@@ -30,11 +30,8 @@ fn file_name(path: &Path) -> Result<&str> {
         })
 }
 
-fn postgres_dir_from_invocation(
-    invocation_file: &Path,
-) -> Result<PathBuf> {
-    let path =
-        invocation_file.parent().unwrap_or(invocation_file);
+fn postgres_dir_from_invocation(invocation_file: &Path) -> Result<PathBuf> {
+    let path = invocation_file.parent().unwrap_or(invocation_file);
 
     if file_stem(invocation_file)? == "postgres" {
         let postgres_dir = path.join("postgres");
@@ -46,16 +43,14 @@ fn postgres_dir_from_invocation(
 
     path.ancestors()
         .find(|ancestor| {
-            ancestor
-                .file_name()
-                .is_some_and(|part| part == "postgres")
+            ancestor.file_name().is_some_and(|part| part == "postgres")
         })
         .map(Path::to_path_buf)
         .ok_or_else(|| {
             syn::Error::new(
                 Span::call_site(),
-                "postgres SQL macros must be called from \
-                 inside a `postgres` module tree",
+                "postgres SQL macros must be called from inside a `postgres` \
+                 module tree",
             )
         })
 }
@@ -63,19 +58,14 @@ fn postgres_dir_from_invocation(
 fn path_from_src(path: &Path) -> Result<String> {
     let components = path
         .components()
-        .skip_while(|component| {
-            component.as_os_str() != "src"
-        })
-        .map(|component| {
-            component.as_os_str().to_string_lossy()
-        })
+        .skip_while(|component| component.as_os_str() != "src")
+        .map(|component| component.as_os_str().to_string_lossy())
         .collect::<Vec<_>>();
 
     if components.is_empty() {
         return Err(syn::Error::new(
             Span::call_site(),
-            "could not derive a crate-relative path \
-             starting at `src`",
+            "could not derive a crate-relative path starting at `src`",
         ));
     }
 
@@ -94,16 +84,13 @@ fn query_dir_from_invocation(
         .and_then(|name| name.to_str());
 
     if file_name == "repository.rs"
-        || (file_name == "mod.rs"
-            && parent_name == Some("repository"))
+        || (file_name == "mod.rs" && parent_name == Some("repository"))
     {
         return Ok(postgres_dir.join("query"));
     }
 
     if parent_name == Some("repository") {
-        return Ok(postgres_dir
-            .join("query")
-            .join(file_stem));
+        return Ok(postgres_dir.join("query").join(file_stem));
     }
 
     Ok(postgres_dir.join("query"))
@@ -120,8 +107,7 @@ pub fn feature_postgres_migrator2(
         ));
     }
 
-    let postgres_dir =
-        postgres_dir_from_invocation(invocation_file)?;
+    let postgres_dir = postgres_dir_from_invocation(invocation_file)?;
     let migration_dir = postgres_dir.join("migration");
 
     let path = LitStr::new(
@@ -173,18 +159,11 @@ pub fn feature_postgres_query_file_as2(
         args,
     } = syn::parse2(input)?;
 
-    let postgres_dir =
-        postgres_dir_from_invocation(invocation_file)?;
-    let query_dir = query_dir_from_invocation(
-        invocation_file,
-        &postgres_dir,
-    )?;
+    let postgres_dir = postgres_dir_from_invocation(invocation_file)?;
+    let query_dir = query_dir_from_invocation(invocation_file, &postgres_dir)?;
     let query_path = query_dir.join(file.value());
 
-    let path = LitStr::new(
-        &path_from_src(&query_path)?,
-        Span::call_site(),
-    );
+    let path = LitStr::new(&path_from_src(&query_path)?, Span::call_site());
 
     let args = args.into_iter().collect::<Vec<_>>();
 

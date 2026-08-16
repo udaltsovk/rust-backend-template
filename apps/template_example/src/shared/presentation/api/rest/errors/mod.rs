@@ -1,20 +1,18 @@
 use std::fmt::Debug;
 
 use axum::{
-    extract::rejection::{JsonRejection, PathRejection},
+    extract::rejection::JsonRejection,
     http::StatusCode,
     response::{IntoResponse, Response},
 };
 use lib::presentation::api::rest::errors::{
-    InternalErrorStringExt as _, JsonError,
-    validation::FieldErrors,
+    InternalErrorStringExt as _, JsonError, validation::FieldErrors,
 };
 use serde_json::Value;
 use tracing::{error, warn};
 
 pub use self::{
-    bad_request::BadRequestResponse,
-    validation::ValidationFailedResponse,
+    bad_request::BadRequestResponse, validation::ValidationFailedResponse,
 };
 
 mod bad_request;
@@ -27,12 +25,6 @@ pub enum ApiError {
 
     #[error(transparent)]
     JsonRejection(#[from] JsonRejection),
-
-    #[error(transparent)]
-    ApiPathRejection(#[from] PathRejection),
-
-    #[error("{0}")]
-    UnknownApiVerRejection(String),
 
     #[error("{message}")]
     UseCase {
@@ -64,10 +56,7 @@ impl ApiError {
 impl ApiError {
     fn log(&self) {
         match self {
-            Self::Validation(_)
-            | Self::JsonRejection(_)
-            | Self::ApiPathRejection(_)
-            | Self::UnknownApiVerRejection(_) => {
+            Self::Validation(_) | Self::JsonRejection(_) => {
                 warn!("{self:?}");
             },
 
@@ -91,40 +80,21 @@ impl IntoResponse for ApiError {
         self.log();
         match self {
             Self::Validation(validation_errors) => {
-                ValidationFailedResponse::from(
-                    validation_errors,
-                )
-                .into()
+                ValidationFailedResponse::from(validation_errors).into()
             },
             Self::JsonRejection(rejection) => {
                 BadRequestResponse::from(rejection).into()
-            },
-            Self::ApiPathRejection(rejection) => {
-                BadRequestResponse::from(rejection).into()
-            },
-            Self::UnknownApiVerRejection(version) => {
-                JsonError::new(
-                    StatusCode::NOT_FOUND,
-                    "unknown_api_version",
-                    format!(
-                        "Unknown api version ({version})."
-                    ),
-                )
             },
             Self::UseCase {
                 status_code,
                 error_code,
                 message: error,
                 details,
-            } => JsonError::with_details(
+            } => JsonError::with_value_details(
                 status_code,
                 error_code,
                 error,
                 details,
-            )
-            .expect(
-                "details from value should serialize \
-                 successfully",
             ),
         }
         .into_response()

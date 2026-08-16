@@ -4,9 +4,7 @@ use lib::{
     application::di::Has,
     async_trait,
     domain::{DomainType, Id},
-    infrastructure::persistence::{
-        HasPoolExt as _, sqlx::SqlxPool,
-    },
+    infrastructure::persistence::{HasPoolExt as _, SqlxPool},
     instrument_all, query_file_as,
     tap::{Conv as _, Pipe as _},
 };
@@ -17,8 +15,7 @@ use crate::{
         application::repository::UserRepositoryImpl,
         domain::{CreateUser, User},
         infrastructure::persistence::postgres::entity::{
-            StoredUser,
-            target_settings::StoredUserTargetSettings,
+            StoredUser, target_settings::StoredUserTargetSettings,
         },
     },
     shared::{
@@ -47,8 +44,7 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
         let surname = source.surname.into_inner();
         let email = source.email.into_inner();
         let password_hash = password_hash.0.expose_secret();
-        let avatar_url =
-            source.avatar_url.map(DomainType::into_inner);
+        let avatar_url = source.avatar_url.map(DomainType::into_inner);
         let target_settings: StoredUserTargetSettings =
             source.target_settings.into();
 
@@ -78,15 +74,11 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
     {
         let mut connection = app.get_connection().await?;
 
-        query_file_as!(
-            StoredUser,
-            "find_by_id.sql",
-            id.value
-        )
-        .fetch_optional(&mut *connection)
-        .await?
-        .map(User::from)
-        .pipe(Ok)
+        query_file_as!(StoredUser, "find_by_id.sql", id.value)
+            .fetch_optional(&mut *connection)
+            .await?
+            .map(User::from)
+            .pipe(Ok)
     }
 
     async fn find_user_by_email<App>(
@@ -98,14 +90,10 @@ impl UserRepositoryImpl for PostgresRepositoryImpl {
     {
         let mut connection = app.get_connection().await?;
 
-        query_file_as!(
-            StoredUser,
-            "find_by_email.sql",
-            email.as_ref()
-        )
-        .fetch_optional(&mut *connection)
-        .await?
-        .map(User::from)
-        .pipe(Ok)
+        query_file_as!(StoredUser, "find_by_email.sql", email.as_ref())
+            .fetch_optional(&mut *connection)
+            .await?
+            .map(User::from)
+            .pipe(Ok)
     }
 }

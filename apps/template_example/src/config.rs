@@ -1,10 +1,7 @@
 use fromenv::FromEnv;
 use lib::bootstrap::instrumentation::opentelemetry::OtelConfig;
 
-use crate::{
-    bootstrappers::api::rest::RestApiConfig,
-    modules::ModulesConfig,
-};
+use crate::{bootstrappers::api::rest::RestApiConfig, modules::ModulesConfig};
 
 #[derive(FromEnv)]
 pub struct AppConfig {

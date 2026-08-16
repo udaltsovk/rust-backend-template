@@ -4,16 +4,14 @@ use axum::{
     extract::ConnectInfo,
     http::{self, uri::PathAndQuery},
 };
+#[cfg(feature = "opentelemetry")]
 use opentelemetry::trace::SpanKind;
 use tower_http::trace::MakeSpan;
 use tracing::{Level, field::Empty};
-use tracing_otel_extra::{
-    dyn_span,
-    extract::{context, fields},
-};
-use tracing_subscriber::{
-    Registry, registry::LookupSpan as _,
-};
+#[cfg(feature = "opentelemetry")]
+use tracing_otel_extra::extract::context;
+use tracing_otel_extra::{dyn_span, extract::fields};
+use tracing_subscriber::{Registry, registry::LookupSpan as _};
 use uuid::Uuid;
 
 use crate::errors::RequestMeta;
@@ -45,64 +43,72 @@ impl Default for AxumOtelSpanCreator {
 }
 
 impl<B> MakeSpan<B> for AxumOtelSpanCreator {
-    fn make_span(
-        &mut self,
-        request: &http::Request<B>,
-    ) -> tracing::Span {
+    fn make_span(&mut self, request: &http::Request<B>) -> tracing::Span {
+        #[cfg(feature = "opentelemetry")]
         let http_method = request.method().as_str();
         let http_route = request.uri().clone();
 
-        let request_id =
-            fields::extract_request_id(request)
-                .map(Uuid::from_str)
-                .transpose()
-                .expect("uuid from fields should be valid")
-                .expect("request id should be present");
+        let request_id = fields::extract_request_id(request)
+            .and_then(|value| Uuid::from_str(value).ok())
+            .unwrap_or_else(Uuid::now_v7);
 
         let client_ip = request
             .extensions()
             .get::<ConnectInfo<SocketAddr>>()
-            .map(|ConnectInfo(ip)| {
-                tracing::field::debug(ip)
-            });
+            .map(|ConnectInfo(ip)| tracing::field::debug(ip));
 
-        let span_name =
-            format!("{http_method} {http_route}");
+        #[cfg(feature = "opentelemetry")]
+        let span_name = format!("{http_method} {http_route}");
 
-        let span = dyn_span!(
-            self.level,
-            "request",
-            http.client_ip = client_ip,
-            http.versions = ?request.version(),
-            http.host = ?fields::extract_host(request),
-            http.method = ?fields::extract_http_method(request),
-            http.route = http_route.to_string(),
-            http.scheme = ?fields::extract_http_scheme(request),
-            http.status_code = Empty,
-            http.target = request.uri().path_and_query().map(PathAndQuery::as_str),
-            http.user_agent = ?fields::extract_user_agent(request),
-            otel.name = span_name,
-            otel.kind = ?SpanKind::Server,
-            otel.status_code = Empty,
-            request_id = %request_id,
-            trace_id = Empty
-        );
+        let span = cfg_select! {
+            feature = "opentelemetry" => dyn_span!(
+                self.level,
+                "request",
+                http.client_ip = client_ip,
+                http.versions = ?request.version(),
+                http.host = ?fields::extract_host(request),
+                http.method = ?fields::extract_http_method(request),
+                http.route = http_route.to_string(),
+                http.scheme = ?fields::extract_http_scheme(request),
+                http.status_code = Empty,
+                http.target = request.uri().path_and_query().map(PathAndQuery::as_str),
+                http.user_agent = ?fields::extract_user_agent(request),
+                otel.name = span_name,
+                otel.kind = ?SpanKind::Server,
+                otel.status_code = Empty,
+                request_id = %request_id,
+                trace_id = Empty
+            ),
+            _ => dyn_span!(
+                self.level,
+                "request",
+                http.client_ip = client_ip,
+                http.versions = ?request.version(),
+                http.host = ?fields::extract_host(request),
+                http.method = ?fields::extract_http_method(request),
+                http.route = http_route.to_string(),
+                http.scheme = ?fields::extract_http_scheme(request),
+                http.status_code = Empty,
+                http.target = request.uri().path_and_query().map(PathAndQuery::as_str),
+                http.user_agent = ?fields::extract_user_agent(request),
+                request_id = %request_id
+            ),
+        };
 
         span.with_subscriber(|(id, subscriber)| {
-            if let Some(registry) =
-                subscriber.downcast_ref::<Registry>()
+            if let Some(registry) = subscriber.downcast_ref::<Registry>()
                 && let Some(span_ref) = registry.span(id)
             {
-                span_ref.extensions_mut().insert(
-                    RequestMeta {
-                        http_route,
-                        request_id: Some(request_id),
-                    },
-                );
+                span_ref.extensions_mut().insert(RequestMeta {
+                    http_route,
+                    request_id: Some(request_id),
+                });
             }
         });
 
+        #[cfg(feature = "opentelemetry")]
         context::set_otel_parent(request.headers(), &span);
+
         span
     }
 }

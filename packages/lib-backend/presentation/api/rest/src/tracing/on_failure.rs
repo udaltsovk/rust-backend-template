@@ -1,6 +1,4 @@
-use tower_http::{
-    classify::ServerErrorsFailureClass, trace::OnFailure,
-};
+use tower_http::{classify::ServerErrorsFailureClass, trace::OnFailure};
 use tracing::Level;
 use tracing_otel_extra::dyn_event;
 
@@ -32,9 +30,7 @@ impl AxumOtelOnFailure {
     }
 }
 
-impl OnFailure<ServerErrorsFailureClass>
-    for AxumOtelOnFailure
-{
+impl OnFailure<ServerErrorsFailureClass> for AxumOtelOnFailure {
     #[expect(
         clippy::cognitive_complexity,
         reason = "I don't think it is really that complex"
@@ -45,8 +41,7 @@ impl OnFailure<ServerErrorsFailureClass>
         latency: std::time::Duration,
         span: &tracing::Span,
     ) {
-        let http_route = http_route(span)
-            .unwrap_or_else(|| "unknown".into());
+        let http_route = http_route(span).unwrap_or_else(|| "unknown".into());
 
         dyn_event!(
             self.level,
@@ -56,9 +51,10 @@ impl OnFailure<ServerErrorsFailureClass>
             "response failed"
         );
         match failure_classification {
-            ServerErrorsFailureClass::StatusCode(
-                status,
-            ) if status.is_server_error() => {
+            ServerErrorsFailureClass::StatusCode(status)
+                if status.is_server_error() =>
+            {
+                #[cfg(feature = "opentelemetry")]
                 span.record("otel.status_code", "ERROR");
             },
             _ => {},

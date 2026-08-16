@@ -1,6 +1,11 @@
+#![expect(
+    clippy::expect_used,
+    reason = "startup path: failing fast here is intended"
+)]
+
 use std::net::SocketAddr;
 
-use axum::Router;
+use axum::{Router, middleware::from_fn_with_state};
 use tokio::{net::TcpListener, signal};
 use tower::ServiceBuilder;
 use tower_http::{
@@ -13,17 +18,19 @@ use {
     axum::{Json, routing::get},
     utoipa::openapi::OpenApi,
     utoipa_scalar::{
-        Scalar, ScalarConfig, ScalarMcp,
-        ScalarShowDeveloperTools, ScalarTheme,
+        Scalar, ScalarConfig, ScalarMcp, ScalarShowDeveloperTools, ScalarTheme,
     },
 };
 
 use super::{
+    errors::envelope::ErrorEnvelope,
+    mask::{self, ServerErrorMasking},
+    negotiate::{self, BodyEncoder, ResponseFormat},
     panic_handler::PanicHandler,
+    request_id::{self, RequestIdPolicy},
     routes::{fallback_404, fallback_405},
     tracing::{
-        AxumOtelOnFailure, AxumOtelOnResponse,
-        AxumOtelSpanCreator, Level,
+        AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator, Level,
     },
 };
 
@@ -34,6 +41,9 @@ where
     pub router: Router<M>,
     pub cors: CorsLayer,
     pub modules: M,
+    pub response_format: ResponseFormat,
+    pub request_id_policy: RequestIdPolicy,
+    pub mask_server_errors: ServerErrorMasking,
     #[cfg(feature = "openapi")]
     pub openapi: Option<OpenApi>,
 }
@@ -42,26 +52,64 @@ impl<M> RestApiBuilder<M>
 where
     M: Send + Sync + Clone + 'static,
 {
-    pub fn new(
-        router: Router<M>,
-        cors: CorsLayer,
-        modules: &M,
-    ) -> Self {
+    pub fn new(router: Router<M>, modules: &M) -> Self {
         Self {
             router,
-            cors,
+            cors: CorsLayer::new(),
             modules: modules.clone(),
+            response_format: ResponseFormat::default(),
+            request_id_policy: RequestIdPolicy::default(),
+            mask_server_errors: ServerErrorMasking::Disabled,
             #[cfg(feature = "openapi")]
             openapi: None,
         }
     }
 
+    #[must_use]
+    pub fn with_cors(mut self, cors: CorsLayer) -> Self {
+        self.cors = cors;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_request_id_policy(
+        mut self,
+        policy: RequestIdPolicy,
+    ) -> Self {
+        self.request_id_policy = policy;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_masked_server_errors(
+        mut self,
+        masking: ServerErrorMasking,
+    ) -> Self {
+        self.mask_server_errors = masking;
+        self
+    }
+
+    #[must_use]
+    pub fn with_envelope<E>(mut self, envelope: E) -> Self
+    where
+        E: ErrorEnvelope,
+    {
+        self.response_format = ResponseFormat::new(envelope);
+        self
+    }
+
+    #[must_use]
+    pub fn with_encoders(
+        mut self,
+        encoders: Vec<Box<dyn BodyEncoder>>,
+    ) -> Self {
+        self.response_format = self.response_format.encoders(encoders);
+        self
+    }
+
     #[cfg(feature = "openapi")]
     #[must_use]
-    pub fn with_openapi(
-        mut self,
-        openapi: OpenApi,
-    ) -> Self {
+    pub fn with_openapi(mut self, openapi: OpenApi) -> Self {
         self.openapi = Some(openapi);
         self
     }
@@ -72,12 +120,10 @@ where
 
     pub fn build(self) -> RestApi {
         #[cfg(feature = "openapi")]
-        let mut router =
-            Self::router(self.router, self.modules);
+        let mut router = Self::router(self.router, self.modules);
 
         #[cfg(not(feature = "openapi"))]
-        let router =
-            Self::router(self.router, self.modules);
+        let router = Self::router(self.router, self.modules);
 
         #[cfg(feature = "openapi")]
         if let Some(openapi) = self.openapi {
@@ -89,32 +135,30 @@ where
                     ScalarConfig::builder()
                         .dark_mode(true)
                         .theme(ScalarTheme::Mars)
-                        .show_developer_tools(
-                            ScalarShowDeveloperTools::Never,
-                        )
+                        .show_developer_tools(ScalarShowDeveloperTools::Never)
                         .mcp(ScalarMcp::Disabled)
                         .build(),
                 ))
-                .route(
-                    "/openapi.json",
-                    get(async move || openapi_json),
-                );
+                .route("/openapi.json", get(async move || openapi_json));
         }
 
         let middlewares = ServiceBuilder::new()
-            .layer(SetRequestIdLayer::x_request_id(
-                MakeRequestUuid,
+            .layer(from_fn_with_state(self.response_format, negotiate::apply))
+            .layer(from_fn_with_state(
+                self.mask_server_errors,
+                mask::server_errors_if,
+            ))
+            .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
+            .layer(from_fn_with_state(
+                self.request_id_policy,
+                request_id::enforce,
             ))
             .layer(
                 TraceLayer::new_for_http()
                     .make_span_with(
-                        AxumOtelSpanCreator::new()
-                            .level(Level::INFO),
+                        AxumOtelSpanCreator::new().level(Level::INFO),
                     )
-                    .on_response(
-                        AxumOtelOnResponse::new()
-                            .level(Level::INFO),
-                    )
+                    .on_response(AxumOtelOnResponse::new().level(Level::INFO))
                     .on_failure(AxumOtelOnFailure::new()),
             )
             .layer(self.cors)
@@ -136,15 +180,11 @@ pub struct RestApi {
 }
 
 impl RestApi {
-    pub fn builder<M>(
-        router: Router<M>,
-        cors: CorsLayer,
-        modules: &M,
-    ) -> RestApiBuilder<M>
+    pub fn builder<M>(router: Router<M>, modules: &M) -> RestApiBuilder<M>
     where
         M: Send + Sync + Clone + 'static,
     {
-        RestApiBuilder::new(router, cors, modules)
+        RestApiBuilder::new(router, modules)
     }
 
     #[must_use]
@@ -160,26 +200,18 @@ impl RestApi {
     }
 
     pub async fn serve(self, listener: TcpListener) {
-        self.serve_with_shutdown(
-            listener,
-            Self::shutdown_signal(),
-        )
-        .await;
+        self.serve_with_shutdown(listener, Self::shutdown_signal())
+            .await;
     }
 
-    pub async fn serve_with_shutdown<F>(
-        self,
-        listener: TcpListener,
-        signal: F,
-    ) where
-        F: std::future::Future<Output = ()>
-            + Send
-            + 'static,
+    pub async fn serve_with_shutdown<F>(self, listener: TcpListener, signal: F)
+    where
+        F: std::future::Future<Output = ()> + Send + 'static,
     {
         let app = self.router.into_make_service();
-        let addr = listener.local_addr().expect(
-            "TcpListener must have a local address.",
-        );
+        let addr = listener
+            .local_addr()
+            .expect("TcpListener must have a local address.");
         tracing::info!("Server is listening on {}", addr);
 
         axum::serve(listener, app)
@@ -197,12 +229,10 @@ impl RestApi {
 
         #[cfg(unix)]
         let terminate = async {
-            signal::unix::signal(
-                signal::unix::SignalKind::terminate(),
-            )
-            .expect("failed to install signal handler")
-            .recv()
-            .await;
+            signal::unix::signal(signal::unix::SignalKind::terminate())
+                .expect("failed to install signal handler")
+                .recv()
+                .await;
         };
 
         #[cfg(not(unix))]

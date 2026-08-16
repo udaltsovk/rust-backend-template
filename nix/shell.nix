@@ -23,6 +23,8 @@
         cargo-features-manager
 
         cargo-audit
+        cargo-deny
+        cargo-outdated
 
         cargo-expand
       ];

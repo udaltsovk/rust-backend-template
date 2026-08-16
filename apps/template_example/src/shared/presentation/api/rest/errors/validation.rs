@@ -4,7 +4,6 @@ use lib::presentation::api::rest::{
 };
 
 validation_error_response!(
-    /// поля не прошли валидацию
     name = ValidationFailedResponse,
     error_code = "VALIDATION_FAILED",
     status_code = UNPROCESSABLE_ENTITY,
@@ -12,9 +11,6 @@ validation_error_response!(
 
 impl From<FieldErrors> for ValidationFailedResponse {
     fn from(errors: FieldErrors) -> Self {
-        Self::new(
-            "Some fields haven't passed validation",
-            errors,
-        )
+        Self::new("Some fields haven't passed validation", errors)
     }
 }

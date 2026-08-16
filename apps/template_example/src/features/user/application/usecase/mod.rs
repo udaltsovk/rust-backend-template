@@ -1,15 +1,10 @@
 use lib::{application::application_result, domain::Id};
 
 pub use self::{
-    authorize::AuthorizeUserUsecase,
-    create::CreateUserUsecase,
-    find_by_id::FindUserByIdUsecase,
-    get_by_id::GetUserByIdUsecase,
+    authorize::AuthorizeUserUsecase, create::CreateUserUsecase,
+    find_by_id::FindUserByIdUsecase, get_by_id::GetUserByIdUsecase,
 };
-use crate::{
-    features::user::domain::User,
-    shared::domain::email::Email,
-};
+use crate::{features::user::domain::User, shared::domain::email::Email};
 
 mod authorize;
 mod create;

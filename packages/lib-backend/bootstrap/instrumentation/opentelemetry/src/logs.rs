@@ -1,99 +1,46 @@
-use std::{ops::Deref as _, sync::Arc};
+#![expect(
+    clippy::expect_used,
+    reason = "startup path: failing fast here is intended"
+)]
 
 use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
-#[cfg(any(
-    feature = "grpc-tonic",
-    feature = "http-proto",
-    feature = "http-json",
-))]
 use opentelemetry_otlp::LogExporter;
 use opentelemetry_sdk::logs::{
-    BatchLogProcessor, LogProcessor, SdkLogger,
-    SdkLoggerProvider,
+    BatchLogProcessor, LogProcessor, SdkLogger, SdkLoggerProvider,
 };
-use tap::Pipe as _;
 
-use crate::Otel;
+use crate::{Otel, Providers};
 
 impl Otel {
-    pub(super) fn get_logger_provider(
-        &self,
-    ) -> SdkLoggerProvider {
-        self.logger_provider
-            .clone()
-            .expect(
-                "Called `Otel::get_logger_provider` too \
-                 early",
-            )
-            .deref()
-            .clone()
-    }
-
     #[inline]
     fn log_processor(&self) -> impl LogProcessor + 'static {
-        let exporter = {
-            #[cfg(feature = "grpc-tonic")]
-            {
-                self.with_export_config(
-                    LogExporter::builder().with_tonic(),
-                )
-                .build()
-                .expect("Failed to build exporter!")
-            }
+        let builder = LogExporter::builder();
 
-            #[cfg(all(
-                not(feature = "grpc-tonic"),
-                any(
-                    feature = "http-proto",
-                    feature = "http-json",
-                )
-            ))]
-            {
-                self.with_export_config(
-                    LogExporter::builder().with_http(),
-                )
-                .build()
-                .expect("Failed to build exporter!")
-            }
-
-            #[cfg(not(any(
-                feature = "grpc-tonic",
-                feature = "http-proto",
-                feature = "http-json",
-            )))]
-            {
-                panic!(
-                    "No OpenTelemetry protocol selected!"
-                );
-            }
-        };
+        let exporter = self
+            .with_export_config(cfg_select! {
+                feature = "grpc-tonic" => builder.with_tonic(),
+                _ => builder.with_http(),
+            })
+            .build()
+            .expect("Failed to build exporter!");
 
         BatchLogProcessor::builder(exporter).build()
     }
 
     #[inline]
-    pub(super) fn configure_logger_provider(
-        mut self,
-    ) -> Self {
-        self.logger_provider = SdkLoggerProvider::builder()
+    pub(super) fn logger_provider(&self) -> SdkLoggerProvider {
+        SdkLoggerProvider::builder()
             .with_resource(self.resource.clone())
             .with_log_processor(self.log_processor())
             .build()
-            .pipe(Arc::new)
-            .pipe(Some);
-
-        self
     }
+}
 
+impl Providers {
     #[inline]
     pub(super) fn log_layer(
         &self,
-    ) -> OpenTelemetryTracingBridge<
-        SdkLoggerProvider,
-        SdkLogger,
-    > {
-        OpenTelemetryTracingBridge::new(
-            &self.get_logger_provider(),
-        )
+    ) -> OpenTelemetryTracingBridge<SdkLoggerProvider, SdkLogger> {
+        OpenTelemetryTracingBridge::new(&self.logger)
     }
 }

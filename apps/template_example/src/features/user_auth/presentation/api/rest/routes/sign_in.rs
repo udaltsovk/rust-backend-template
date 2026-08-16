@@ -1,7 +1,4 @@
-use axum::{
-    extract::State, http::StatusCode,
-    response::IntoResponse,
-};
+use axum::{extract::State, http::StatusCode, response::IntoResponse};
 use lib::{
     presentation::api::rest::{
         errors::JsonError, response::ResponseExt as _,
@@ -23,8 +20,7 @@ use crate::{
         },
     },
     shared::presentation::api::rest::{
-        ApiError, B2C_TAG, errors::BadRequestResponse,
-        extractors::Json,
+        ApiError, B2C_TAG, errors::BadRequestResponse, extractors::Json,
     },
 };
 

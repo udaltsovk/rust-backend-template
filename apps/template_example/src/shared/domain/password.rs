@@ -19,17 +19,12 @@ use super::constraints::PASSWORD_CONSTRAINTS;
 pub struct Password(Secret<String>);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> =
-    LazyLock::new(|| {
-        Constraints::builder_with(&PASSWORD_CONSTRAINTS)
-            .build()
-    });
+    LazyLock::new(|| Constraints::builder_with(&PASSWORD_CONSTRAINTS).build());
 
 impl TryFrom<Secret<String>> for Password {
     type Error = ValidationErrors;
 
-    fn try_from(
-        value: Secret<String>,
-    ) -> ValidationResult<Self> {
+    fn try_from(value: Secret<String>) -> ValidationResult<Self> {
         CONSTRAINTS
             .check(value.expose_secret())
             .into_result(|_| Self(value))

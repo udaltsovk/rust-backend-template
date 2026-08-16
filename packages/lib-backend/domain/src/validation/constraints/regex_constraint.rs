@@ -1,15 +1,13 @@
-use bon::Builder;
+use macros::{constraint, constraint_check};
 use regex::Regex;
 
-use super::Constraint;
+use super::{Constraint, Validation};
 
-#[derive(Builder)]
-#[builder(derive(Clone), start_fn = with_err)]
+#[constraint]
 pub struct Matches<T>
 where
     T: ToString,
 {
-    #[builder(start_fn)]
     err_fn: fn(&T, &Regex) -> String,
     regex: Regex,
 }
@@ -23,24 +21,18 @@ where
     pub fn try_regex(
         self,
         regex: &str,
-    ) -> Result<
-        MatchesBuilder<T, matches_builder::SetRegex<S>>,
-        regex::Error,
-    > {
-        Regex::try_from(regex)
-            .map(|regex| self.regex(regex))
+    ) -> Result<MatchesBuilder<T, matches_builder::SetRegex<S>>, regex::Error>
+    {
+        Regex::try_from(regex).map(|regex| self.regex(regex))
     }
 }
 
-impl<T> Constraint<T> for Matches<T>
+#[constraint_check(T)]
+impl<T> Matches<T>
 where
     T: ToString,
 {
-    fn check(&self, value: &T) -> bool {
+    fn is_valid(&self, value: &T) -> bool {
         self.regex.is_match(&value.to_string())
-    }
-
-    fn error_msg(&self, rejected_value: &T) -> String {
-        (self.err_fn)(rejected_value, &self.regex)
     }
 }

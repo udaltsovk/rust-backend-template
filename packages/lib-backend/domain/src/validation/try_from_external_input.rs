@@ -1,27 +1,14 @@
-use std::{
-    any::type_name,
-    collections::HashMap,
-    sync::{LazyLock, RwLock},
-};
+use std::any::type_name;
 
-static TYPE_NAMES: LazyLock<
-    RwLock<HashMap<&'static str, &'static str>>,
-> = LazyLock::new(|| RwLock::new(HashMap::new()));
-
+#[must_use]
 pub fn get_type_name<T>() -> &'static str {
     let type_name = type_name::<T>();
-    TYPE_NAMES
-        .write()
-        .expect("RwLock should not be poisoned")
-        .entry(type_name)
-        .or_insert_with(|| {
-            type_name
-                .split_once('<')
-                .map_or(type_name, |(path, _)| path)
-                .split("::")
-                .last()
-                .unwrap_or(type_name)
-        })
+    type_name
+        .split_once('<')
+        .map_or(type_name, |(path, _)| path)
+        .split("::")
+        .last()
+        .unwrap_or(type_name)
 }
 
 // TODO: make this a derive macro

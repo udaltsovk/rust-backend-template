@@ -5,6 +5,7 @@ use axum::{
 };
 use chrono::{DateTime, Utc};
 use serde::Serialize;
+use serde_json::Value;
 use tracing::Span;
 use tracing_subscriber::registry::LookupSpan as _;
 #[cfg(feature = "openapi")]
@@ -12,10 +13,12 @@ use utoipa::ToSchema;
 use uuid::Uuid;
 
 use self::{
+    envelope::{DefaultEnvelope, ErrorData, ErrorEnvelope as _},
     generic::GenericJsonError,
     validation::ValidationJsonError,
 };
 
+pub mod envelope;
 pub mod generic;
 pub mod validation;
 
@@ -56,8 +59,7 @@ pub struct JsonErrorStruct {
 impl JsonErrorStruct {
     #[expect(
         clippy::needless_pass_by_value,
-        reason = "we may pass &str here and then &M won't \
-                  work"
+        reason = "we may pass &str here and then &M won't work"
     )]
     pub fn new<S, M>(
         status_code: S,
@@ -82,10 +84,9 @@ impl JsonErrorStruct {
             }
         });
 
-        let http_route = http_route_option
-            .unwrap_or_else(|| Uri::from_static("unknown"));
-        let request_id =
-            request_id_option.unwrap_or(Uuid::nil());
+        let http_route =
+            http_route_option.unwrap_or_else(|| Uri::from_static("unknown"));
+        let request_id = request_id_option.unwrap_or(Uuid::nil());
 
         Self {
             status_code: status_code.into(),
@@ -103,12 +104,10 @@ impl JsonError {
     pub const fn inner_struct(&self) -> &JsonErrorStruct {
         match self {
             Self::Generic(GenericJsonError {
-                error,
-                ..
+                error, ..
             })
             | Self::Validation(ValidationJsonError {
-                error,
-                ..
+                error, ..
             }) => error,
         }
     }
@@ -116,20 +115,42 @@ impl JsonError {
 
 impl IntoResponse for JsonError {
     fn into_response(self) -> Response {
-        (self.inner_struct().status_code, Json(self))
-            .into_response()
+        static NO_DETAILS: Value = Value::Null;
+
+        let (details, field_errors) = match &self {
+            Self::Generic(generic) => (&generic.details, [].as_slice()),
+            Self::Validation(validation) => {
+                (&NO_DETAILS, validation.field_errors.as_slice())
+            },
+        };
+
+        let inner = self.inner_struct();
+        let status_code = inner.status_code;
+
+        let data = ErrorData {
+            status_code,
+            error_code: inner.error_code,
+            message: inner.message.clone(),
+            trace_id: inner.trace_id,
+            timestamp: inner.timestamp,
+            path: inner.path.clone(),
+            details: details.clone(),
+            field_errors: field_errors.to_vec(),
+        };
+
+        let body = DefaultEnvelope::default().render(&data);
+
+        let mut response = (status_code, Json(&body)).into_response();
+
+        response.extensions_mut().insert(data);
+
+        response
     }
 }
 
 pub trait InternalErrorStringExt: ToString + Sized {
-    fn to_internal_error_string(
-        self,
-        public: &'static str,
-    ) -> String {
-        self.to_internal_error_string_with_debug(
-            cfg!(debug_assertions),
-            public,
-        )
+    fn to_internal_error_string(self, public: &'static str) -> String {
+        self.to_internal_error_string_with_debug(cfg!(debug_assertions), public)
     }
 
     fn to_internal_error_string_with_debug(
@@ -145,7 +166,4 @@ pub trait InternalErrorStringExt: ToString + Sized {
     }
 }
 
-impl<T> InternalErrorStringExt for T where
-    T: ToString + Sized
-{
-}
+impl<T> InternalErrorStringExt for T where T: ToString + Sized {}

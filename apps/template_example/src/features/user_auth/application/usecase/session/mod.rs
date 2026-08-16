@@ -4,8 +4,7 @@ mod create;
 mod get_from_token;
 
 pub use self::{
-    create::CreateSessionUsecase,
-    get_from_token::GetSessionFromTokenUsecase,
+    create::CreateSessionUsecase, get_from_token::GetSessionFromTokenUsecase,
 };
 use crate::features::user_auth::domain::session::Session;
 

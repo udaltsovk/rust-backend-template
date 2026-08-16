@@ -1,26 +1,20 @@
-use bon::Builder;
+use macros::{constraint, constraint_check};
 
-use super::Constraint;
+use super::{Constraint, Validation};
 
 #[macro_export]
 macro_rules! has {
-    ($name: ident, $matcher: expr $(,)?) => {
+    ($name:ident, $matcher:expr $(,)?) => {
         $crate::pastey::paste! {
-            #[derive(Builder)]
-            #[builder(derive(Clone), start_fn = with_err)]
+            #[constraint]
             pub struct [<$name:camel>] {
-                #[builder(start_fn)]
                 err_fn: fn(&str) -> String,
             }
 
-
-            impl Constraint<String> for [<$name:camel>] {
-                fn check(&self, value: &String) -> bool {
+            #[constraint_check(String)]
+            impl [<$name:camel>] {
+                fn is_valid(value: &str) -> bool {
                     value.chars().any($matcher)
-                }
-
-                fn error_msg(&self, rejected_value: &String) -> String {
-                    (self.err_fn)(rejected_value)
                 }
             }
         }

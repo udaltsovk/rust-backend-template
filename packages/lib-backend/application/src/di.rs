@@ -20,9 +20,7 @@ impl<D> Deref for DependencyContainer<D> {
 }
 
 #[entrait(pub Has)]
-fn get_dependency<D>(
-    dependency: &DependencyContainer<D>,
-) -> &D {
+fn get_dependency<D>(dependency: &DependencyContainer<D>) -> &D {
     &dependency.0
 }
 

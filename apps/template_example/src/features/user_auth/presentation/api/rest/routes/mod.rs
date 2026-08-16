@@ -4,9 +4,7 @@ use lib::{
 };
 
 use crate::features::{
-    user::application::usecase::{
-        AuthorizeUserUsecase, CreateUserUsecase,
-    },
+    user::application::usecase::{AuthorizeUserUsecase, CreateUserUsecase},
     user_auth::UserAuthFeature,
 };
 

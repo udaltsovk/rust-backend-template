@@ -1,7 +1,6 @@
 #![allow(
     clippy::empty_docs,
-    reason = "API DTO documentation will be added in \
-              future iterations"
+    reason = "API DTO documentation will be added in future iterations"
 )]
 
 use derive_more::From;
@@ -9,8 +8,7 @@ use lib::{
     presentation::api::rest::{
         into_validators,
         validation::{
-            UserInput, parseable::Parseable,
-            validator::ValidatorResult,
+            UserInput, parseable::Parseable, validator::ValidatorResult,
         },
     },
     redact::{Secret, expose_secret},
@@ -22,9 +20,6 @@ use crate::features::user_auth::domain::session::CreateSession;
 
 #[derive(From, Serialize, ToSchema, ToResponse, Debug)]
 pub struct SessionDto {
-    /// Токен доступа для авторизованных запросов. После
-    /// успешной аутентификации СТАРЫЕ ТОКЕНЫ ПЕРЕСТАЮТ
-    /// РАБОТАТЬ.
     #[schema(
         examples(
         "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3Njg1ODE1MjMsImlhdCI6MTc2ODU3NzkyMywic3ViIjoiMDE5YmM2ZGEtM2Y0Yi03MTcwLTg4NDItMDMzY2MwZjA0ZTUwIiwicm9sZSI6IlVTRVIiLCJqdGkiOiIwMTliYzc3NS03ODI3LTc2NDEtODdmYy00YzlkYTc5ODlkZGEifQ.MCS_MLo8g4CciJ--qxXfBgPflVrhmmbdd4J9zqq69Sk"
@@ -37,7 +32,6 @@ pub struct SessionDto {
 
 #[derive(Deserialize, ToSchema, Default, Debug)]
 pub struct CreateSessionDto {
-    ///
     #[schema(
         required,
         format = IdnEmail,
@@ -51,7 +45,6 @@ pub struct CreateSessionDto {
     #[serde(default)]
     email: UserInput<String>,
 
-    ///
     #[schema(
         required,
         format = Password,

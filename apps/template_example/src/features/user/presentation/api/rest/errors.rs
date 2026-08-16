@@ -12,9 +12,7 @@ impl From<UserUseCaseError> for ApiError {
             use StatusCode as C;
             use UserUseCaseError as E;
             match error {
-                E::Infrastructure(_) => {
-                    Self::internal_server_error(error)
-                },
+                E::Infrastructure(_) => Self::internal_server_error(error),
 
                 E::EmailAlreadyUsed(ref email) => (
                     C::CONFLICT,

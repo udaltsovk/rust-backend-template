@@ -1,6 +1,7 @@
 [package]
 name = "lib-presentation"
 version = "0.1.0"
+publish = false
 authors.workspace = true
 edition.workspace = true
 
@@ -8,6 +9,7 @@ edition.workspace = true
 api = ["dep:api"]
 api-rest = ["api", "api/rest"]
 api-rest-openapi = ["api-rest", "api/rest-openapi"]
+api-rest-opentelemetry = ["api-rest", "api/rest-opentelemetry"]
 
 [dependencies]
 api = { path = "./api", package = "lib-presentation-api", optional = true }

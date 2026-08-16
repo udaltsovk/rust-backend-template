@@ -17,10 +17,7 @@ use super::constraints::EMAIL_CONSTRAINTS;
 pub struct Email(String);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> =
-    LazyLock::new(|| {
-        Constraints::builder_with(&EMAIL_CONSTRAINTS)
-            .build()
-    });
+    LazyLock::new(|| Constraints::builder_with(&EMAIL_CONSTRAINTS).build());
 
 impl TryFrom<String> for Email {
     type Error = ValidationErrors;
@@ -32,16 +29,10 @@ impl TryFrom<String> for Email {
     }
 }
 
-impl_try_from_external_input!(
-    domain_type = Email,
-    input_type = String,
-);
+impl_try_from_external_input!(domain_type = Email, input_type = String,);
 
 impl fmt::Display for Email {
-    fn fmt(
-        &self,
-        f: &mut fmt::Formatter<'_>,
-    ) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)
     }
 }

@@ -5,8 +5,7 @@ use tracing::instrument;
 use super::SessionUseCaseResult;
 use crate::features::user_auth::{
     application::{
-        repository::session::SessionRepository,
-        service::token::TokenService,
+        repository::session::SessionRepository, service::token::TokenService,
     },
     domain::session::{Session, entity::SessionEntity},
 };
@@ -27,9 +26,7 @@ where
         }
     };
 
-    let session =
-        SessionRepository::save_session(deps, session)
-            .await?;
+    let session = SessionRepository::save_session(deps, session).await?;
 
     TokenService::generate_token(deps, session)?.pipe(Ok)
 }

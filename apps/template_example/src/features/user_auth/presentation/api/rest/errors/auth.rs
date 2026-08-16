@@ -15,11 +15,9 @@ impl From<AuthError> for ApiError {
             use AuthError as E;
             use StatusCode as C;
             match error {
-                E::InvalidToken => (
-                    C::UNAUTHORIZED,
-                    "invalid_token",
-                    "Invalid token".into(),
-                ),
+                E::InvalidToken => {
+                    (C::UNAUTHORIZED, "invalid_token", "Invalid token".into())
+                },
             }
         };
 

@@ -3,9 +3,7 @@ pub use instrumentation;
 #[doc(hidden)]
 pub use {entrait, mimalloc, mobc::Pool, pastey};
 
-pub use self::{
-    bootstrap::Bootstrapper, config::ConfigExt,
-};
+pub use self::{bootstrap::Bootstrapper, config::ConfigExt};
 
 mod allocator;
 mod bootstrap;

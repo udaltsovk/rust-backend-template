@@ -17,21 +17,14 @@ use crate::shared::domain::constraints::URL_CONSTRAINTS;
 pub struct UserAvatarUrl(String);
 
 static CONSTRAINTS: LazyLock<Constraints<String>> =
-    LazyLock::new(|| {
-        Constraints::builder_with(&URL_CONSTRAINTS).build()
-    });
+    LazyLock::new(|| Constraints::builder_with(&URL_CONSTRAINTS).build());
 
 impl TryFrom<String> for UserAvatarUrl {
     type Error = ValidationErrors;
 
     fn try_from(value: String) -> ValidationResult<Self> {
-        CONSTRAINTS
-            .check(&value)
-            .into_result(|_| Self(value))
+        CONSTRAINTS.check(&value).into_result(|_| Self(value))
     }
 }
 
-impl_try_from_external_input!(
-    domain_type = UserAvatarUrl,
-    input_type = String,
-);
+impl_try_from_external_input!(domain_type = UserAvatarUrl, input_type = String,);

@@ -2,6 +2,7 @@ use std::{fmt::Debug, sync::Arc};
 
 use derive_where::derive_where;
 pub use regex;
+use result_like::OptionLike;
 use serde::Serialize;
 
 use super::error::ValidationErrors;
@@ -20,16 +21,18 @@ pub use ascii_alphanumeric::IsAsciiAlphanumeric;
 pub use email::IsValidEmail;
 pub use regex_constraint::Matches;
 
-pub trait Constraint<T> {
-    fn check(&self, value: &T) -> bool;
+#[derive(OptionLike, PartialEq, Eq, Clone, Debug)]
+pub enum Validation {
+    Invalid(String),
+    Valid,
+}
 
-    fn error_msg(&self, rejected_value: &T) -> String;
+pub trait Constraint<T> {
+    fn check(&self, value: &T) -> Validation;
 }
 
 #[derive_where(Clone)]
-pub struct ConstraintVec<T>(
-    Vec<Arc<dyn Constraint<T> + Send + Sync>>,
-);
+pub struct ConstraintVec<T>(Vec<Arc<dyn Constraint<T> + Send + Sync>>);
 
 impl<T> ConstraintVec<T> {
     #[must_use]
@@ -38,10 +41,7 @@ impl<T> ConstraintVec<T> {
     }
 
     #[must_use]
-    pub fn add_constraint<C>(
-        mut self,
-        constraint: C,
-    ) -> Self
+    pub fn add_constraint<C>(mut self, constraint: C) -> Self
     where
         C: Constraint<T> + Send + Sync + 'static,
     {
@@ -75,9 +75,7 @@ impl<T> ConstraintsBuilder<T> {
     }
 
     #[must_use]
-    pub const fn new_with_constraints(
-        constraints: ConstraintVec<T>,
-    ) -> Self {
+    pub const fn new_with_constraints(constraints: ConstraintVec<T>) -> Self {
         Self {
             constraints,
             type_mismatch_fn: None,
@@ -96,33 +94,23 @@ impl<T> ConstraintsBuilder<T> {
     }
 
     #[must_use]
-    pub const fn with_none_msg(
-        mut self,
-        message: &'static str,
-    ) -> Self {
+    pub const fn with_none_msg(mut self, message: &'static str) -> Self {
         self.none_msg = Some(message);
         self
     }
 
     #[must_use]
-    pub const fn with_missing_msg(
-        mut self,
-        message: &'static str,
-    ) -> Self {
+    pub const fn with_missing_msg(mut self, message: &'static str) -> Self {
         self.missing_msg = Some(message);
         self
     }
 
     #[must_use]
-    pub fn add_constraint<C>(
-        mut self,
-        constraint: C,
-    ) -> Self
+    pub fn add_constraint<C>(mut self, constraint: C) -> Self
     where
         C: Constraint<T> + Send + Sync + 'static,
     {
-        self.constraints =
-            self.constraints.add_constraint(constraint);
+        self.constraints = self.constraints.add_constraint(constraint);
         self
     }
 
@@ -133,12 +121,8 @@ impl<T> ConstraintsBuilder<T> {
             type_mismatch_fn: self
                 .type_mismatch_fn
                 .unwrap_or(DEFAULT_TYPE_MISMATCH_FN),
-            none_msg: self
-                .none_msg
-                .unwrap_or("must not be null"),
-            missing_msg: self
-                .missing_msg
-                .unwrap_or("must be present"),
+            none_msg: self.none_msg.unwrap_or("must not be null"),
+            missing_msg: self.missing_msg.unwrap_or("must be present"),
         }
     }
 }
@@ -169,9 +153,7 @@ where
     pub fn builder_with(
         constraints: &ConstraintVec<T>,
     ) -> ConstraintsBuilder<T> {
-        ConstraintsBuilder::new_with_constraints(
-            constraints.clone(),
-        )
+        ConstraintsBuilder::new_with_constraints(constraints.clone())
     }
 
     #[must_use]
@@ -188,8 +170,7 @@ where
         let mut errors = ValidationErrors::new();
 
         for constraint in &self.inner.0 {
-            if !constraint.check(value) {
-                let message = constraint.error_msg(value);
+            if let Validation::Invalid(message) = constraint.check(value) {
                 errors.push(message, value.clone());
             }
         }

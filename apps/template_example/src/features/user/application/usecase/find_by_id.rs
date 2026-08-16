@@ -16,7 +16,5 @@ async fn find_user_by_id<Deps>(
 where
     Deps: UserRepository,
 {
-    UserRepository::find_user_by_id(deps, id)
-        .await?
-        .pipe(Ok)
+    UserRepository::find_user_by_id(deps, id).await?.pipe(Ok)
 }

@@ -1,7 +1,4 @@
-use lib::{
-    infrastructure::persistence::entity::DomainTypeFromDb,
-    uuid::Uuid,
-};
+use lib::{infrastructure::persistence::entity::DomainTypeFromDb, uuid::Uuid};
 use model_mapper::Mapper;
 use sqlx::FromRow;
 

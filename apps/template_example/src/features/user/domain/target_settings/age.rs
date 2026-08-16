@@ -1,3 +1,8 @@
+#![expect(
+    clippy::expect_used,
+    reason = "startup path: failing fast here is intended"
+)]
+
 use std::{
     fmt::{Debug, Display},
     sync::LazyLock,
@@ -6,7 +11,7 @@ use std::{
 use lib::{
     DomainType,
     domain::{
-        DomainType as _, impl_try_from_external_input,
+        impl_try_from_external_input,
         pastey::paste,
         validation::{
             Constraints,
@@ -36,28 +41,17 @@ impl UserTargetSettingsAge {
     {
         Constraints::builder()
             .add_constraint(
-                constraints::range::Min::with_err(
-                    |_, limit| {
-                        format!(
-                            "can't be less than {limit}"
-                        )
-                    },
-                )
+                constraints::range::Min::with_err(|_, limit| {
+                    format!("can't be less than {limit}")
+                })
                 .limit(T::zero())
                 .build(),
             )
             .add_constraint(
-                constraints::range::Max::with_err(
-                    |_, limit| {
-                        format!(
-                            "can't be greater than {limit}"
-                        )
-                    },
-                )
-                .limit(
-                    T::from_str_radix("100", 10)
-                        .expect("a valid number"),
-                )
+                constraints::range::Max::with_err(|_, limit| {
+                    format!("can't be greater than {limit}")
+                })
+                .limit(T::from_str_radix("100", 10).expect("a valid number"))
                 .build(),
             )
             .build()
@@ -74,10 +68,13 @@ macro_rules! numeric_constraints {
                 type Error = ValidationErrors;
 
                 fn try_from(value: $type) -> ValidationResult<Self> {
-                    [<CONSTRAINTS_ $type:upper>].check(&value).into_result(|_| {
-                        Self(value.try_into().unwrap_or_else(
-                            Self::it_should_be_safe_to_unwrap(),
-                        ))
+                    [<CONSTRAINTS_ $type:upper>].check(&value).into_result(|_| ())?;
+
+                    u8::try_from(value).map(Self).map_err(|_| {
+                        ValidationErrors::with_error(
+                            "must be a valid age",
+                            value,
+                        )
                     })
                 }
             }

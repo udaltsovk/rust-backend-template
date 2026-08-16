@@ -43,14 +43,11 @@ impl<B> OnResponse<B> for AxumOtelOnResponse {
         span: &tracing::Span,
     ) {
         let status = response.status().as_u16();
-        span.record(
-            "http.status_code",
-            tracing::field::display(status),
-        );
+        span.record("http.status_code", tracing::field::display(status));
+        #[cfg(feature = "opentelemetry")]
         span.record("otel.status_code", "OK");
 
-        let http_route = http_route(span)
-            .unwrap_or_else(|| "unknown".into());
+        let http_route = http_route(span).unwrap_or_else(|| "unknown".into());
 
         dyn_event!(
             self.level,

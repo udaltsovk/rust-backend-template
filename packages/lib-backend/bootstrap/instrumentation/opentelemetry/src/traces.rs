@@ -1,109 +1,53 @@
-use std::{ops::Deref as _, sync::Arc};
+#![expect(
+    clippy::expect_used,
+    reason = "startup path: failing fast here is intended"
+)]
 
 use opentelemetry::{global, trace::TracerProvider as _};
-#[cfg(any(
-    feature = "grpc-tonic",
-    feature = "http-proto",
-    feature = "http-json",
-))]
 use opentelemetry_otlp::SpanExporter;
 use opentelemetry_sdk::trace::{
-    BatchSpanProcessor, SdkTracerProvider, SpanProcessor,
-    Tracer,
+    BatchSpanProcessor, SdkTracerProvider, SpanProcessor, Tracer,
 };
-use tap::{Pipe as _, Tap as _};
+use tap::Tap as _;
 use tracing::Subscriber;
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::registry::LookupSpan;
 
-use crate::Otel;
+use crate::{Otel, Providers};
 
 impl Otel {
-    pub(super) fn get_tracer_provider(
-        &self,
-    ) -> SdkTracerProvider {
-        self.tracer_provider
-            .clone()
-            .expect(
-                "Called `Otel::get_tracer_provider` too \
-                 early",
-            )
-            .deref()
-            .clone()
-    }
-
     #[inline]
-    fn span_processor(
-        &self,
-    ) -> impl SpanProcessor + 'static {
-        let exporter = {
-            #[cfg(feature = "grpc-tonic")]
-            {
-                self.with_export_config(
-                    SpanExporter::builder().with_tonic(),
-                )
-                .build()
-                .expect("Failed to build exporter!")
-            }
+    fn span_processor(&self) -> impl SpanProcessor + 'static {
+        let builder = SpanExporter::builder();
 
-            #[cfg(all(
-                not(feature = "grpc-tonic"),
-                any(
-                    feature = "http-proto",
-                    feature = "http-json",
-                )
-            ))]
-            {
-                self.with_export_config(
-                    SpanExporter::builder().with_http(),
-                )
-                .build()
-                .expect("Failed to build exporter!")
-            }
-
-            #[cfg(not(any(
-                feature = "grpc-tonic",
-                feature = "http-proto",
-                feature = "http-json",
-            )))]
-            {
-                panic!(
-                    "No OpenTelemetry protocol selected!"
-                );
-            }
-        };
+        let exporter = self
+            .with_export_config(cfg_select! {
+                feature = "grpc-tonic" => builder.with_tonic(),
+                _ => builder.with_http(),
+            })
+            .build()
+            .expect("Failed to build exporter!");
 
         BatchSpanProcessor::builder(exporter).build()
     }
 
     #[inline]
-    pub(super) fn configure_tracer_provider(
-        mut self,
-    ) -> Self {
-        self.tracer_provider = SdkTracerProvider::builder()
+    pub(super) fn tracer_provider(&self) -> SdkTracerProvider {
+        SdkTracerProvider::builder()
             .with_resource(self.resource.clone())
             .with_span_processor(self.span_processor())
             .build()
             .tap(|provider| {
-                global::set_tracer_provider(
-                    provider.clone(),
-                );
+                global::set_tracer_provider(provider.clone());
             })
-            .pipe(Arc::new)
-            .pipe(Some);
-
-        self
     }
+}
 
+impl Providers {
     #[inline]
-    pub(super) fn trace_layer<
-        S: Subscriber + for<'span> LookupSpan<'span>,
-    >(
+    pub(super) fn trace_layer<S: Subscriber + for<'span> LookupSpan<'span>>(
         &self,
     ) -> OpenTelemetryLayer<S, Tracer> {
-        OpenTelemetryLayer::new(
-            self.get_tracer_provider()
-                .tracer(self.service_name.clone()),
-        )
+        OpenTelemetryLayer::new(self.tracer.tracer(self.service_name.clone()))
     }
 }

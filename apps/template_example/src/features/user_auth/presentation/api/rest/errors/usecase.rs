@@ -12,9 +12,7 @@ impl From<SessionUseCaseError> for ApiError {
             use SessionUseCaseError as E;
             use StatusCode as C;
             match error {
-                E::Infrastructure(_) => {
-                    Self::internal_server_error(error)
-                },
+                E::Infrastructure(_) => Self::internal_server_error(error),
                 E::NotFound(id) => (
                     C::UNAUTHORIZED,
                     "invalid_session",

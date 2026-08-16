@@ -1,8 +1,7 @@
 use std::any::type_name;
 
 use domain::validation::{
-    ExternalInput, ValidationConfirmation,
-    error::ValidationErrors,
+    ExternalInput, ValidationConfirmation, error::ValidationErrors,
 };
 use tap::Pipe as _;
 
@@ -45,10 +44,7 @@ impl<T> Validator<T> {
     ) -> Self
     where
         I: Into<UserInput<F>>,
-        T: TryFrom<
-                ExternalInput<F>,
-                Error = ValidationErrors,
-            >,
+        T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
     {
         Self::from_result(
             input
@@ -56,40 +52,27 @@ impl<T> Validator<T> {
                 .pipe(ExternalInput::from)
                 .try_into()
                 .map_err(|err| {
-                    FieldErrors::from_validation_errors(
-                        &field.into(),
-                        err,
-                    )
+                    FieldErrors::from_validation_errors(&field.into(), err)
                 }),
             errors,
         )
     }
 
-    pub fn nested<F, I>(
-        field: I,
-        input: F,
-        errors: &mut FieldErrors,
-    ) -> Self
+    pub fn nested<F, I>(field: I, input: F, errors: &mut FieldErrors) -> Self
     where
         F: Parseable<T>,
         I: Into<Option<&'static str>>,
     {
         Self::from_result(
-            input.parse_field(
-                field.into().map(str::to_string),
-            ),
+            input.parse_field(field.into().map(str::to_string)),
             errors,
         )
     }
 
-    pub fn validated(
-        self,
-        _confirmation: ValidationConfirmation,
-    ) -> T {
+    pub fn validated(self, _confirmation: ValidationConfirmation) -> T {
         self.inner.unwrap_or_else(|_| {
             panic!(
-                "`{}` should be Ok because error vec is \
-                 empty",
+                "`{}` should be Ok because error vec is empty",
                 type_name::<Self>()
             )
         })
@@ -98,10 +81,7 @@ impl<T> Validator<T> {
 
 impl<T> From<Vec<Validator<T>>> for Validator<Vec<T>> {
     fn from(validators: Vec<Validator<T>>) -> Self {
-        let res = validators
-            .into_iter()
-            .map(|v| v.inner)
-            .collect();
+        let res = validators.into_iter().map(|v| v.inner).collect();
         Self {
             inner: res,
         }
@@ -116,10 +96,7 @@ impl<T> Validator<Option<T>> {
     ) -> Self
     where
         I: Into<UserInput<F>>,
-        T: TryFrom<
-                ExternalInput<F>,
-                Error = ValidationErrors,
-            >,
+        T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
     {
         match input.into() {
             UserInput::Null => Self {
@@ -128,9 +105,7 @@ impl<T> Validator<Option<T>> {
             input => {
                 let Validator {
                     inner: res,
-                } = Validator::required(
-                    field, input, errors,
-                );
+                } = Validator::required(field, input, errors);
 
                 Self {
                     inner: res.map(Some),
@@ -146,10 +121,7 @@ impl<T> Validator<Option<T>> {
     ) -> Self
     where
         I: Into<UserInput<F>>,
-        T: TryFrom<
-                ExternalInput<F>,
-                Error = ValidationErrors,
-            >,
+        T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
     {
         match input.into() {
             UserInput::Missing => Self {
@@ -158,9 +130,7 @@ impl<T> Validator<Option<T>> {
             input => {
                 let Validator {
                     inner: res,
-                } = Validator::required(
-                    field, input, errors,
-                );
+                } = Validator::required(field, input, errors);
 
                 Self {
                     inner: res.map(Some),
@@ -178,10 +148,7 @@ impl<T> Validator<Option<Option<T>>> {
     ) -> Self
     where
         I: Into<UserInput<F>>,
-        T: TryFrom<
-                ExternalInput<F>,
-                Error = ValidationErrors,
-            >,
+        T: TryFrom<ExternalInput<F>, Error = ValidationErrors>,
     {
         match input.into() {
             UserInput::Missing => Self {
@@ -193,9 +160,7 @@ impl<T> Validator<Option<Option<T>>> {
             input => {
                 let Validator {
                     inner: res,
-                } = Validator::required(
-                    field, input, errors,
-                );
+                } = Validator::required(field, input, errors);
 
                 Self {
                     inner: res.map(Some).map(Some),

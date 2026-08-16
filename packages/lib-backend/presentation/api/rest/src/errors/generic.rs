@@ -30,15 +30,30 @@ impl JsonError {
         M: ToString,
         D: Serialize,
     {
-        Self::Generic(GenericJsonError {
-            error: JsonErrorStruct::new(
-                status_code,
-                error_code,
-                message,
-            ),
-            details: serde_json::to_value(details)?,
-        })
+        Self::with_value_details(
+            status_code,
+            error_code,
+            message,
+            serde_json::to_value(details)?,
+        )
         .pipe(Ok)
+    }
+
+    #[must_use]
+    pub fn with_value_details<S, M>(
+        status_code: S,
+        error_code: &'static str,
+        message: M,
+        details: Value,
+    ) -> Self
+    where
+        S: Into<StatusCode>,
+        M: ToString,
+    {
+        Self::Generic(GenericJsonError {
+            error: JsonErrorStruct::new(status_code, error_code, message),
+            details,
+        })
     }
 
     pub fn new<S, M>(
@@ -51,11 +66,7 @@ impl JsonError {
         M: ToString,
     {
         Self::Generic(GenericJsonError {
-            error: JsonErrorStruct::new(
-                status_code,
-                error_code,
-                message,
-            ),
+            error: JsonErrorStruct::new(status_code, error_code, message),
             details: Value::Null,
         })
     }
@@ -108,10 +119,18 @@ macro_rules! generic_error_response {
                 M: ToString,
                 D: serde::Serialize,
             {
-                Ok(Self($crate::errors::generic::GenericJsonError {
+                Ok(Self::with_value_details(message, $crate::serde_json::to_value(details)?))
+            }
+
+            #[must_use]
+            pub fn with_value_details<M>(message: M, details: $crate::serde_json::Value) -> Self
+            where
+                M: ToString,
+            {
+                Self($crate::errors::generic::GenericJsonError {
                     error: $crate::errors::JsonErrorStruct::new(Self::STATUS_CODE, Self::ERROR_CODE, message),
-                    details: $crate::serde_json::to_value(details)?
-                }))
+                    details
+                })
             }
 
             #[must_use]
@@ -128,13 +147,12 @@ macro_rules! generic_error_response {
 
         impl From<$name> for $crate::errors::JsonError {
             fn from(error: $name) -> Self {
-                Self::with_details(
+                Self::with_value_details(
                     $name::STATUS_CODE,
                     $name::ERROR_CODE,
                     error.0.error.message,
                     error.0.details
                 )
-                .expect("details is already a value so it should be ok")
             }
         }
     };

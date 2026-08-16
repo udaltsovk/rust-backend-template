@@ -1,15 +1,8 @@
-#![expect(
-    clippy::empty_docs,
-    reason = "API DTO documentation will be added in \
-              future iterations"
-)]
-
 use lib::{
     presentation::api::rest::{
         into_validators,
         validation::{
-            UserInput, parseable::Parseable,
-            validator::ValidatorResult,
+            UserInput, parseable::Parseable, validator::ValidatorResult,
         },
     },
     redact::Secret,
@@ -26,21 +19,16 @@ pub mod target_settings;
 #[derive(Mapper, Serialize, ToSchema, Default, Debug)]
 #[mapper(ty = User, from, ignore_extra)]
 pub struct UserDto {
-    ///
     name: String,
 
-    ///
     surname: String,
 
-    ///
     email: String,
 
-    ///
     #[serde(skip_serializing_if = "Option::is_none")]
     #[mapper(opt)]
     avatar_url: Option<String>,
 
-    ///
     #[mapper(rename = target_settings)]
     other: UserTargetSettingsDto,
 }
@@ -57,7 +45,6 @@ pub struct CreateUserDto {
     #[serde(default)]
     name: UserInput<String>,
 
-    ///
     #[schema(
         required,
         min_length = 1,
@@ -68,7 +55,6 @@ pub struct CreateUserDto {
     #[serde(default)]
     surname: UserInput<String>,
 
-    ///
     #[schema(
         required,
         format = IdnEmail,
@@ -82,7 +68,6 @@ pub struct CreateUserDto {
     #[serde(default)]
     email: UserInput<String>,
 
-    ///
     #[schema(
         required,
         format = Password,
@@ -97,7 +82,6 @@ pub struct CreateUserDto {
     #[serde(default)]
     password: UserInput<Secret<String>>,
 
-    /// Ссылка на фото пользователя
     #[schema(
         format = Uri,
         max_length = 350,
@@ -109,7 +93,6 @@ pub struct CreateUserDto {
     #[serde(default)]
     avatar_url: UserInput<String>,
 
-    ///
     #[schema(required, value_type = UserTargetSettingsDto)]
     #[serde(default)]
     other: UserInput<UserTargetSettingsDto>,
@@ -119,14 +102,7 @@ impl Parseable<CreateUser> for CreateUserDto {
     fn parse(self) -> ValidatorResult<CreateUser> {
         let (
             errors,
-            (
-                name,
-                surname,
-                email,
-                password,
-                avatar_url,
-                target_settings,
-            ),
+            (name, surname, email, password, avatar_url, target_settings),
         ) = into_validators!(
             field!(self.name, required, "name"),
             field!(self.surname, required, "surname"),

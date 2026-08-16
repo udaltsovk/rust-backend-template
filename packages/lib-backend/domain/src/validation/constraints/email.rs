@@ -1,21 +1,16 @@
-use bon::Builder;
+use macros::{constraint, constraint_check};
 use validator_rs::is_valid_email;
 
-use super::Constraint;
+use super::{Constraint, Validation};
 
-#[derive(Builder)]
-#[builder(derive(Clone), start_fn = with_err)]
+#[constraint]
 pub struct IsValidEmail {
-    #[builder(start_fn)]
     err_fn: fn(&str) -> String,
 }
 
-impl Constraint<String> for IsValidEmail {
-    fn check(&self, value: &String) -> bool {
+#[constraint_check(String)]
+impl IsValidEmail {
+    fn is_valid(value: &str) -> bool {
         is_valid_email(value)
-    }
-
-    fn error_msg(&self, rejected_value: &String) -> String {
-        (self.err_fn)(rejected_value)
     }
 }

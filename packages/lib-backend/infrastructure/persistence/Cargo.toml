@@ -1,6 +1,7 @@
 [package]
 name = "lib-infrastructure-persistence"
 version = "0.1.0"
+publish = false
 authors.workspace = true
 edition.workspace = true
 
@@ -19,6 +20,7 @@ derive-where.workspace = true
 mobc.workspace = true
 mobc-sqlx = { workspace = true, optional = true }
 pastey.workspace = true
+tap.workspace = true
 
 [lints]
 workspace = true

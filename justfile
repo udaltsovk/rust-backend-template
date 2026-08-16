@@ -28,6 +28,15 @@ test *args="--workspace":
 build crate=(default_app_name + "-monolyth") *args:
     cargo build --bin {{ crate }} {{ args }}
 
+deny *args="check":
+    cargo deny {{ args }}
+
+outdated *args="-wR":
+    cargo outdated {{ args }}
+
+audit *args:
+    cargo audit {{ args }}
+
 style: fmt lint
 
 run crate=(default_app_name + "-monolyth") *args:

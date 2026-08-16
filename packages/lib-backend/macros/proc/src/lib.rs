@@ -2,15 +2,18 @@ use std::path::PathBuf;
 
 use proc_macro::TokenStream;
 
+mod constraint;
+mod constraint_check;
 mod domain_type;
 mod feature_postgres;
 mod instrument_all;
 
 use crate::{
+    constraint::constraint2,
+    constraint_check::constraint_check2,
     domain_type::domain_type2,
     feature_postgres::{
-        feature_postgres_migrator2,
-        feature_postgres_query_file_as2,
+        feature_postgres_migrator2, feature_postgres_query_file_as2,
     },
     instrument_all::instrument_all2,
 };
@@ -41,18 +44,26 @@ pub fn query_file_as(input: TokenStream) -> TokenStream {
         .local_file()
         .unwrap_or_else(|| PathBuf::from(span.file()));
 
-    feature_postgres_query_file_as2(
-        &invocation_file,
-        input.into(),
-    )
-    .unwrap_or_else(syn::Error::into_compile_error)
-    .into()
+    feature_postgres_query_file_as2(&invocation_file, input.into())
+        .unwrap_or_else(syn::Error::into_compile_error)
+        .into()
 }
 
 #[proc_macro_attribute]
-pub fn instrument_all(
-    attr: TokenStream,
-    item: TokenStream,
-) -> TokenStream {
+pub fn instrument_all(attr: TokenStream, item: TokenStream) -> TokenStream {
     instrument_all2(attr.into(), item.into()).into()
+}
+
+#[proc_macro_attribute]
+pub fn constraint(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    constraint2(item.into())
+        .unwrap_or_else(syn::Error::into_compile_error)
+        .into()
+}
+
+#[proc_macro_attribute]
+pub fn constraint_check(attr: TokenStream, item: TokenStream) -> TokenStream {
+    constraint_check2(attr.into(), item.into())
+        .unwrap_or_else(syn::Error::into_compile_error)
+        .into()
 }

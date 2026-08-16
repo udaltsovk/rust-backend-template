@@ -1,40 +1,26 @@
-use bon::Builder;
+use macros::{constraint, constraint_check};
 
-use super::Constraint;
+use super::{Constraint, Validation};
 
 macro_rules! length_constraint {
     ($name:ident, $func:ident $(,)?) => {
-        #[derive(Builder)]
-        #[builder(derive(Clone), start_fn = with_err)]
+        #[constraint]
         pub struct $name<T> {
-            #[builder(start_fn)]
             err_fn: fn(&T, usize) -> String,
             limit: usize,
         }
 
-        impl Constraint<String> for $name<String> {
-            fn check(&self, value: &String) -> bool {
+        #[constraint_check(String)]
+        impl $name<String> {
+            fn is_valid(&self, value: &str) -> bool {
                 value.chars().count().$func(&self.limit)
-            }
-
-            fn error_msg(
-                &self,
-                rejected_value: &String,
-            ) -> String {
-                (self.err_fn)(rejected_value, self.limit)
             }
         }
 
-        impl<T> Constraint<Vec<T>> for $name<Vec<T>> {
-            fn check(&self, value: &Vec<T>) -> bool {
+        #[constraint_check(Vec<T>)]
+        impl<T> $name<Vec<T>> {
+            fn is_valid(&self, value: &[T]) -> bool {
                 value.len().$func(&self.limit)
-            }
-
-            fn error_msg(
-                &self,
-                rejected_value: &Vec<T>,
-            ) -> String {
-                (self.err_fn)(rejected_value, self.limit)
             }
         }
     };
