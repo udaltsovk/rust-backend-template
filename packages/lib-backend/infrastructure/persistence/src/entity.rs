@@ -1,6 +1,30 @@
-use std::any::type_name;
+use std::{
+    any::type_name,
+    num::{NonZero, ZeroablePrimitive},
+};
 
-use domain::{DomainType, validation::error::ValidationErrors};
+use domain::{DomainType, Id, IdRepr, validation::error::ValidationErrors};
+
+pub trait IdFromDb<T, N>
+where
+    Self: Sized,
+    N: ZeroablePrimitive,
+    NonZero<N>: IdRepr,
+{
+    fn into_id(self) -> Id<T, NonZero<N>>;
+}
+
+impl<T, N> IdFromDb<T, N> for N
+where
+    N: ZeroablePrimitive,
+    NonZero<N>: IdRepr,
+{
+    fn into_id(self) -> Id<T, NonZero<N>> {
+        Id::new(NonZero::new(self).unwrap_or_else(|| {
+            panic!("DB returned `id` = 0 for an `Id` column; expected non-zero")
+        }))
+    }
+}
 
 pub trait DomainTypeFromDb<T, I>
 where

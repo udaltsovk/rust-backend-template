@@ -47,6 +47,13 @@ impl Otel {
             feature = "grpc-tonic" => Protocol::Grpc,
             feature = "http-proto" => Protocol::HttpBinary,
             feature = "http-json" => Protocol::HttpJson,
+            any(
+                all(feature = "grpc-tonic", feature = "http-proto"),
+                all(feature = "http-proto", feature = "http-json"),
+                all(feature = "http-json", feature = "grpc-tonic"),
+            ) => compile_error!(
+                "only one OpenTelemetry protocol feature may be selected"
+            ),
             _ => compile_error!("no OpenTelemetry protocol feature selected"),
         }
     }

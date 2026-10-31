@@ -21,7 +21,7 @@ lib = { workspace = true, features = [
   "bootstrap-sqlx",
   # "bootstrap-instrumentation-stdout",
   "bootstrap-instrumentation-opentelemetry-grpc-tonic",
-  "domain",
+  "domain-id-uuidv7",
   "infrastructure-persistence-redis",
   "infrastructure-persistence-sqlx",
   "infrastructure-services",

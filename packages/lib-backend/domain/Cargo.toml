@@ -4,10 +4,12 @@ version = "0.1.0"
 publish = false
 edition = "2024"
 
+[features]
+id-uuidv4 = ["uuid/v4"]
+id-uuidv7 = ["uuid/v7"]
+
 [dependencies]
-macros = { path = "../macros", package = "lib-macros", features = [
-  "proc",
-] }
+macros = { path = "../macros", package = "lib-macros", features = ["proc"] }
 
 bon.workspace = true
 derive-where.workspace = true
@@ -16,7 +18,7 @@ result-like.workspace = true
 serde.workspace = true
 serde-value.workspace = true
 tap.workspace = true
-uuid = { workspace = true, features = ["v7", "serde"] }
+uuid = { workspace = true, features = ["serde"] }
 
 num-traits = "0.2"
 regex = "1.12"

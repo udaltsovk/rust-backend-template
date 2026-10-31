@@ -1,3 +1,6 @@
+#![expect(internal_features, reason = "We desperately need nonzero")]
+#![feature(nonzero_internals)]
+
 use std::ops::Deref;
 
 use application::{

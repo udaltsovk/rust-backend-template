@@ -98,6 +98,8 @@ bootstrap-instrumentation-stdout = [
 ]
 
 domain = ["dep:domain", "dep:redact", "dep:uuid"]
+domain-id-uuidv4 = ["domain", "domain/id-uuidv4"]
+domain-id-uuidv7 = ["domain", "domain/id-uuidv7"]
 
 infrastructure = ["dep:infrastructure", "dep:entrait"]
 
